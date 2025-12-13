@@ -6,5 +6,10 @@ enum LightType {
 };
 
 class Light : public Component{
+public:
     LightType lightType = LightType::DIRECTIONAL;
+    
+    size_t GetId() override {
+        return typeid(Light).hash_code();
+    }
 };

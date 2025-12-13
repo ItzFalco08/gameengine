@@ -22,11 +22,12 @@ public:
     void AddComponent(Args&&... args) {
         static_assert(std::is_base_of_v<Component, T>, "T must derive from Component");
 
+        size_t compId = typeid(T).hash_code();
+
         for(const auto& c : components) {
-            T* ptr = dynamic_cast<T*>(c.get());
-            if(ptr) {
+            if(compId == c->GetId()) {
                 LOG::Error("AddComponent Failed! Component Already Exists.");
-                return; // Don't add duplicate component
+                return; 
             }
         }
 
@@ -36,10 +37,12 @@ public:
 
     template <typename T>
     void RemoveComponent() {
+        size_t compId = typeid(T).hash_code(); 
+
         for(auto itr = components.begin(); itr != components.end(); ++itr) {
-            T* ptr = dynamic_cast<T*>(itr->get());
-            if(ptr){
+            if((*itr)->GetId() == compId){
                 components.erase(itr);
+                LOG::Success("Component Deleted of type: ", typeid(T).name());
                 return;
             }
         }
@@ -51,10 +54,11 @@ public:
     T* GetComponent() {
         static_assert(std::is_base_of_v<Component, T>, "T must derive from Component");
 
+        size_t compId = typeid(T).hash_code();
+
         for (const auto& c : components ){
-            T* ptr = dynamic_cast<T*>(c.get());
-            if(ptr) {
-                return ptr;                 
+            if (c->GetId() == compId) {
+                return static_cast<T*>(c.get());
             }
         }
 

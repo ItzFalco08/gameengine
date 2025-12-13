@@ -17,6 +17,7 @@ public:
     glm::vec3 position = glm::vec3(0.0f);
     glm::vec3 scale = glm::vec3(1.0f);
 
+    size_t GetId() override;
     void Rotate(const glm::vec3& deltaGlobalEulars);
     void SetRotation(const glm::vec3& globalEulars);
     void RotateLocal(const glm::vec3 localEulars);
