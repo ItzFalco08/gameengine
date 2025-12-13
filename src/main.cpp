@@ -1,0 +1,150 @@
+#define _DEBUG
+#include <iostream>
+#include <glad/gl.h>
+#include <GLFW/glfw3.h>
+#include "utils/Logger.hpp"
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
+#include "utils/Utils.hpp"
+#include "utils/globals.hpp"
+void drawGraphics();
+void drawImgui();
+
+int main() {
+    glfwSetErrorCallback(Utils::GLFWErrorCallback);
+    if(!glfwInit()) return 1;
+        
+    // context hints (you already have these)
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    #ifdef __APPLE__
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    #endif
+
+    // important for multi-viewport behavior
+    glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
+    glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+
+    
+    GLFWwindow* window = glfwCreateWindow(1200, 700, "Game Engine", nullptr, nullptr);
+    if (!window) {glfwTerminate(); return 1; };
+
+    glfwMakeContextCurrent(window);
+    if(!gladLoadGL(glfwGetProcAddress)) return 1;
+
+    Utils::initImGui(window);
+    Utils::genSceneFramebuffers();
+
+    while(!glfwWindowShouldClose(window)) {
+        glfwPollEvents();
+        
+        // NOTE: if fbo bounded, opengl draws into it. else backbuffer.
+        glBindFramebuffer(GL_FRAMEBUFFER, sceneView.framebuffObj);
+        glViewport(0, 0, sceneView.SCENEVIEW_WIDTH, sceneView.SCENEVIEW_HEIGHT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+        drawGraphics();
+        
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        drawImgui();
+        glfwSwapBuffers(window);
+    }
+
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyPlatformWindows();
+    ImGui::DestroyContext();
+    glfwTerminate();
+    return 0;
+}
+
+bool logged = false;
+
+void drawGraphics() {
+
+}
+
+void drawImgui()
+{
+    ImGui_ImplGlfw_NewFrame();
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui::NewFrame();
+
+    // Fullscreen DockSpace window -------------------------
+    ImGuiWindowFlags host_window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
+                         ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+    const ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->Pos);
+    ImGui::SetNextWindowSize(viewport->Size);
+    ImGui::SetNextWindowViewport(viewport->ID);
+
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    ImGui::Begin("DockSpaceHost", nullptr, host_window_flags);
+    ImGui::PopStyleVar(2);
+
+    // DockSpace itself
+    ImGuiID dockspace_id = ImGui::GetID("EngineDockspace");
+    ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode;
+
+    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+
+    // Menu bar (optional)
+    if (ImGui::BeginMenuBar()) {
+        if (ImGui::BeginMenu("File")) {
+            if (ImGui::MenuItem("Save Changes (Ctrl + S)")) {
+                std::cout << "changes saved!" << std::endl;
+            } else if(ImGui::MenuItem("Exit Editor")) {
+                GLFWwindow* w = glfwGetCurrentContext();
+                if (w) glfwSetWindowShouldClose(w, GLFW_TRUE);
+            }
+            ImGui::EndMenu();
+        }
+        ImGui::EndMenuBar();
+    }
+
+    ImGui::End(); // end DockSpaceHost
+
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.10f, 0.10f, 0.10f, 1.0f));
+    ImGui::Begin("Scene");
+
+    // U P D A T E _ S C E N E _ D I M E N T I O N S
+    int p_w = sceneView.SCENEVIEW_WIDTH;
+    int p_h = sceneView.SCENEVIEW_HEIGHT;
+    static double lastchange = 0;
+    ImVec2 dimentions = ImGui::GetContentRegionAvail();
+
+    if (dimentions.x != p_w) {
+        sceneView.SCENEVIEW_WIDTH = dimentions.x;
+        lastchange = glfwGetTime();
+    } else if (dimentions.y != p_h) {
+        sceneView.SCENEVIEW_HEIGHT = dimentions.y;
+        lastchange = glfwGetTime();
+    }
+
+    if(glfwGetTime() - lastchange > 0.15f) { // 150ms
+        Utils::updateFBODimensions();
+    }
+
+    ImGui::Image((ImTextureID)(uintptr_t)sceneView.textureObj, ImVec2(sceneView.SCENEVIEW_WIDTH, sceneView.SCENEVIEW_HEIGHT), ImVec2(0,0), ImVec2(1,1));
+
+    ImGui::End();
+    ImGui::PopStyleColor();
+
+    // Render ImGui
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    // When viewports are enabled, render additional platform windows
+    if (ImGuiConfigFlags_ViewportsEnable) {
+        GLFWwindow* backup_context = glfwGetCurrentContext();
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+        glfwMakeContextCurrent(backup_context);
+    }
+}
