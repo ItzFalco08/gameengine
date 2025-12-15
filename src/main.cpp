@@ -8,8 +8,10 @@
 #include "imgui/imgui_impl_opengl3.h"
 #include "utils/Utils.hpp"
 #include "utils/globals.hpp"
+#include "core/GameObject.hpp"
 void drawGraphics();
 void drawImgui();
+void test();
 
 int main() {
     glfwSetErrorCallback(Utils::GLFWErrorCallback);
@@ -38,6 +40,8 @@ int main() {
     Utils::initImGui(window);
     Utils::genSceneFramebuffers();
 
+    test();
+
     while(!glfwWindowShouldClose(window)) {
         glfwPollEvents();
         
@@ -62,7 +66,14 @@ int main() {
     return 0;
 }
 
-bool logged = false;
+GameObject* gameObject;
+
+void test() {
+    gameObject = new GameObject();
+    gameObject->AddComponent<Mesh>("../assets/lowpoly-burger/source/burger.obj");
+    gameObject->AddComponent<Material>();
+    delete gameObject;
+}
 
 void drawGraphics() {
 

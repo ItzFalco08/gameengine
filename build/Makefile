@@ -112,6 +112,7 @@ preinstall/fast:
 
 # clear depends
 depend:
+	$(CMAKE_COMMAND) -P C:\Users\pc\Desktop\gameengine\build\CMakeFiles\VerifyGlobs.cmake
 	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles\Makefile.cmake 1
 .PHONY : depend
 
@@ -309,6 +310,30 @@ includes/imgui/imgui_widgets.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\imgui.dir\build.make CMakeFiles/imgui.dir/includes/imgui/imgui_widgets.cpp.s
 .PHONY : includes/imgui/imgui_widgets.cpp.s
 
+src/core/Renderer.obj: src/core/Renderer.cpp.obj
+.PHONY : src/core/Renderer.obj
+
+# target to build an object file
+src/core/Renderer.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/core/Renderer.cpp.obj
+.PHONY : src/core/Renderer.cpp.obj
+
+src/core/Renderer.i: src/core/Renderer.cpp.i
+.PHONY : src/core/Renderer.i
+
+# target to preprocess a source file
+src/core/Renderer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/core/Renderer.cpp.i
+.PHONY : src/core/Renderer.cpp.i
+
+src/core/Renderer.s: src/core/Renderer.cpp.s
+.PHONY : src/core/Renderer.s
+
+# target to generate assembly for a file
+src/core/Renderer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/core/Renderer.cpp.s
+.PHONY : src/core/Renderer.cpp.s
+
 src/core/Texture.obj: src/core/Texture.cpp.obj
 .PHONY : src/core/Texture.obj
 
@@ -332,6 +357,102 @@ src/core/Texture.s: src/core/Texture.cpp.s
 src/core/Texture.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/core/Texture.cpp.s
 .PHONY : src/core/Texture.cpp.s
+
+src/core/components/Light.obj: src/core/components/Light.cpp.obj
+.PHONY : src/core/components/Light.obj
+
+# target to build an object file
+src/core/components/Light.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/core/components/Light.cpp.obj
+.PHONY : src/core/components/Light.cpp.obj
+
+src/core/components/Light.i: src/core/components/Light.cpp.i
+.PHONY : src/core/components/Light.i
+
+# target to preprocess a source file
+src/core/components/Light.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/core/components/Light.cpp.i
+.PHONY : src/core/components/Light.cpp.i
+
+src/core/components/Light.s: src/core/components/Light.cpp.s
+.PHONY : src/core/components/Light.s
+
+# target to generate assembly for a file
+src/core/components/Light.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/core/components/Light.cpp.s
+.PHONY : src/core/components/Light.cpp.s
+
+src/core/components/Material.obj: src/core/components/Material.cpp.obj
+.PHONY : src/core/components/Material.obj
+
+# target to build an object file
+src/core/components/Material.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/core/components/Material.cpp.obj
+.PHONY : src/core/components/Material.cpp.obj
+
+src/core/components/Material.i: src/core/components/Material.cpp.i
+.PHONY : src/core/components/Material.i
+
+# target to preprocess a source file
+src/core/components/Material.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/core/components/Material.cpp.i
+.PHONY : src/core/components/Material.cpp.i
+
+src/core/components/Material.s: src/core/components/Material.cpp.s
+.PHONY : src/core/components/Material.s
+
+# target to generate assembly for a file
+src/core/components/Material.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/core/components/Material.cpp.s
+.PHONY : src/core/components/Material.cpp.s
+
+src/core/components/Mesh.obj: src/core/components/Mesh.cpp.obj
+.PHONY : src/core/components/Mesh.obj
+
+# target to build an object file
+src/core/components/Mesh.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/core/components/Mesh.cpp.obj
+.PHONY : src/core/components/Mesh.cpp.obj
+
+src/core/components/Mesh.i: src/core/components/Mesh.cpp.i
+.PHONY : src/core/components/Mesh.i
+
+# target to preprocess a source file
+src/core/components/Mesh.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/core/components/Mesh.cpp.i
+.PHONY : src/core/components/Mesh.cpp.i
+
+src/core/components/Mesh.s: src/core/components/Mesh.cpp.s
+.PHONY : src/core/components/Mesh.s
+
+# target to generate assembly for a file
+src/core/components/Mesh.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/core/components/Mesh.cpp.s
+.PHONY : src/core/components/Mesh.cpp.s
+
+src/core/components/Transform.obj: src/core/components/Transform.cpp.obj
+.PHONY : src/core/components/Transform.obj
+
+# target to build an object file
+src/core/components/Transform.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/core/components/Transform.cpp.obj
+.PHONY : src/core/components/Transform.cpp.obj
+
+src/core/components/Transform.i: src/core/components/Transform.cpp.i
+.PHONY : src/core/components/Transform.i
+
+# target to preprocess a source file
+src/core/components/Transform.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/core/components/Transform.cpp.i
+.PHONY : src/core/components/Transform.cpp.i
+
+src/core/components/Transform.s: src/core/components/Transform.cpp.s
+.PHONY : src/core/components/Transform.s
+
+# target to generate assembly for a file
+src/core/components/Transform.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/core/components/Transform.cpp.s
+.PHONY : src/core/components/Transform.cpp.s
 
 src/gl.obj: src/gl.c.obj
 .PHONY : src/gl.obj
@@ -460,9 +581,24 @@ help:
 	@echo ... includes/imgui/imgui_widgets.obj
 	@echo ... includes/imgui/imgui_widgets.i
 	@echo ... includes/imgui/imgui_widgets.s
+	@echo ... src/core/Renderer.obj
+	@echo ... src/core/Renderer.i
+	@echo ... src/core/Renderer.s
 	@echo ... src/core/Texture.obj
 	@echo ... src/core/Texture.i
 	@echo ... src/core/Texture.s
+	@echo ... src/core/components/Light.obj
+	@echo ... src/core/components/Light.i
+	@echo ... src/core/components/Light.s
+	@echo ... src/core/components/Material.obj
+	@echo ... src/core/components/Material.i
+	@echo ... src/core/components/Material.s
+	@echo ... src/core/components/Mesh.obj
+	@echo ... src/core/components/Mesh.i
+	@echo ... src/core/components/Mesh.s
+	@echo ... src/core/components/Transform.obj
+	@echo ... src/core/components/Transform.i
+	@echo ... src/core/components/Transform.s
 	@echo ... src/gl.obj
 	@echo ... src/gl.i
 	@echo ... src/gl.s
@@ -486,6 +622,7 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
+	$(CMAKE_COMMAND) -P C:\Users\pc\Desktop\gameengine\build\CMakeFiles\VerifyGlobs.cmake
 	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles\Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

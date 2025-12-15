@@ -24,6 +24,8 @@ public:
     void Translate(const glm::vec3& offset);
     void Scale(const glm::vec3& factor);
     glm::mat4 getModel();
+    ~Transform() noexcept override;
+    Transform();
 
     void reset();
 };

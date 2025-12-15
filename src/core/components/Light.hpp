@@ -1,3 +1,4 @@
+#pragma once
 #include "Component.hpp"
 
 enum LightType {
@@ -11,5 +12,13 @@ public:
     
     size_t GetId() override {
         return typeid(Light).hash_code();
+    }
+
+    ~Light() noexcept override {
+        LOG::Info("Light Destroyed");
+    };
+
+    Light() {
+        LOG::Info("Light Created");
     }
 };

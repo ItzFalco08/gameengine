@@ -87,12 +87,12 @@ clean: CMakeFiles/imgui.dir/clean
 CMakeFiles/engine.dir/all: CMakeFiles/imgui.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\pc\Desktop\gameengine\build\CMakeFiles --progress-num=1,2,3,4,5,6 "Built target engine"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\pc\Desktop\gameengine\build\CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11 "Built target engine"
 .PHONY : CMakeFiles/engine.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/engine.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\pc\Desktop\gameengine\build\CMakeFiles 14
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\pc\Desktop\gameengine\build\CMakeFiles 19
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/engine.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\pc\Desktop\gameengine\build\CMakeFiles 0
 .PHONY : CMakeFiles/engine.dir/rule
@@ -104,7 +104,7 @@ engine: CMakeFiles/engine.dir/rule
 # codegen rule for target.
 CMakeFiles/engine.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\pc\Desktop\gameengine\build\CMakeFiles --progress-num=1,2,3,4,5,6 "Finished codegen for target engine"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\pc\Desktop\gameengine\build\CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11 "Finished codegen for target engine"
 .PHONY : CMakeFiles/engine.dir/codegen
 
 # clean rule for target.
@@ -119,7 +119,7 @@ CMakeFiles/engine.dir/clean:
 CMakeFiles/imgui.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\imgui.dir\build.make CMakeFiles/imgui.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\imgui.dir\build.make CMakeFiles/imgui.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\pc\Desktop\gameengine\build\CMakeFiles --progress-num=7,8,9,10,11,12,13,14 "Built target imgui"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\pc\Desktop\gameengine\build\CMakeFiles --progress-num=12,13,14,15,16,17,18,19 "Built target imgui"
 .PHONY : CMakeFiles/imgui.dir/all
 
 # Build rule for subdir invocation for target.
@@ -136,7 +136,7 @@ imgui: CMakeFiles/imgui.dir/rule
 # codegen rule for target.
 CMakeFiles/imgui.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\imgui.dir\build.make CMakeFiles/imgui.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\pc\Desktop\gameengine\build\CMakeFiles --progress-num=7,8,9,10,11,12,13,14 "Finished codegen for target imgui"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\pc\Desktop\gameengine\build\CMakeFiles --progress-num=12,13,14,15,16,17,18,19 "Finished codegen for target imgui"
 .PHONY : CMakeFiles/imgui.dir/codegen
 
 # clean rule for target.
@@ -151,6 +151,7 @@ CMakeFiles/imgui.dir/clean:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
+	$(CMAKE_COMMAND) -P C:\Users\pc\Desktop\gameengine\build\CMakeFiles\VerifyGlobs.cmake
 	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles\Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

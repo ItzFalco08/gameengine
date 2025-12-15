@@ -1,7 +1,10 @@
+#pragma once
+#define GLM_ENABLE_EXPERIMENTAL
 #include "glm/glm.hpp"
 #include "../utils/Logger.hpp"
 #include "memory"
 #include "vector"
+#include <typeinfo>
 #include "components/Transform.hpp"
 #include "components/Material.hpp"
 #include "components/Mesh.hpp"

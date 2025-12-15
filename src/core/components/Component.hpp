@@ -1,12 +1,13 @@
 #pragma once
-#include "../GameObject.hpp"
+#define GLM_ENABLE_EXPERIMENTAL
+#include <cstddef>
+#include "../../utils/Logger.hpp"
+
+class GameObject; // forward declaration to avoid circular include
 
 class Component {
-    virtual ~Component() = default;
 public:
+    virtual ~Component() noexcept = default;
     GameObject* owner = nullptr;
-    virtual size_t GetId() {
-        return 0;
-    };
-
+    virtual size_t GetId() { return 0; }
 };

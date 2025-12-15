@@ -43,6 +43,15 @@ glm::mat4 Transform::getModel() {
     return model;
 }
 
+Transform::~Transform() noexcept {
+    LOG::Info("Transform Destroyed");
+}
+
+
+Transform::Transform() {
+    LOG::Info("Transfrom Created");
+}
+
 void Transform::reset() {
     position = glm::vec3(0.0f);
     rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);

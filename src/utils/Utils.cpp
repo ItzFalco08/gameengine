@@ -111,6 +111,109 @@ void Utils::updateFBODimensions()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+
+void Utils::loadObj(std::vector<Vertex>& vertices, const char* objPath) {
+    // positions[0] and uvs[0] is the x, y, z, u, v of first vertex
+    std::ifstream objFile(objPath);
+
+    std::vector<glm::vec3> tempPositions;
+    std::vector<glm::vec2> tempUvs;
+    std::vector<glm::vec3> tempNormals;
+
+    std::string line;
+
+    while(std::getline(objFile, line)) {
+        std::string prefix;
+        std::stringstream ss(line);
+        ss >> prefix;
+        
+        if (prefix == "v") {
+            float x, y, z;
+            ss >> x >> y >> z;
+
+            tempPositions.push_back(glm::vec3(x,y,z));
+            // LOG::Info("added vertex pos: ", x, ", ", y,", ", z);
+            continue;
+        }
+
+        if (prefix == "vt") {
+            float u, v;
+            ss >> u >> v;
+
+            tempUvs.push_back(glm::vec2(u,v));
+            // LOG::Info("added uv: ", u, ", ", v);
+            continue;
+        }
+        
+        if (prefix == "vn") {
+            float x, y, z;
+            ss >> x >> y >> z;
+
+            tempNormals.push_back(glm::vec3(x,y,z));
+            // LOG::Info("added vertex normal : ", x, ", ", y,", ", z);
+            continue;
+        }
+
+        if (prefix == "f") {
+            std::vector<std::string> faceVerts;
+            std::string vert;
+            while(ss >> vert) {
+                faceVerts.push_back(vert);
+            }
+
+
+            if (faceVerts.size() > 3) {
+                std::array<int, 6> order = {0, 1, 2, 0, 2 ,3}; // convert to 2 triangles
+
+                for (int i = 0; i < order.size(); i++) { // 0 -> 5
+                    int v, vt, vn;
+                    std::stringstream vertexSS(faceVerts[order[i]]);
+                    std::string token;
+
+                    std::getline(vertexSS, token, '/'); v = stoi(token);
+                    std::getline(vertexSS, token, '/'); vt = stoi(token);
+                    std::getline(vertexSS, token, '/'); vn = stoi(token);
+
+                    Vertex vertex;
+                    vertex.position = tempPositions[v - 1];
+                    vertex.uv = tempUvs[vt - 1];
+                    vertex.normal = tempNormals[vn - 1];
+                    vertices.push_back(vertex);
+                    
+                    // LOG::Info(
+                    //     "Vertex Added: ", "pos: ", vertex.position.x, ", ", vertex.position.y, ", ", vertex.position.z, "\n",
+                    //     "uv: ", vertex.uv.x, ", ", vertex.uv.y, "\n",
+                    //     "normal: ", vertex.normal.x, ", ", vertex.normal.y, ", ", vertex.normal.z
+                    // );
+                }
+            } else {
+                for (int i = 0; i <= 2; i++) { // 0, 1, 2
+                    int v, vt, vn;
+                    std::stringstream vertexSS(faceVerts[i]);
+                    std::string token;
+
+                    std::getline(vertexSS, token, '/'); v = stoi(token);
+                    std::getline(vertexSS, token, '/'); vt = stoi(token);
+                    std::getline(vertexSS, token, '/'); vn = stoi(token);
+
+                    Vertex vertex;
+                    vertex.position = tempPositions[v - 1];
+                    vertex.uv = tempUvs[vt - 1];
+                    vertex.normal = tempNormals[vn - 1];
+                    vertices.push_back(vertex);
+                    
+                    LOG::Info(
+                        "Vertex Added: ", "pos: ", vertex.position.x, ", ", vertex.position.y, ", ", vertex.position.z, "\n",
+                        "uv: ", vertex.uv.x, ", ", vertex.uv.y, "\n",
+                        "normal: ", vertex.normal.x, ", ", vertex.normal.y, ", ", vertex.normal.z
+                    );
+                }
+            }
+        }
+    }
+}
+
+
 void SetEditorStyle()
 {
     ImGuiStyle& style = ImGui::GetStyle();

@@ -7,12 +7,12 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 include_directories(${PROJECT_SOURCE_DIR}/includes)
 
 # variables - arrays with file list 
-file(GLOB_RECURSE SOURCES
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
     ${PROJECT_SOURCE_DIR}/src/*.cpp
     ${PROJECT_SOURCE_DIR}/src/*.c
 )
 
-file(GLOB_RECURSE IMGUI
+file(GLOB_RECURSE IMGUI CONFIGURE_DEPENDS
     ${PROJECT_SOURCE_DIR}/includes/imgui/*.cpp
 )
 
