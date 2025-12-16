@@ -15,6 +15,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/engine.dir/src/gl.c.obj.d"
   "CMakeFiles/engine.dir/src/main.cpp.obj"
   "CMakeFiles/engine.dir/src/main.cpp.obj.d"
+  "CMakeFiles/engine.dir/src/utils/Shader.cpp.obj"
+  "CMakeFiles/engine.dir/src/utils/Shader.cpp.obj.d"
   "CMakeFiles/engine.dir/src/utils/Utils.cpp.obj"
   "CMakeFiles/engine.dir/src/utils/Utils.cpp.obj.d"
   "CMakeFiles/engine.dir/src/utils/globals.cpp.obj"

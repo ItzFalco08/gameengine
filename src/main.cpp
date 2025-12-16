@@ -39,6 +39,8 @@ int main() {
 
     Utils::initImGui(window);
     Utils::genSceneFramebuffers();
+    litShader = Shader("../src/shaders/lit/shader.frag", "../src/shaders/lit/shader.vert");
+    unlitShader = Shader("../src/shaders/unlit/shader.frag", "../src/shaders/unlit/shader.vert");
 
     test();
 

@@ -37,6 +37,7 @@ set(OLD_GLOB
   "C:/Users/pc/Desktop/gameengine/src/core/components/Mesh.cpp"
   "C:/Users/pc/Desktop/gameengine/src/core/components/Transform.cpp"
   "C:/Users/pc/Desktop/gameengine/src/main.cpp"
+  "C:/Users/pc/Desktop/gameengine/src/utils/Shader.cpp"
   "C:/Users/pc/Desktop/gameengine/src/utils/Utils.cpp"
   "C:/Users/pc/Desktop/gameengine/src/utils/globals.cpp"
   )

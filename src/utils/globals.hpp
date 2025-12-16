@@ -1,5 +1,6 @@
 #pragma once
 #include "GLAD/gl.h"
+#include "Shader.hpp"
 
 struct SceneView {
     int SCENEVIEW_WIDTH;
@@ -9,3 +10,6 @@ struct SceneView {
 };
 
 extern SceneView sceneView;
+
+extern Shader litShader;
+extern Shader unlitShader;

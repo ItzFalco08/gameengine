@@ -337,6 +337,7 @@ CMakeFiles/engine.dir/src/main.cpp.obj: \
  C:/Users/pc/Desktop/gameengine/includes/glm/detail/func_integer.inl \
  C:\Users\pc\Desktop\gameengine\src\utils/globals.hpp \
  C:/Users/pc/Desktop/gameengine/includes/GLAD/gl.h \
+ C:\Users\pc\Desktop\gameengine\src\utils/Shader.hpp \
  C:\Users\pc\Desktop\gameengine\src\core/GameObject.hpp \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/memory \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/stl_tempbuf.h \

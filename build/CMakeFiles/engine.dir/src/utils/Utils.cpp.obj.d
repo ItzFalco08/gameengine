@@ -335,4 +335,5 @@ CMakeFiles/engine.dir/src/utils/Utils.cpp.obj: \
  C:\Users\pc\Desktop\gameengine\src\utils\Logger.hpp \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/iostream \
  C:\Users\pc\Desktop\gameengine\src\utils\globals.hpp \
- C:/Users/pc/Desktop/gameengine/includes/GLAD/gl.h
+ C:/Users/pc/Desktop/gameengine/includes/GLAD/gl.h \
+ C:\Users\pc\Desktop\gameengine\src\utils\Shader.hpp

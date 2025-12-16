@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <glm/gtc/type_ptr.hpp>
 
 Shader::Shader(const char* fragPath, const char* vertPath) {
     std::string fragTxt;
@@ -56,6 +57,34 @@ Shader::~Shader() {
     }
 }
 
+void Shader::use() {
+    glUseProgram(shaderId);
+}
+
+void Shader::setMat4(const char* name, const glm::mat4& value) {
+    glUniformMatrix4fv(glGetUniformLocation(shaderId, name), 1, GL_FALSE, glm::value_ptr(value));
+}
+
+void Shader::setMat3(const char* name, const glm::mat3& value) {
+    glUniformMatrix3fv(glGetUniformLocation(shaderId, name), 1, GL_FALSE, glm::value_ptr(value));
+}
+
+void Shader::setVec4(const char* name, const glm::vec4& value) {
+    glUniform4fv(glGetUniformLocation(shaderId, name), 1, glm::value_ptr(value));
+}
+
+void Shader::setVec3(const char* name, const glm::vec3& value) {
+    glUniform3fv(glGetUniformLocation(shaderId, name), 1, glm::value_ptr(value));
+}
+
+void Shader::setFloat(const char* name, const float& value) {
+    glUniform1f(glGetUniformLocation(shaderId, name), value);
+}
+
+void Shader::setInt(const char* name, const int& value) {
+    glUniform1i(glGetUniformLocation(shaderId, name), value);
+}
+
 void Shader::checkCompileErrors(unsigned int shaderId, const char* shaderType) {
     int success;
     char infoLog[1024];
@@ -100,6 +129,4 @@ void Shader::getShaderTexts(std::string& fragTxt, std::string& vertTxt, const ch
     while (std::getline(vertFile, line)) {
         vertTxt += line + "\n";
     }
-
-    LOG::Info("Vertex Shader: \n", vertTxt, "\nFragment Shader: \n", fragTxt);
 }

@@ -502,6 +502,30 @@ src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+src/utils/Shader.obj: src/utils/Shader.cpp.obj
+.PHONY : src/utils/Shader.obj
+
+# target to build an object file
+src/utils/Shader.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/utils/Shader.cpp.obj
+.PHONY : src/utils/Shader.cpp.obj
+
+src/utils/Shader.i: src/utils/Shader.cpp.i
+.PHONY : src/utils/Shader.i
+
+# target to preprocess a source file
+src/utils/Shader.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/utils/Shader.cpp.i
+.PHONY : src/utils/Shader.cpp.i
+
+src/utils/Shader.s: src/utils/Shader.cpp.s
+.PHONY : src/utils/Shader.s
+
+# target to generate assembly for a file
+src/utils/Shader.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/utils/Shader.cpp.s
+.PHONY : src/utils/Shader.cpp.s
+
 src/utils/Utils.obj: src/utils/Utils.cpp.obj
 .PHONY : src/utils/Utils.obj
 
@@ -605,6 +629,9 @@ help:
 	@echo ... src/main.obj
 	@echo ... src/main.i
 	@echo ... src/main.s
+	@echo ... src/utils/Shader.obj
+	@echo ... src/utils/Shader.i
+	@echo ... src/utils/Shader.s
 	@echo ... src/utils/Utils.obj
 	@echo ... src/utils/Utils.i
 	@echo ... src/utils/Utils.s

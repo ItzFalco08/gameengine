@@ -17,6 +17,11 @@ public:
         LOG::Info("Mesh Created");
     }
 
+    Mesh(const std::vector<Vertex>&& vertices) {
+        uploadVertices(vertices);
+        LOG::Info("Mesh Created");
+    }
+
     ~Mesh() override {
         LOG::Info("Mesh Destroyed");
     }
