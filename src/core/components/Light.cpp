@@ -1,5 +1,5 @@
 #include "Light.hpp"
-#include "../utils/Logger.hpp"
+#include "../../utils/Logger.hpp"
 #include <typeinfo>
 
 size_t Light::GetId() {

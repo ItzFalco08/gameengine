@@ -278,4 +278,87 @@ CMakeFiles/engine.dir/src/utils/globals.cpp.obj: \
  C:/Users/pc/Desktop/gameengine/includes/glm/detail/type_half.hpp \
  C:/Users/pc/Desktop/gameengine/includes/glm/detail/type_half.inl \
  C:/Users/pc/Desktop/gameengine/includes/glm/integer.hpp \
- C:/Users/pc/Desktop/gameengine/includes/glm/detail/func_integer.inl
+ C:/Users/pc/Desktop/gameengine/includes/glm/detail/func_integer.inl \
+ C:/Users/pc/Desktop/gameengine/src/core/AssetsManager.hpp \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/filesystem \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/fs_fwd.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/system_error \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32/bits/error_constants.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/stdexcept \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/exception \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/exception_ptr.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/cxxabi_init_exception.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/nested_exception.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/chrono.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/ratio \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/ctime \
+ C:/w64devkit/include/time.h C:/w64devkit/include/sys/timeb.h \
+ C:/w64devkit/include/sec_api/sys/timeb_s.h \
+ C:/w64devkit/include/_timeval.h C:/w64devkit/include/pthread_time.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/parse_numbers.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/fs_path.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/locale \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/locale_classes.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/ext/atomicity.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32/bits/gthr.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32/bits/gthr-default.h \
+ C:/w64devkit/include/pthread.h C:/w64devkit/include/sys/types.h \
+ C:/w64devkit/include/process.h C:/w64devkit/include/corecrt_startup.h \
+ C:/w64devkit/include/signal.h C:/w64devkit/include/pthread_signal.h \
+ C:/w64devkit/include/pthread_compat.h \
+ C:/w64devkit/include/pthread_unistd.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32/bits/atomic_word.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/locale_classes.tcc \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/locale_facets.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/cwctype \
+ C:/w64devkit/include/wctype.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32/bits/ctype_base.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/ios_base.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/streambuf \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/streambuf.tcc \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/streambuf_iterator.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32/bits/ctype_inline.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/locale_facets.tcc \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/locale_facets_nonio.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32/bits/time_members.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32/bits/messages_members.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/codecvt.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/locale_facets_nonio.tcc \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/locale_conv.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/iomanip \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/quoted_string.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/sstream \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/istream \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/ios \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/basic_ios.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/basic_ios.tcc \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/ostream \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/ostream.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/ostream.tcc \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/istream.tcc \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/sstream.tcc \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/codecvt \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/ext/concurrence.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/shared_ptr.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/shared_ptr_base.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/allocated_ptr.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/unique_ptr.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/align.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/fs_dir.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/fs_ops.h \
+ C:/Users/pc/Desktop/gameengine/src/gui/ScenePanel.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/imgui/imgui.h \
+ C:/Users/pc/Desktop/gameengine/includes/imgui/imconfig.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/stdarg.h \
+ C:/w64devkit/include/stdarg.h C:/w64devkit/include/_mingw_stdarg.h \
+ C:/w64devkit/include/string.h C:/w64devkit/include/sec_api/string_s.h \
+ C:/Users/pc/Desktop/gameengine/includes/glfw/glfw3.h \
+ C:/Users/pc/Desktop/gameengine/src/utils/Utils.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glad/gl.h \
+ C:/Users/pc/Desktop/gameengine/includes/GLFW/glfw3.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/fstream \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32/bits/basic_file.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32/bits/c++io.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/fstream.tcc \
+ C:/Users/pc/Desktop/gameengine/src/gui/AssetsBrowserPanel.hpp \
+ C:/Users/pc/Desktop/gameengine/src/core/Texture.hpp

@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/engine.dir/src/core/AssetsManager.cpp.obj"
+  "CMakeFiles/engine.dir/src/core/AssetsManager.cpp.obj.d"
   "CMakeFiles/engine.dir/src/core/Renderer.cpp.obj"
   "CMakeFiles/engine.dir/src/core/Renderer.cpp.obj.d"
   "CMakeFiles/engine.dir/src/core/Texture.cpp.obj"
@@ -13,6 +15,10 @@ file(REMOVE_RECURSE
   "CMakeFiles/engine.dir/src/core/components/Transform.cpp.obj.d"
   "CMakeFiles/engine.dir/src/gl.c.obj"
   "CMakeFiles/engine.dir/src/gl.c.obj.d"
+  "CMakeFiles/engine.dir/src/gui/AssetsBrowserPanel.cpp.obj"
+  "CMakeFiles/engine.dir/src/gui/AssetsBrowserPanel.cpp.obj.d"
+  "CMakeFiles/engine.dir/src/gui/ScenePanel.cpp.obj"
+  "CMakeFiles/engine.dir/src/gui/ScenePanel.cpp.obj.d"
   "CMakeFiles/engine.dir/src/main.cpp.obj"
   "CMakeFiles/engine.dir/src/main.cpp.obj.d"
   "CMakeFiles/engine.dir/src/utils/Shader.cpp.obj"

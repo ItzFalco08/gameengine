@@ -336,4 +336,29 @@ CMakeFiles/engine.dir/src/utils/Utils.cpp.obj: \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/iostream \
  C:\Users\pc\Desktop\gameengine\src\utils\globals.hpp \
  C:/Users/pc/Desktop/gameengine/includes/GLAD/gl.h \
- C:\Users\pc\Desktop\gameengine\src\utils\Shader.hpp
+ C:\Users\pc\Desktop\gameengine\src\utils\Shader.hpp \
+ C:/Users/pc/Desktop/gameengine/src/core/AssetsManager.hpp \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/filesystem \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/fs_fwd.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/chrono.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/ratio \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/ctime \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/parse_numbers.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/fs_path.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/locale \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/locale_facets_nonio.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32/bits/time_members.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32/bits/messages_members.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/locale_facets_nonio.tcc \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/locale_conv.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/iomanip \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/quoted_string.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/codecvt \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/ext/concurrence.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/shared_ptr.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/shared_ptr_base.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/allocated_ptr.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/unique_ptr.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/align.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/fs_dir.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/fs_ops.h

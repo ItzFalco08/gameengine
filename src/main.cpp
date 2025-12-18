@@ -8,7 +8,11 @@
 #include "imgui/imgui_impl_opengl3.h"
 #include "utils/Utils.hpp"
 #include "utils/globals.hpp"
+#include "gui/ScenePanel.hpp"
+#include "gui/AssetsBrowserPanel.hpp"
+
 #include "core/GameObject.hpp"
+
 void drawGraphics();
 void drawImgui();
 void test();
@@ -41,6 +45,9 @@ int main() {
     Utils::genSceneFramebuffers();
     litShader = Shader("../src/shaders/lit/shader.frag", "../src/shaders/lit/shader.vert");
     unlitShader = Shader("../src/shaders/unlit/shader.frag", "../src/shaders/unlit/shader.vert");
+
+    // Initialize panel icons after GL is ready
+    panels::assetsBrowserPanel.InitIcons();
 
     test();
 
@@ -95,7 +102,6 @@ void drawImgui()
     ImGui::SetNextWindowSize(viewport->Size);
     ImGui::SetNextWindowViewport(viewport->ID);
 
-
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
     ImGui::Begin("DockSpaceHost", nullptr, host_window_flags);
@@ -123,31 +129,8 @@ void drawImgui()
 
     ImGui::End(); // end DockSpaceHost
 
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.10f, 0.10f, 0.10f, 1.0f));
-    ImGui::Begin("Scene");
-
-    // U P D A T E _ S C E N E _ D I M E N T I O N S
-    int p_w = sceneView.SCENEVIEW_WIDTH;
-    int p_h = sceneView.SCENEVIEW_HEIGHT;
-    static double lastchange = 0;
-    ImVec2 dimentions = ImGui::GetContentRegionAvail();
-
-    if (dimentions.x != p_w) {
-        sceneView.SCENEVIEW_WIDTH = dimentions.x;
-        lastchange = glfwGetTime();
-    } else if (dimentions.y != p_h) {
-        sceneView.SCENEVIEW_HEIGHT = dimentions.y;
-        lastchange = glfwGetTime();
-    }
-
-    if(glfwGetTime() - lastchange > 0.15f) { // 150ms
-        Utils::updateFBODimensions();
-    }
-
-    ImGui::Image((ImTextureID)(uintptr_t)sceneView.textureObj, ImVec2(sceneView.SCENEVIEW_WIDTH, sceneView.SCENEVIEW_HEIGHT), ImVec2(0,0), ImVec2(1,1));
-
-    ImGui::End();
-    ImGui::PopStyleColor();
+    panels::scenePanel.Render();
+    panels::assetsBrowserPanel.Render();
 
     // Render ImGui
     ImGui::Render();

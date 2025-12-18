@@ -30,12 +30,15 @@ endif()
 # SOURCES at CMakeLists.txt:10 (file)
 file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "C:/Users/pc/Desktop/gameengine/src/*.cpp")
 set(OLD_GLOB
+  "C:/Users/pc/Desktop/gameengine/src/core/AssetsManager.cpp"
   "C:/Users/pc/Desktop/gameengine/src/core/Renderer.cpp"
   "C:/Users/pc/Desktop/gameengine/src/core/Texture.cpp"
   "C:/Users/pc/Desktop/gameengine/src/core/components/Light.cpp"
   "C:/Users/pc/Desktop/gameengine/src/core/components/Material.cpp"
   "C:/Users/pc/Desktop/gameengine/src/core/components/Mesh.cpp"
   "C:/Users/pc/Desktop/gameengine/src/core/components/Transform.cpp"
+  "C:/Users/pc/Desktop/gameengine/src/gui/AssetsBrowserPanel.cpp"
+  "C:/Users/pc/Desktop/gameengine/src/gui/ScenePanel.cpp"
   "C:/Users/pc/Desktop/gameengine/src/main.cpp"
   "C:/Users/pc/Desktop/gameengine/src/utils/Shader.cpp"
   "C:/Users/pc/Desktop/gameengine/src/utils/Utils.cpp"

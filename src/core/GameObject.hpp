@@ -18,32 +18,30 @@ public:
 
     GameObject() : transform(std::make_unique<Transform>()) {
         components.reserve(4);
-    };
+    }
 
-    // gameObject.AddComponent<Mesh>(int a);
     template<typename T, typename... Args>
     void AddComponent(Args&&... args) {
         static_assert(std::is_base_of_v<Component, T>, "T must derive from Component");
 
         size_t compId = typeid(T).hash_code();
 
-        for(const auto& c : components) {
-            if(compId == c->GetId()) {
+        for (const auto& c : components) {
+            if (compId == c->GetId()) {
                 LOG::Error("AddComponent Failed! Component Already Exists.");
-                return; 
+                return;
             }
         }
 
         components.push_back(std::make_unique<T>(std::forward<Args>(args)...));
     }
 
-
-    template <typename T>
+    template<typename T>
     void RemoveComponent() {
-        size_t compId = typeid(T).hash_code(); 
+        size_t compId = typeid(T).hash_code();
 
-        for(auto itr = components.begin(); itr != components.end(); ++itr) {
-            if((*itr)->GetId() == compId){
+        for (auto itr = components.begin(); itr != components.end(); ++itr) {
+            if ((*itr)->GetId() == compId) {
                 components.erase(itr);
                 LOG::Success("Component Deleted of type: ", typeid(T).name());
                 return;
@@ -59,13 +57,12 @@ public:
 
         size_t compId = typeid(T).hash_code();
 
-        for (const auto& c : components ){
+        for (const auto& c : components) {
             if (c->GetId() == compId) {
                 return static_cast<T*>(c.get());
             }
         }
 
-        // if component dont exists
         return nullptr;
     }
 };

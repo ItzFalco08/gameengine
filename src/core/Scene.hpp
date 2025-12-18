@@ -1,3 +1,6 @@
+#include "GameObject.hpp"
 
-class Scene {
+struct Scene {
+    std::string sceneName;
+    std::vector<GameObject> gameObjects;
 };

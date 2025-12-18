@@ -338,16 +338,39 @@ CMakeFiles/engine.dir/src/main.cpp.obj: \
  C:\Users\pc\Desktop\gameengine\src\utils/globals.hpp \
  C:/Users/pc/Desktop/gameengine/includes/GLAD/gl.h \
  C:\Users\pc\Desktop\gameengine\src\utils/Shader.hpp \
+ C:/Users/pc/Desktop/gameengine/src/core/AssetsManager.hpp \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/filesystem \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/fs_fwd.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/chrono.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/ratio \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/ctime \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/parse_numbers.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/fs_path.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/locale \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/locale_facets_nonio.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32/bits/time_members.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32/bits/messages_members.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/locale_facets_nonio.tcc \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/locale_conv.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/iomanip \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/quoted_string.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/codecvt \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/ext/concurrence.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/shared_ptr.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/shared_ptr_base.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/allocated_ptr.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/unique_ptr.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/align.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/fs_dir.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/fs_ops.h \
+ C:\Users\pc\Desktop\gameengine\src\gui/ScenePanel.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glfw/glfw3.h \
+ C:\Users\pc\Desktop\gameengine\src\gui/AssetsBrowserPanel.hpp \
+ C:/Users/pc/Desktop/gameengine/src/core/Texture.hpp \
  C:\Users\pc\Desktop\gameengine\src\core/GameObject.hpp \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/memory \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/stl_tempbuf.h \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/stl_raw_storage_iter.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/align.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/unique_ptr.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/shared_ptr.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/shared_ptr_base.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/allocated_ptr.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/ext/concurrence.h \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/shared_ptr_atomic.h \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/atomic_base.h \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/atomic_lockfree_defines.h \

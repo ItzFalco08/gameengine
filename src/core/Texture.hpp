@@ -12,6 +12,7 @@ class Texture {
 public:
     unsigned int TexId;
 
+    Texture() = default;
     Texture(const char* path, TexDets texDetails);
 
 private:

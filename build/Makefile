@@ -310,6 +310,30 @@ includes/imgui/imgui_widgets.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\imgui.dir\build.make CMakeFiles/imgui.dir/includes/imgui/imgui_widgets.cpp.s
 .PHONY : includes/imgui/imgui_widgets.cpp.s
 
+src/core/AssetsManager.obj: src/core/AssetsManager.cpp.obj
+.PHONY : src/core/AssetsManager.obj
+
+# target to build an object file
+src/core/AssetsManager.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/core/AssetsManager.cpp.obj
+.PHONY : src/core/AssetsManager.cpp.obj
+
+src/core/AssetsManager.i: src/core/AssetsManager.cpp.i
+.PHONY : src/core/AssetsManager.i
+
+# target to preprocess a source file
+src/core/AssetsManager.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/core/AssetsManager.cpp.i
+.PHONY : src/core/AssetsManager.cpp.i
+
+src/core/AssetsManager.s: src/core/AssetsManager.cpp.s
+.PHONY : src/core/AssetsManager.s
+
+# target to generate assembly for a file
+src/core/AssetsManager.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/core/AssetsManager.cpp.s
+.PHONY : src/core/AssetsManager.cpp.s
+
 src/core/Renderer.obj: src/core/Renderer.cpp.obj
 .PHONY : src/core/Renderer.obj
 
@@ -478,6 +502,54 @@ src/gl.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/gl.c.s
 .PHONY : src/gl.c.s
 
+src/gui/AssetsBrowserPanel.obj: src/gui/AssetsBrowserPanel.cpp.obj
+.PHONY : src/gui/AssetsBrowserPanel.obj
+
+# target to build an object file
+src/gui/AssetsBrowserPanel.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/gui/AssetsBrowserPanel.cpp.obj
+.PHONY : src/gui/AssetsBrowserPanel.cpp.obj
+
+src/gui/AssetsBrowserPanel.i: src/gui/AssetsBrowserPanel.cpp.i
+.PHONY : src/gui/AssetsBrowserPanel.i
+
+# target to preprocess a source file
+src/gui/AssetsBrowserPanel.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/gui/AssetsBrowserPanel.cpp.i
+.PHONY : src/gui/AssetsBrowserPanel.cpp.i
+
+src/gui/AssetsBrowserPanel.s: src/gui/AssetsBrowserPanel.cpp.s
+.PHONY : src/gui/AssetsBrowserPanel.s
+
+# target to generate assembly for a file
+src/gui/AssetsBrowserPanel.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/gui/AssetsBrowserPanel.cpp.s
+.PHONY : src/gui/AssetsBrowserPanel.cpp.s
+
+src/gui/ScenePanel.obj: src/gui/ScenePanel.cpp.obj
+.PHONY : src/gui/ScenePanel.obj
+
+# target to build an object file
+src/gui/ScenePanel.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/gui/ScenePanel.cpp.obj
+.PHONY : src/gui/ScenePanel.cpp.obj
+
+src/gui/ScenePanel.i: src/gui/ScenePanel.cpp.i
+.PHONY : src/gui/ScenePanel.i
+
+# target to preprocess a source file
+src/gui/ScenePanel.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/gui/ScenePanel.cpp.i
+.PHONY : src/gui/ScenePanel.cpp.i
+
+src/gui/ScenePanel.s: src/gui/ScenePanel.cpp.s
+.PHONY : src/gui/ScenePanel.s
+
+# target to generate assembly for a file
+src/gui/ScenePanel.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/gui/ScenePanel.cpp.s
+.PHONY : src/gui/ScenePanel.cpp.s
+
 src/main.obj: src/main.cpp.obj
 .PHONY : src/main.obj
 
@@ -605,6 +677,9 @@ help:
 	@echo ... includes/imgui/imgui_widgets.obj
 	@echo ... includes/imgui/imgui_widgets.i
 	@echo ... includes/imgui/imgui_widgets.s
+	@echo ... src/core/AssetsManager.obj
+	@echo ... src/core/AssetsManager.i
+	@echo ... src/core/AssetsManager.s
 	@echo ... src/core/Renderer.obj
 	@echo ... src/core/Renderer.i
 	@echo ... src/core/Renderer.s
@@ -626,6 +701,12 @@ help:
 	@echo ... src/gl.obj
 	@echo ... src/gl.i
 	@echo ... src/gl.s
+	@echo ... src/gui/AssetsBrowserPanel.obj
+	@echo ... src/gui/AssetsBrowserPanel.i
+	@echo ... src/gui/AssetsBrowserPanel.s
+	@echo ... src/gui/ScenePanel.obj
+	@echo ... src/gui/ScenePanel.i
+	@echo ... src/gui/ScenePanel.s
 	@echo ... src/main.obj
 	@echo ... src/main.i
 	@echo ... src/main.s
