@@ -10,9 +10,13 @@
 #include "components/Mesh.hpp"
 #include "components/Light.hpp"
 #include "components/Component.hpp"
+#include "json/json.hpp"
+#include "Serializer.hpp"
+#include "Deserializer.hpp"
 
 class GameObject {
 public:
+    std::string name;
     std::unique_ptr<Transform> transform;
     std::vector<std::unique_ptr<Component>> components;
 
@@ -64,5 +68,12 @@ public:
         }
 
         return nullptr;
+    }
+    
+    void Serialize(nlohmann::json& json) {
+        SerializerJSON serializer(json);
+
+        serializer.Write("name", name);
+        serializer.Write("gameObjects")
     }
 };

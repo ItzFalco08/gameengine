@@ -1,1 +1,1 @@
-// renders a scene
+// renders the active scene with batching

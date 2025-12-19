@@ -28,9 +28,13 @@ void AssetsBrowser::Render() {
     ImGui::BeginChild("##toolbar", ImVec2(0, toolbarHeight), true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
     
     
-    if(ImGui::Button("<-", ImVec2(20, 20))) {
-        currentPath = currentPath.parent_path();
-    }
+    if(currentPath.string() != "../Assets") {
+        if(ImGui::Button("<-", ImVec2(20, 20))) {
+            
+            currentPath = currentPath.parent_path();
+        }
+    } 
+
     ImGui::SameLine();
     ImGui::Text(currentPath.filename().string().c_str());
 

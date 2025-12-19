@@ -5,9 +5,12 @@
 #include "fstream"
 
 class SceneManager {
-    std::vector<Scene> loadedScenes;
+    std::unordered_map<std::string, Scene> loadedScenes;
     Scene* activeScene;
 
+    void setActiveScene(std::string sceneName) {
+        activeScene = &loadedScenes[sceneName];
+    }
 
     void loadScene(const char* path) {
         Scene scene;

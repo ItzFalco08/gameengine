@@ -1,8 +1,89 @@
-GameObject
-- Transform ✅
-- Mesh
-- Material
+Serialization
 
-Scene Renderer
+Mesh 
+ - VAO
+ - vertices
+ Mesh(vertices)
+ Serialize() {
+    // cannot store VAO (since it can be deleted)
+    // we can store vertices  
+    Serializer meshJson;
+    meshJson.Write("vertices", vertices);
+    return meshJson;
+ }
 
-Scene
+ Deserialize(Deserializer& meshJson) {
+    ....
+ }
+}
+
+enum ShaderType  {
+    UNLIT,
+    LIT
+}
+
+
+Material {
+    Texture* diffMap = nullptr;
+    Shader* shader = litShader;
+
+    ShaderType shaderType;
+
+    // properties
+    shineyness = someDefaultVal, metalic .....
+
+    Material() = default;
+    Material(Shader, Texture, properties...) {};
+
+    Serialize() {
+        // store texture path instead of texture Id and shader Type instead of shaderId;
+        // properties stored normally
+
+        Serializer materialJson;
+        
+        diffMap && materialJson.Write("diffMap", diffMap->texPath);
+        materialJson.Write("shaderType", shaderType);
+
+        if(shaderType == ShaderType::LIT) {
+            // attach  lit shader properties
+            materialJson["shaderType"] = shaderType;
+            materialJson["metalic"] = metalic;
+            .......
+        }
+    }
+
+    Deserialize(Deserializer materialJson) {
+        // resourceManager is a global instance
+        texture = resourceManager.LoadTexture(materialJson.read("texturePath"), maybe store tex properties and pass here later);
+
+        switch(sahderType) {
+            case LIT: 
+                shader = &litShader;
+            ....
+        }
+
+        // extract properties normally
+    }
+}
+
+class ResourceManager {
+    std::unordered_map<fs::path, std::shared_ptr<Texture>> loadedTextures;
+
+public:
+    std::shared_ptr<Texture> LoadTexture(fs::path texPath) {
+        if(unordered_map has key texPath) {
+            return loadedTextures[texPath]
+        }
+        // else
+        loadedTextures[texPath] = std::make_shared<Texture>(path);
+        return loadedTextures[texPath];
+    }
+
+    void removeTexture(fs::path toRemove) {
+        loadedTextures.remove(toRemove); 
+    }
+
+    void clear() {
+        loadedTextures.clear();
+    }
+}
