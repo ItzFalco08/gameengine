@@ -7,6 +7,8 @@ SceneView sceneView = {800, 600, 0, 0, 0}; // Initialize with default dimensions
 
 Shader litShader;
 Shader unlitShader;
+
+Scene* editorScene = new Scene();
 AssetsManager assetsManager;
 
 namespace panels {

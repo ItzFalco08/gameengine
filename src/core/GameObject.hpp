@@ -5,22 +5,28 @@
 #include "memory"
 #include "vector"
 #include <typeinfo>
+#include <functional>
+#include <unordered_map>
 #include "components/Transform.hpp"
-#include "components/Material.hpp"
-#include "components/Mesh.hpp"
-#include "components/Light.hpp"
 #include "components/Component.hpp"
 #include "json/json.hpp"
-#include "Serializer.hpp"
-#include "Deserializer.hpp"
+
+class Scene; // forward declaration 
+
+// Factory map defined in a .cpp to avoid include cycles
+extern std::unordered_map<std::string, std::function<std::unique_ptr<Component>()>> TypeToComponent;
 
 class GameObject {
 public:
-    std::string name;
+    std::string name = "GameObject";
     std::unique_ptr<Transform> transform;
     std::vector<std::unique_ptr<Component>> components;
+    Scene* parentScene;
 
-    GameObject() : transform(std::make_unique<Transform>()) {
+    GameObject(Scene* parentScene) 
+    : transform(std::make_unique<Transform>())
+    , parentScene(parentScene) 
+    {
         components.reserve(4);
     }
 
@@ -70,10 +76,37 @@ public:
         return nullptr;
     }
     
+    // Game Object -> JSON 
     void Serialize(nlohmann::json& json) {
-        SerializerJSON serializer(json);
+        json["name"] = name;
+       
+        nlohmann::json transformJson;
+        nlohmann::json componentsJson = nlohmann::json::array();
 
-        serializer.Write("name", name);
-        serializer.Write("gameObjects")
+        transform->Serialize(transformJson);
+
+        for (std::unique_ptr<Component>& component : components) {
+            nlohmann::json componentJson;
+            componentJson["type"] = component->GetType();
+            component->Serialize(componentJson);
+            componentsJson.push_back(std::move(componentJson));
+        }
+
+        json["transform"] = transformJson;
+        json["components"] = componentsJson;
+    }
+    
+    void Deserialize(nlohmann::json& json) {
+        name = json.at("name");
+        
+        transform = std::make_unique<Transform>();
+        transform->Deserialize(json["transform"]);
+
+        for(nlohmann::json& component : json["components"]) {
+            std::unique_ptr<Component> c = TypeToComponent[component["type"]]();
+            c->Deserialize(component);
+            components.push_back(std::move(c));
+        }
     }
 };
+

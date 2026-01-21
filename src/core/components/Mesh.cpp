@@ -11,7 +11,10 @@ Mesh::Mesh(const char* objPath) {
     Utils::loadObj(vertices, objPath);
     uploadVertices(vertices);
     LOG::Info("Mesh Created");
+    objFilePath = objPath;
 }
+
+Mesh::Mesh() {};
 
 Mesh::Mesh(const std::vector<Vertex>&& vertices) {
     uploadVertices(vertices);
@@ -43,4 +46,8 @@ void Mesh::uploadVertices(const std::vector<Vertex>& vertices) {
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+}
+
+std::string Mesh::GetType() {
+    return "Mesh";
 }

@@ -9,3 +9,7 @@ size_t Light::GetId() {
 Light::~Light() noexcept {
     LOG::Info("Light Destroyed");
 }
+
+std::string Light::GetType() {
+    return "Light";
+}

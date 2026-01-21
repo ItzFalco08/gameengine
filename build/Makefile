@@ -334,6 +334,30 @@ src/core/AssetsManager.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/core/AssetsManager.cpp.s
 .PHONY : src/core/AssetsManager.cpp.s
 
+src/core/ComponentFactory.obj: src/core/ComponentFactory.cpp.obj
+.PHONY : src/core/ComponentFactory.obj
+
+# target to build an object file
+src/core/ComponentFactory.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/core/ComponentFactory.cpp.obj
+.PHONY : src/core/ComponentFactory.cpp.obj
+
+src/core/ComponentFactory.i: src/core/ComponentFactory.cpp.i
+.PHONY : src/core/ComponentFactory.i
+
+# target to preprocess a source file
+src/core/ComponentFactory.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/core/ComponentFactory.cpp.i
+.PHONY : src/core/ComponentFactory.cpp.i
+
+src/core/ComponentFactory.s: src/core/ComponentFactory.cpp.s
+.PHONY : src/core/ComponentFactory.s
+
+# target to generate assembly for a file
+src/core/ComponentFactory.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/core/ComponentFactory.cpp.s
+.PHONY : src/core/ComponentFactory.cpp.s
+
 src/core/Renderer.obj: src/core/Renderer.cpp.obj
 .PHONY : src/core/Renderer.obj
 
@@ -680,6 +704,9 @@ help:
 	@echo ... src/core/AssetsManager.obj
 	@echo ... src/core/AssetsManager.i
 	@echo ... src/core/AssetsManager.s
+	@echo ... src/core/ComponentFactory.obj
+	@echo ... src/core/ComponentFactory.i
+	@echo ... src/core/ComponentFactory.s
 	@echo ... src/core/Renderer.obj
 	@echo ... src/core/Renderer.i
 	@echo ... src/core/Renderer.s

@@ -15,5 +15,7 @@ public:
 
     size_t GetId() override;
     ~Material() noexcept override;
+    std::string GetType() override;
+
     Material();
 };

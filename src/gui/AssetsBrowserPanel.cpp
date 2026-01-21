@@ -1,6 +1,7 @@
 #include "AssetsBrowserPanel.hpp"
 #include "../utils/globals.hpp"
 #include <vector>
+#include <functional>
 #include "../utils/Logger.hpp"
 #include <windows.h>
 #include <shlobj.h>
@@ -25,97 +26,118 @@ void AssetsBrowser::Render() {
     ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyleColorVec4(ImGuiCol_MenuBarBg));
     
     float toolbarHeight = 28;
-    ImGui::BeginChild("##toolbar", ImVec2(0, toolbarHeight), true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-    
-    
-    if(currentPath.string() != "../Assets") {
-        if(ImGui::Button("<-", ImVec2(20, 20))) {
-            
-            currentPath = currentPath.parent_path();
-        }
-    } 
 
-    ImGui::SameLine();
-    ImGui::Text(currentPath.filename().string().c_str());
+        ImGui::BeginChild("##toolbar", ImVec2(0, toolbarHeight), true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+        
+        
+        if(currentPath.string() != "../Assets") {
+            if(ImGui::Button("<-", ImVec2(20, 20))) {
+                
+                currentPath = currentPath.parent_path();
+            }
+        } 
 
-    ImGui::SameLine(ImGui::GetWindowWidth() - 270);
-    ImGui::Text("icon size");
-    ImGui::SameLine();
+        ImGui::SameLine();
+        ImGui::Text(currentPath.filename().string().c_str());
 
-    ImGui::PushItemWidth(180);
-    ImGui::SliderFloat("##iconSize", &iconSize, 50.0f, 200.0f);
-    ImGui::PopItemWidth();
-    
-    ImGui::EndChild();
+        ImGui::SameLine(ImGui::GetWindowWidth() - 270);
+        ImGui::Text("icon size");
+        ImGui::SameLine();
+
+        ImGui::PushItemWidth(180);
+        ImGui::SliderFloat("##iconSize", &iconSize, 50.0f, 200.0f);
+        ImGui::PopItemWidth();
+        
+        ImGui::EndChild();
+
     ImGui::PopStyleColor();
     ImGui::PopStyleVar(2);
 
-    ImGui::BeginChild("##content", ImVec2(0, 0), false, ImGuiWindowFlags_NoScrollbar);
-    ImGui::Indent(8);
-    ImGui::Dummy(ImVec2(0, 8));
-    
-    float panelWidth = ImGui::GetContentRegionAvail().x;
-    DrawBreadcrumbBar();
+        ImGui::BeginChild("##content", ImVec2(0, 0), false, ImGuiWindowFlags_NoScrollbar);
+        ImGui::Indent(8);
+        ImGui::Dummy(ImVec2(0, 8));
+        
+        float panelWidth = ImGui::GetContentRegionAvail().x;
+        DrawBreadcrumbBar();
 
 
-    if(ImGui::BeginPopupContextWindow()) {
-        if(ImGui::BeginMenu("Create")) {
-            if(ImGui::MenuItem("Folder")) {
-                isCreateFolderPanelActive = true;
+        // right click
+        if(ImGui::BeginPopupContextWindow()) {
+            if(ImGui::BeginMenu("Create")) {
+                if(ImGui::MenuItem("Folder")) {
+                    isCreateFolderPanelActive = true;
+                }
+                if(ImGui::MenuItem("Scene")) {
+                    isCreateScenePanelActive = true;
+                }
+                ImGui::MenuItem("Script");
+                ImGui::MenuItem("Material");
+                ImGui::MenuItem("Texture");
+                ImGui::EndMenu();
             }
-            ImGui::MenuItem("Script");
-            ImGui::MenuItem("Material");
-            ImGui::MenuItem("Texture");
-            ImGui::EndMenu();
+            
+            std::string openTxt = std::string("Open ") + currentPath.filename().string() + std::string(" Folder");
+
+            if(ImGui::MenuItem(openTxt.c_str())) {
+                ShowOpenWithDialog(fs::absolute(currentPath).string());
+            }
+            ImGui::EndPopup();
         }
-        
-        std::string openTxt = std::string("Open ") + currentPath.filename().string() + std::string(" Folder");
 
-        if(ImGui::MenuItem(openTxt.c_str())) {
-            ShowOpenWithDialog(fs::absolute(currentPath).string());
+        std::vector<AssetItem> items = assetsManager.List(currentPath);
+
+        int cursorW = 0;
+        int itemWidthWithSpacing = iconSize + ImGui::GetStyle().ItemSpacing.x;
+        
+        // assets
+        for (auto& item : items) {
+            std::error_code ec;
+            ImTextureID icon;
+            
+            if (item.isDir) {
+                // Check if folder is empty (non-throwing)
+                bool isEmpty = fs::is_empty(item.itemPath, ec);
+                icon = (ImTextureID)(intptr_t)(isEmpty && !ec ? folderEmptyTex.TexId : folderTex.TexId);
+            } else {
+                icon = (ImTextureID)(intptr_t)fileTex.TexId;
+            }
+            
+            // Check if THIS item would overflow - if so, wrap to new line
+            if (cursorW > 0 && cursorW + itemWidthWithSpacing > panelWidth) {
+                cursorW = 0; // Start new line
+            }
+            
+            // If not first item on line, call SameLine
+            if (cursorW > 0) {
+                ImGui::SameLine();
+            }
+            
+            DrawAssetItem(icon, item.itemPath.filename().string().c_str(), {(float)iconSize, (float)iconSize}, item.itemPath);
+
+            cursorW += itemWidthWithSpacing;
         }
-        ImGui::EndPopup();
-    }
 
-    std::vector<AssetItem> items = assetsManager.List(currentPath);
+        // rename panel
+        if(isRenamePanelActive) {
+            ShowTextInputDialoge(
+                "Rename File",
+                "NewScene",
+                isRenamePanelActive,
+                [this](std::string input) { onRename(std::move(input)); }
+            );
+        };
 
-    int cursorW = 0;
-    int itemWidthWithSpacing = iconSize + ImGui::GetStyle().ItemSpacing.x;
-    
-    // assets
-    for (auto& item : items) {
-        std::error_code ec;
-        ImTextureID icon;
-        
-        if (item.isDir) {
-            // Check if folder is empty (non-throwing)
-            bool isEmpty = fs::is_empty(item.itemPath, ec);
-            icon = (ImTextureID)(intptr_t)(isEmpty && !ec ? folderEmptyTex.TexId : folderTex.TexId);
-        } else {
-            icon = (ImTextureID)(intptr_t)fileTex.TexId;
-        }
-        
-        // Check if THIS item would overflow - if so, wrap to new line
-        if (cursorW > 0 && cursorW + itemWidthWithSpacing > panelWidth) {
-            cursorW = 0; // Start new line
-        }
-        
-        // If not first item on line, call SameLine
-        if (cursorW > 0) {
-            ImGui::SameLine();
-        }
-        
-        DrawAssetItem(icon, item.itemPath.filename().string().c_str(), {(float)iconSize, (float)iconSize}, item.itemPath);
+        if(isCreateFolderPanelActive) {
+            ShowTextInputDialoge(
+                "Create Folder",
+                "NewFolder",
+                isCreateFolderPanelActive,
+                [this](std::string input) { onCreateFolder(std::move(input)); }
+            );
+        };
 
-        cursorW += itemWidthWithSpacing;
-    }
-
-    // rename panel
-    if(isRenamePanelActive) ShowRenamePanel();
-    if(isCreateFolderPanelActive) ShowCreateFolderPanel();
-
-    ImGui::Unindent(8);
-    ImGui::EndChild();
+        ImGui::Unindent(8);
+        ImGui::EndChild();
     
     ImGui::End();
 }
@@ -123,6 +145,16 @@ void AssetsBrowser::Render() {
 void AssetsBrowser::DrawBreadcrumbBar() {
 
 };
+
+void AssetsBrowser::onRename(std::string input) {
+    // Build the new path using the user-provided name and original parent directory
+    assetsManager.Rename(toRename, toRename.parent_path() / input);
+}
+
+void AssetsBrowser::onCreateFolder(std::string input) {
+    // Build the new path using the user-provided name and original parent directory
+    assetsManager.CreateFolder(currentPath / input);
+}
 
 void AssetsBrowser::DrawAssetItem(
     ImTextureID icon,
@@ -183,7 +215,7 @@ void AssetsBrowser::DrawAssetItem(
 
 }
 
-void AssetsBrowser::ShowRenamePanel() { 
+void AssetsBrowser::ShowTextInputDialoge(const char* title, const char* defaultValue = "enter text", bool isActive, std::function<void(std::string)> onOk) {
     ImGui::SetNextWindowFocus();
     ImGui::SetNextWindowSize(ImVec2(300, 200), ImGuiCond_Always);
     ImGui::SetNextWindowPos(
@@ -191,66 +223,33 @@ void AssetsBrowser::ShowRenamePanel() {
         ImGuiCond_Always,
         ImVec2(0.5f, 0.5f)
     );
-    
     ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoMove;
-    ImGui::Begin("Rename Asset", nullptr, flags);
-    
-    static char inputBuffer[256];
+    ImGui::Begin(title, nullptr, flags);
+
+    // Persist what the user types; only seed the buffer the first time (or after manual clear)
+    static char inputBuffer[256] = {0};
     if (inputBuffer[0] == '\0') {
-        strncpy(inputBuffer, toRename.filename().string().c_str(), sizeof(inputBuffer) - 1);
+        strncpy(inputBuffer, defaultValue, sizeof(inputBuffer) - 1);
         inputBuffer[sizeof(inputBuffer) - 1] = '\0';
     }
+    
     ImGui::InputText("New Name", inputBuffer, sizeof(inputBuffer));
-    
-    if (ImGui::Button("OK"))
-    {
-        assetsManager.Rename(toRename, fs::path(toRename.parent_path() / inputBuffer));
-        isRenamePanelActive = false;        
+
+    if (ImGui::Button("OK")) {
+        onOk(inputBuffer);
+        isActive = false;
+        inputBuffer[0] = '\0'; // reset buffer for next open
     }
 
     ImGui::SameLine();
-
-    if (ImGui::Button("Cancel"))
-    {
-        isRenamePanelActive = false;
+    
+    if (ImGui::Button("Cancel")) {
+        isActive = false;
+        inputBuffer[0] = '\0'; // reset buffer on cancel
     }
 
     ImGui::End();
 }
-
-void AssetsBrowser::ShowCreateFolderPanel() { 
-    ImGui::SetNextWindowFocus();
-    ImGui::SetNextWindowSize(ImVec2(300, 200), ImGuiCond_Always);
-    ImGui::SetNextWindowPos(
-        ImGui::GetMainViewport()->GetCenter(),
-        ImGuiCond_Always,
-        ImVec2(0.5f, 0.5f)
-    );
-    
-    ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoMove;
-    ImGui::Begin("Create Folder", nullptr, flags);
-    
-    static char inputBuffer[256] = {0};
-    ImGui::InputText("Folder Name", inputBuffer, sizeof(inputBuffer));
-    
-    if (ImGui::Button("OK"))
-    {
-        if (inputBuffer[0] != '\0') {
-            assetsManager.CreateFolder(currentPath / inputBuffer);
-            isCreateFolderPanelActive = false;
-        }
-    }
-
-    ImGui::SameLine();
-
-    if (ImGui::Button("Cancel"))
-    {
-        isCreateFolderPanelActive = false;
-    }
-
-    ImGui::End();
-}
-
 
 void AssetsBrowser::ShowOpenWithDialog(std::string filePath)
 {

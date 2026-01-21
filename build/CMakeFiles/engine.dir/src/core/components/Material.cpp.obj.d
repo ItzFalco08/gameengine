@@ -143,14 +143,64 @@ CMakeFiles/engine.dir/src/core/components/Material.cpp.obj: \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/istream.tcc \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/sstream \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/sstream.tcc \
- C:/Users/pc/Desktop/gameengine/src/utils/globals.hpp \
- C:/Users/pc/Desktop/gameengine/includes/GLAD/gl.h \
- C:/Users/pc/Desktop/gameengine/includes/KHR/khrplatform.h \
+ C:/Users/pc/Desktop/gameengine/includes/json/json.hpp \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/algorithm \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/stl_algo.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/algorithmfwd.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/stl_heap.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/uniform_int_dist.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/stl_tempbuf.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/ranges_algo.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/ranges_algobase.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/pstl/glue_algorithm_defs.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/pstl/execution_defs.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/functional \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/std_function.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/unordered_map \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/unordered_map.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/hashtable.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/hashtable_policy.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/ext/aligned_buffer.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/enable_special_members.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/node_handle.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/erase_if.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/vector \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/stl_uninitialized.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/stl_vector.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/stl_bvector.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/vector.tcc \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/array \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/iterator \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/stream_iterator.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/memory \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/stl_raw_storage_iter.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/align.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/unique_ptr.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/shared_ptr.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/shared_ptr_base.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/allocated_ptr.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/ext/concurrence.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/shared_ptr_atomic.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/atomic_base.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/atomic_lockfree_defines.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/atomic_wait.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/cstdint \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/stdint.h \
  C:/w64devkit/include/stdint.h \
- C:/Users/pc/Desktop/gameengine/src/utils/Shader.hpp \
- C:/Users/pc/Desktop/gameengine/includes/glm/glm.hpp \
- C:/Users/pc/Desktop/gameengine/includes/glm/detail/_fixes.hpp \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/std_mutex.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/backward/auto_ptr.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/ranges_uninitialized.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/pstl/glue_memory_defs.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/utility \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/stl_relops.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/forward_list \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/forward_list.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/forward_list.tcc \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/map \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/stl_tree.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/stl_map.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/stl_multimap.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/valarray \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/cmath \
  C:/w64devkit/include/math.h \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/specfun.h \
@@ -167,11 +217,54 @@ CMakeFiles/engine.dir/src/core/components/Material.cpp.obj: \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/tr1/poly_hermite.tcc \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/tr1/poly_laguerre.tcc \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/tr1/riemann_zeta.tcc \
- C:/Users/pc/Desktop/gameengine/includes/glm/detail/setup.hpp \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/valarray_array.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/valarray_array.tcc \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/valarray_before.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/slice_array.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/valarray_after.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/gslice.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/gslice_array.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/mask_array.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/indirect_array.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/version \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/cassert \
  C:/w64devkit/include/assert.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/cstring \
+ C:/w64devkit/include/string.h C:/w64devkit/include/sec_api/string_s.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/filesystem \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/fs_fwd.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/chrono.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/ratio \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/ctime \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/parse_numbers.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/fs_path.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/locale \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/locale_facets_nonio.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32/bits/time_members.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32/bits/messages_members.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/codecvt.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/locale_facets_nonio.tcc \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/locale_conv.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/iomanip \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/quoted_string.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/codecvt \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/fs_dir.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/fs_ops.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/optional \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/ranges \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/span \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/numeric \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/stl_numeric.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/pstl/glue_numeric_defs.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/any \
+ C:/Users/pc/Desktop/gameengine/src/utils/globals.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/GLAD/gl.h \
+ C:/Users/pc/Desktop/gameengine/includes/KHR/khrplatform.h \
+ C:/Users/pc/Desktop/gameengine/src/utils/Shader.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/glm.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/detail/_fixes.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/detail/setup.hpp \
  C:/Users/pc/Desktop/gameengine/includes/glm/simd/platform.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/cstdint \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/climits \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/cfloat \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/float.h \
@@ -201,22 +294,6 @@ CMakeFiles/engine.dir/src/core/components/Material.cpp.obj: \
  C:/Users/pc/Desktop/gameengine/includes/glm/detail/type_vec3.hpp \
  C:/Users/pc/Desktop/gameengine/includes/glm/detail/type_vec3.inl \
  C:/Users/pc/Desktop/gameengine/includes/glm/detail/compute_vector_decl.hpp \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/functional \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/std_function.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/unordered_map \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/unordered_map.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/hashtable.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/hashtable_policy.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/ext/aligned_buffer.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/enable_special_members.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/node_handle.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/erase_if.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/vector \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/stl_uninitialized.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/stl_vector.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/stl_bvector.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/vector.tcc \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/array \
  C:/Users/pc/Desktop/gameengine/includes/glm/detail/_vectorize.hpp \
  C:/Users/pc/Desktop/gameengine/includes/glm/ext/vector_bool3_precision.hpp \
  C:/Users/pc/Desktop/gameengine/includes/glm/ext/vector_float3.hpp \
@@ -325,29 +402,58 @@ CMakeFiles/engine.dir/src/core/components/Material.cpp.obj: \
  C:/Users/pc/Desktop/gameengine/includes/glm/integer.hpp \
  C:/Users/pc/Desktop/gameengine/includes/glm/detail/func_integer.inl \
  C:/Users/pc/Desktop/gameengine/src/core/AssetsManager.hpp \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/filesystem \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/fs_fwd.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/chrono.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/ratio \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/ctime \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/parse_numbers.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/fs_path.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/locale \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/locale_facets_nonio.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32/bits/time_members.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32/bits/messages_members.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/codecvt.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/locale_facets_nonio.tcc \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/locale_conv.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/iomanip \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/quoted_string.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/codecvt \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/ext/concurrence.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/shared_ptr.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/shared_ptr_base.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/allocated_ptr.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/unique_ptr.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/align.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/fs_dir.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/fs_ops.h \
+ C:/Users/pc/Desktop/gameengine/src/core/Scene.hpp \
+ C:/Users/pc/Desktop/gameengine/src/core/GameObject.hpp \
+ C:/Users/pc/Desktop/gameengine/src/core/components/Transform.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/gtc/matrix_transform.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/matrix_projection.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/gtc/constants.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/scalar_constants.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/scalar_constants.inl \
+ C:/Users/pc/Desktop/gameengine/includes/glm/gtc/constants.inl \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/matrix_projection.inl \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/matrix_clip_space.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/matrix_clip_space.inl \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/matrix_transform.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/matrix_transform.inl \
+ C:/Users/pc/Desktop/gameengine/includes/glm/gtc/matrix_transform.inl \
+ C:/Users/pc/Desktop/gameengine/includes/glm/gtc/quaternion.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/vector_relational.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/vector_relational.inl \
+ C:/Users/pc/Desktop/gameengine/includes/glm/detail/type_float.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/quaternion_common.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/quaternion_geometric.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/quaternion_geometric.inl \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/quaternion_common.inl \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/quaternion_float.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/detail/type_quat.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/quaternion_relational.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/quaternion_relational.inl \
+ C:/Users/pc/Desktop/gameengine/includes/glm/detail/type_quat.inl \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/quaternion_float_precision.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/quaternion_double.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/quaternion_double_precision.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/quaternion_trigonometric.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/quaternion_trigonometric.inl \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/quaternion_transform.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/quaternion_transform.inl \
+ C:/Users/pc/Desktop/gameengine/includes/glm/gtc/quaternion.inl \
+ C:/Users/pc/Desktop/gameengine/includes/glm/gtc/epsilon.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/detail/setup.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/gtc/epsilon.inl \
+ C:/Users/pc/Desktop/gameengine/includes/glm/gtx/quaternion.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/quaternion_exponential.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/quaternion_exponential.inl \
+ C:/Users/pc/Desktop/gameengine/includes/glm/gtx/norm.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/gtx/component_wise.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/detail/setup.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/gtx/component_wise.inl \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/scalar_common.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glm/ext/scalar_common.inl \
+ C:/Users/pc/Desktop/gameengine/includes/glm/gtx/norm.inl \
+ C:/Users/pc/Desktop/gameengine/includes/glm/gtx/quaternion.inl \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/fstream \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32/bits/basic_file.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32/bits/c++io.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/fstream.tcc \
  C:/Users/pc/Desktop/gameengine/src/core/Texture.hpp

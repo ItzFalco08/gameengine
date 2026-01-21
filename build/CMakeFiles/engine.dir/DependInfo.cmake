@@ -10,6 +10,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "C:/Users/pc/Desktop/gameengine/src/gl.c" "CMakeFiles/engine.dir/src/gl.c.obj" "gcc" "CMakeFiles/engine.dir/src/gl.c.obj.d"
   "C:/Users/pc/Desktop/gameengine/src/core/AssetsManager.cpp" "CMakeFiles/engine.dir/src/core/AssetsManager.cpp.obj" "gcc" "CMakeFiles/engine.dir/src/core/AssetsManager.cpp.obj.d"
+  "C:/Users/pc/Desktop/gameengine/src/core/ComponentFactory.cpp" "CMakeFiles/engine.dir/src/core/ComponentFactory.cpp.obj" "gcc" "CMakeFiles/engine.dir/src/core/ComponentFactory.cpp.obj.d"
   "C:/Users/pc/Desktop/gameengine/src/core/Renderer.cpp" "CMakeFiles/engine.dir/src/core/Renderer.cpp.obj" "gcc" "CMakeFiles/engine.dir/src/core/Renderer.cpp.obj.d"
   "C:/Users/pc/Desktop/gameengine/src/core/Texture.cpp" "CMakeFiles/engine.dir/src/core/Texture.cpp.obj" "gcc" "CMakeFiles/engine.dir/src/core/Texture.cpp.obj.d"
   "C:/Users/pc/Desktop/gameengine/src/core/components/Light.cpp" "CMakeFiles/engine.dir/src/core/components/Light.cpp.obj" "gcc" "CMakeFiles/engine.dir/src/core/components/Light.cpp.obj.d"

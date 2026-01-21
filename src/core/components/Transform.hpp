@@ -4,6 +4,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include "json/json.hpp"
 
 struct Transform : public Component  {
 private:
@@ -26,6 +27,9 @@ public:
     glm::mat4 getModel();
     ~Transform() noexcept override;
     Transform();
+
+    void Serialize(nlohmann::json& json) override;
+    void Deserialize(nlohmann::json& json) override;
 
     void reset();
 };

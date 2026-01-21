@@ -1,18 +1,18 @@
 #include "iostream"
-#include "vector"
-#include "memory"
+#define print(x) std::cout << x << std::endl
 
-struct Component {
+class A { 
 
 };
 
-class GameObject { 
-    std::vector<std::unique_ptr<Component>> components;
+class B {
+
 };
 
 int main() {
-    std::vector<int> v1;
-    std::vector<GameObject> v2;
-    std::cout << "Size of std::vector<int>: " << sizeof(v1) << "size of std::vector<GameObject>: " << sizeof(v2) << std::endl;
+    const std::type_info& typeInfoA = typeid(A);
+    const std::type_info& typeInfoB = typeid(B);
+    print(typeInfoA.raw_name());
+    print(typeInfoB.name());
     return 0;
 }

@@ -31,6 +31,7 @@ endif()
 file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "C:/Users/pc/Desktop/gameengine/src/*.cpp")
 set(OLD_GLOB
   "C:/Users/pc/Desktop/gameengine/src/core/AssetsManager.cpp"
+  "C:/Users/pc/Desktop/gameengine/src/core/ComponentFactory.cpp"
   "C:/Users/pc/Desktop/gameengine/src/core/Renderer.cpp"
   "C:/Users/pc/Desktop/gameengine/src/core/Texture.cpp"
   "C:/Users/pc/Desktop/gameengine/src/core/components/Light.cpp"

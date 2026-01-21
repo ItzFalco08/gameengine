@@ -19,5 +19,6 @@ public:
     float quadratic = 0.017f;
     
     size_t GetId() override;
+    std::string GetType() override;
     ~Light() noexcept override;
 };

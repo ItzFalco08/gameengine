@@ -13,3 +13,7 @@ Material::~Material() noexcept {
 Material::Material() {
     LOG::Info("Material Created");
 }
+
+std::string Material::GetType() {
+    return "Material";
+}

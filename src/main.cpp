@@ -75,13 +75,10 @@ int main() {
     return 0;
 }
 
-GameObject* gameObject;
-
 void test() {
-    gameObject = new GameObject();
-    gameObject->AddComponent<Mesh>("../assets/lowpoly-burger/source/burger.obj");
-    gameObject->AddComponent<Material>();
-    delete gameObject;
+    editorScene->AddGameObject();
+    editorScene->sceneFilePath = "../Assets/DefaultScene.json";
+    editorScene->Serialize();
 }
 
 void drawGraphics() {

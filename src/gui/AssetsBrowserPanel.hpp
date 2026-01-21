@@ -1,6 +1,8 @@
 #pragma once
 #include "imgui/imgui.h"
 #include <filesystem>
+#include <functional>
+#include <string>
 #include "../core/Texture.hpp"
 namespace fs = std::filesystem;
 
@@ -15,8 +17,9 @@ private:
     void DrawBreadcrumbBar();
     void DrawAssetItem( ImTextureID icon, const char* label, ImVec2 iconSize, fs::path itemPath);
     void ShowOpenWithDialog(std::string filePath);
-    void ShowCreateFolderPanel();
-    void ShowRenamePanel();
+    void ShowTextInputDialoge(const char* title, const char* defaultValue = "enter text", bool isActive, std::function<void(std::string)> onOk);
+    void onCreateFolder(std::string input);
+    void onRename(std::string input);
     fs::path currentPath = "../Assets";
     Texture fileTex;
     Texture folderTex;
@@ -27,5 +30,6 @@ private:
     bool isCreateFolderPanelActive = false;
     bool isCreateMaterialPanelActive = false;
     bool isCreateTexturePanelActive = false;
+    bool isCreateScenePanelActive = false;
     fs::path toRename = "";
 };

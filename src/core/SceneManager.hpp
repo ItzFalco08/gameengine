@@ -1,38 +1,29 @@
 #include "vector"
 #include "Scene.hpp"
-#include "Serializer.hpp"
 #include "sstream"
 #include "fstream"
 
-class SceneManager {
-    std::unordered_map<std::string, Scene> loadedScenes;
-    Scene* activeScene;
+class SceneManager { // switching between scenes made easy. (USEFUL DURING RUNTIME)
+    std::unordered_map<std::string, std::unique_ptr<Scene>> loadedScenes;
+    Scene* activeScene; // passed to renderer
 
-    void setActiveScene(std::string sceneName) {
-        activeScene = &loadedScenes[sceneName];
+    void setActiveScene(std::string scenePath) {
+        activeScene = loadedScenes[scenePath].get();
     }
 
     void loadScene(const char* path) {
-        Scene scene;
+        auto scene = std::make_unique<Scene>();
         
-        std::ifstream sceneJsonFile(path);
-        nlohmann::json sceneJson;
-        sceneJsonFile >> sceneJson;
-
-        scene.sceneName = sceneJson["sceneName"];
-        
-        for (nlohmann::json gameObject : sceneJson["gameObjects"]) {
-            
-        }
+        scene->Serialize(path);
+        loadedScenes[path] = std::move(scene);
     }
 
-    void SaveScene() {
-        nlohmann::json sceneJson;
-        SerializerJSON scene(sceneJson); // js obj with write
-        scene.Write("sceneName", activeScene->sceneName);
+    void SaveScene(const char* path) {
+        loadedScenes[path]->Deserialize(path);
+    }
 
-        for(auto& GameObject : activeScene->gameObjects) {
-            
-        }
+    ~SceneManager() {
+        delete activeScene;
+        // loaded scenes deleted automatically
     }
 };

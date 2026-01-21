@@ -1,6 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/engine.dir/src/core/AssetsManager.cpp.obj"
   "CMakeFiles/engine.dir/src/core/AssetsManager.cpp.obj.d"
+  "CMakeFiles/engine.dir/src/core/ComponentFactory.cpp.obj"
+  "CMakeFiles/engine.dir/src/core/ComponentFactory.cpp.obj.d"
   "CMakeFiles/engine.dir/src/core/Renderer.cpp.obj"
   "CMakeFiles/engine.dir/src/core/Renderer.cpp.obj.d"
   "CMakeFiles/engine.dir/src/core/Texture.cpp.obj"
