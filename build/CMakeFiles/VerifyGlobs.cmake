@@ -40,10 +40,12 @@ set(OLD_GLOB
   "C:/Users/pc/Desktop/gameengine/src/core/components/Transform.cpp"
   "C:/Users/pc/Desktop/gameengine/src/gui/AssetsBrowserPanel.cpp"
   "C:/Users/pc/Desktop/gameengine/src/gui/HeriarchyPanel.cpp"
+  "C:/Users/pc/Desktop/gameengine/src/gui/InspectorPanel.cpp"
   "C:/Users/pc/Desktop/gameengine/src/gui/ScenePanel.cpp"
   "C:/Users/pc/Desktop/gameengine/src/main.cpp"
   "C:/Users/pc/Desktop/gameengine/src/utils/Shader.cpp"
   "C:/Users/pc/Desktop/gameengine/src/utils/Utils.cpp"
+  "C:/Users/pc/Desktop/gameengine/src/utils/WinMsg.cpp"
   "C:/Users/pc/Desktop/gameengine/src/utils/globals.cpp"
   )
 if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")

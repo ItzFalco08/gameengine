@@ -1,5 +1,6 @@
 #include "AssetsManager.hpp"
 #include "../utils/Logger.hpp"
+#include "../utils/WinMsg.hpp"
 #include "json/json.hpp"
 #include <fstream>
 
@@ -23,6 +24,9 @@ std::vector<AssetItem> AssetsManager::List(const fs::path& directory) {
 };
 
 void AssetsManager::CreateFolder(const fs::path& path) {
+    if(fs::exists(path)) {
+        WinMsg::Warning("Warning", "Folder with this name already exists!");
+    }
     fs::create_directory(path);
 };
 
@@ -55,7 +59,14 @@ void AssetsManager::Delete(const fs::path& path) {
 };
 
 void AssetsManager::CreateScene(fs::path dir, std::string sceneName) {
-    std::ofstream sceneFile(dir/ (sceneName + ".scene") );
+    fs::path scenePath = dir / (sceneName + ".scene");
+    if (fs::exists(scenePath)) {
+        WinMsg::Warning("Warning", "A scene with this name already exists.");
+        return;
+
+    }
+    std::ofstream sceneFile(scenePath);
+
     nlohmann::json defaultSceneJson;
     defaultSceneJson["sceneName"] = sceneName;
     defaultSceneJson["gameObjects"] = nlohmann::json::array();

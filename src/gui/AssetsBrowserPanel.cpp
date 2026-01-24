@@ -6,6 +6,7 @@
 #include <windows.h>
 #include <shlobj.h>
 #include <cstring>
+#include "../utils/WinMsg.hpp"
 
 void AssetsBrowser::InitIcons() {
     TexDets texDets;
@@ -246,7 +247,8 @@ void AssetsBrowser::DrawAssetItem(
 
         if (ImGui::MenuItem("Delete"))
         {
-            assetsManager.Delete(itemPath);
+            if(WinMsg::YesNo("Confirm", "This will permanently delete this item.\nContinue?"))
+                assetsManager.Delete(itemPath);
         }
 
         ImGui::EndPopup();

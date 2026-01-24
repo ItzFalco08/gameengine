@@ -456,4 +456,16 @@ CMakeFiles/engine.dir/src/core/components/Material.cpp.obj: \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32/bits/basic_file.h \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32/bits/c++io.h \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/fstream.tcc \
- C:/Users/pc/Desktop/gameengine/src/core/Texture.hpp
+ C:/Users/pc/Desktop/gameengine/src/gui/ScenePanel.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/imgui/imgui.h \
+ C:/Users/pc/Desktop/gameengine/includes/imgui/imconfig.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/stdarg.h \
+ C:/w64devkit/include/stdarg.h C:/w64devkit/include/_mingw_stdarg.h \
+ C:/Users/pc/Desktop/gameengine/includes/glfw/glfw3.h \
+ C:/Users/pc/Desktop/gameengine/src/utils/Utils.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glad/gl.h \
+ C:/Users/pc/Desktop/gameengine/includes/GLFW/glfw3.h \
+ C:/Users/pc/Desktop/gameengine/src/gui/AssetsBrowserPanel.hpp \
+ C:/Users/pc/Desktop/gameengine/src/core/Texture.hpp \
+ C:/Users/pc/Desktop/gameengine/src/gui/HeriarchyPanel.hpp \
+ C:/Users/pc/Desktop/gameengine/src/gui/InspectorPanel.hpp

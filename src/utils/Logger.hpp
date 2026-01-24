@@ -71,7 +71,7 @@ namespace LOG {
         INFO,
         SUCCESS,
         WARNING,
-        ERROR,
+        ERR,
         FATAL,
         DEBUG
     };
@@ -82,7 +82,7 @@ namespace LOG {
             case Level::INFO:    return std::string(Color::Style::BOLD) + Color::FG::CYAN + "[INFO] " + Color::RESET;
             case Level::SUCCESS: return std::string(Color::Style::BOLD) + Color::FG::GREEN + "[SUCCESS] " + Color::RESET;
             case Level::WARNING: return std::string(Color::Style::BOLD) + Color::FG::YELLOW + "[WARNING] " + Color::RESET;
-            case Level::ERROR:   return std::string(Color::Style::BOLD) + Color::FG::RED + "[ERROR] " + Color::RESET;
+            case Level::ERR:   return std::string(Color::Style::BOLD) + Color::FG::RED + "[ERROR] " + Color::RESET;
             case Level::FATAL:   return std::string(Color::Style::BOLD) + Color::FG::RED + "[FATAL] " + Color::RESET;
             case Level::DEBUG:   return std::string(Color::Style::BOLD) + Color::FG::GRAY + "[DEBUG] " + Color::RESET;
             default:             return "[LOG] ";
@@ -115,7 +115,7 @@ namespace LOG {
 
     template<typename... Args>
     inline void Error(Args&&... args) {
-        log(Level::ERROR, std::forward<Args>(args)...);
+        log(Level::ERR, std::forward<Args>(args)...);
     }
 
     template<typename... Args>

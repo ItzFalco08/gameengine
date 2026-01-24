@@ -463,4 +463,10 @@ CMakeFiles/engine.dir/src/utils/Utils.cpp.obj: \
  C:/Users/pc/Desktop/gameengine/includes/glm/ext/scalar_common.hpp \
  C:/Users/pc/Desktop/gameengine/includes/glm/ext/scalar_common.inl \
  C:/Users/pc/Desktop/gameengine/includes/glm/gtx/norm.inl \
- C:/Users/pc/Desktop/gameengine/includes/glm/gtx/quaternion.inl
+ C:/Users/pc/Desktop/gameengine/includes/glm/gtx/quaternion.inl \
+ C:/Users/pc/Desktop/gameengine/src/gui/ScenePanel.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glfw/glfw3.h \
+ C:/Users/pc/Desktop/gameengine/src/gui/AssetsBrowserPanel.hpp \
+ C:/Users/pc/Desktop/gameengine/src/core/Texture.hpp \
+ C:/Users/pc/Desktop/gameengine/src/gui/HeriarchyPanel.hpp \
+ C:/Users/pc/Desktop/gameengine/src/gui/InspectorPanel.hpp

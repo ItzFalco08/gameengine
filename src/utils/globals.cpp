@@ -1,6 +1,5 @@
 #include "globals.hpp"
-#include "../gui/ScenePanel.hpp"
-#include "../gui/AssetsBrowserPanel.hpp"
+
 #include "../core/AssetsManager.hpp"
 
 SceneView sceneView = {800, 600, 0, 0, 0}; // Initialize with default dimensions
@@ -14,4 +13,6 @@ AssetsManager assetsManager;
 namespace panels {
 	ScenePanel scenePanel;
 	AssetsBrowser assetsBrowserPanel;
+	HeriarchyPanel heriarchyPanel;
+	InspectorPanel inspectorPanel;
 }

@@ -465,4 +465,6 @@ CMakeFiles/engine.dir/src/utils/globals.cpp.obj: \
  C:/Users/pc/Desktop/gameengine/includes/glad/gl.h \
  C:/Users/pc/Desktop/gameengine/includes/GLFW/glfw3.h \
  C:/Users/pc/Desktop/gameengine/src/gui/AssetsBrowserPanel.hpp \
- C:/Users/pc/Desktop/gameengine/src/core/Texture.hpp
+ C:/Users/pc/Desktop/gameengine/src/core/Texture.hpp \
+ C:/Users/pc/Desktop/gameengine/src/gui/HeriarchyPanel.hpp \
+ C:/Users/pc/Desktop/gameengine/src/gui/InspectorPanel.hpp

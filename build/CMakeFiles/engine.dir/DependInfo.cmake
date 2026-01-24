@@ -19,10 +19,12 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "C:/Users/pc/Desktop/gameengine/src/core/components/Transform.cpp" "CMakeFiles/engine.dir/src/core/components/Transform.cpp.obj" "gcc" "CMakeFiles/engine.dir/src/core/components/Transform.cpp.obj.d"
   "C:/Users/pc/Desktop/gameengine/src/gui/AssetsBrowserPanel.cpp" "CMakeFiles/engine.dir/src/gui/AssetsBrowserPanel.cpp.obj" "gcc" "CMakeFiles/engine.dir/src/gui/AssetsBrowserPanel.cpp.obj.d"
   "C:/Users/pc/Desktop/gameengine/src/gui/HeriarchyPanel.cpp" "CMakeFiles/engine.dir/src/gui/HeriarchyPanel.cpp.obj" "gcc" "CMakeFiles/engine.dir/src/gui/HeriarchyPanel.cpp.obj.d"
+  "C:/Users/pc/Desktop/gameengine/src/gui/InspectorPanel.cpp" "CMakeFiles/engine.dir/src/gui/InspectorPanel.cpp.obj" "gcc" "CMakeFiles/engine.dir/src/gui/InspectorPanel.cpp.obj.d"
   "C:/Users/pc/Desktop/gameengine/src/gui/ScenePanel.cpp" "CMakeFiles/engine.dir/src/gui/ScenePanel.cpp.obj" "gcc" "CMakeFiles/engine.dir/src/gui/ScenePanel.cpp.obj.d"
   "C:/Users/pc/Desktop/gameengine/src/main.cpp" "CMakeFiles/engine.dir/src/main.cpp.obj" "gcc" "CMakeFiles/engine.dir/src/main.cpp.obj.d"
   "C:/Users/pc/Desktop/gameengine/src/utils/Shader.cpp" "CMakeFiles/engine.dir/src/utils/Shader.cpp.obj" "gcc" "CMakeFiles/engine.dir/src/utils/Shader.cpp.obj.d"
   "C:/Users/pc/Desktop/gameengine/src/utils/Utils.cpp" "CMakeFiles/engine.dir/src/utils/Utils.cpp.obj" "gcc" "CMakeFiles/engine.dir/src/utils/Utils.cpp.obj.d"
+  "C:/Users/pc/Desktop/gameengine/src/utils/WinMsg.cpp" "CMakeFiles/engine.dir/src/utils/WinMsg.cpp.obj" "gcc" "CMakeFiles/engine.dir/src/utils/WinMsg.cpp.obj.d"
   "C:/Users/pc/Desktop/gameengine/src/utils/globals.cpp" "CMakeFiles/engine.dir/src/utils/globals.cpp.obj" "gcc" "CMakeFiles/engine.dir/src/utils/globals.cpp.obj.d"
   )
 

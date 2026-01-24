@@ -574,6 +574,30 @@ src/gui/HeriarchyPanel.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/gui/HeriarchyPanel.cpp.s
 .PHONY : src/gui/HeriarchyPanel.cpp.s
 
+src/gui/InspectorPanel.obj: src/gui/InspectorPanel.cpp.obj
+.PHONY : src/gui/InspectorPanel.obj
+
+# target to build an object file
+src/gui/InspectorPanel.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/gui/InspectorPanel.cpp.obj
+.PHONY : src/gui/InspectorPanel.cpp.obj
+
+src/gui/InspectorPanel.i: src/gui/InspectorPanel.cpp.i
+.PHONY : src/gui/InspectorPanel.i
+
+# target to preprocess a source file
+src/gui/InspectorPanel.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/gui/InspectorPanel.cpp.i
+.PHONY : src/gui/InspectorPanel.cpp.i
+
+src/gui/InspectorPanel.s: src/gui/InspectorPanel.cpp.s
+.PHONY : src/gui/InspectorPanel.s
+
+# target to generate assembly for a file
+src/gui/InspectorPanel.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/gui/InspectorPanel.cpp.s
+.PHONY : src/gui/InspectorPanel.cpp.s
+
 src/gui/ScenePanel.obj: src/gui/ScenePanel.cpp.obj
 .PHONY : src/gui/ScenePanel.obj
 
@@ -670,6 +694,30 @@ src/utils/Utils.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/utils/Utils.cpp.s
 .PHONY : src/utils/Utils.cpp.s
 
+src/utils/WinMsg.obj: src/utils/WinMsg.cpp.obj
+.PHONY : src/utils/WinMsg.obj
+
+# target to build an object file
+src/utils/WinMsg.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/utils/WinMsg.cpp.obj
+.PHONY : src/utils/WinMsg.cpp.obj
+
+src/utils/WinMsg.i: src/utils/WinMsg.cpp.i
+.PHONY : src/utils/WinMsg.i
+
+# target to preprocess a source file
+src/utils/WinMsg.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/utils/WinMsg.cpp.i
+.PHONY : src/utils/WinMsg.cpp.i
+
+src/utils/WinMsg.s: src/utils/WinMsg.cpp.s
+.PHONY : src/utils/WinMsg.s
+
+# target to generate assembly for a file
+src/utils/WinMsg.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/utils/WinMsg.cpp.s
+.PHONY : src/utils/WinMsg.cpp.s
+
 src/utils/globals.obj: src/utils/globals.cpp.obj
 .PHONY : src/utils/globals.obj
 
@@ -758,6 +806,9 @@ help:
 	@echo ... src/gui/HeriarchyPanel.obj
 	@echo ... src/gui/HeriarchyPanel.i
 	@echo ... src/gui/HeriarchyPanel.s
+	@echo ... src/gui/InspectorPanel.obj
+	@echo ... src/gui/InspectorPanel.i
+	@echo ... src/gui/InspectorPanel.s
 	@echo ... src/gui/ScenePanel.obj
 	@echo ... src/gui/ScenePanel.i
 	@echo ... src/gui/ScenePanel.s
@@ -770,6 +821,9 @@ help:
 	@echo ... src/utils/Utils.obj
 	@echo ... src/utils/Utils.i
 	@echo ... src/utils/Utils.s
+	@echo ... src/utils/WinMsg.obj
+	@echo ... src/utils/WinMsg.i
+	@echo ... src/utils/WinMsg.s
 	@echo ... src/utils/globals.obj
 	@echo ... src/utils/globals.i
 	@echo ... src/utils/globals.s

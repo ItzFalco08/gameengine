@@ -177,6 +177,7 @@ CMakeFiles/engine.dir/src/core/AssetsManager.cpp.obj: \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/fs_ops.h \
  C:/Users/pc/Desktop/gameengine/src/utils/Logger.hpp \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/iostream \
+ C:/Users/pc/Desktop/gameengine/src/utils/WinMsg.hpp \
  C:/Users/pc/Desktop/gameengine/includes/json/json.hpp \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/algorithm \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/stl_algo.h \

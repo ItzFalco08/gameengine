@@ -459,6 +459,13 @@ CMakeFiles/engine.dir/src/gui/AssetsBrowserPanel.cpp.obj: \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32/bits/basic_file.h \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32/bits/c++io.h \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/fstream.tcc \
+ C:/Users/pc/Desktop/gameengine/src/gui/ScenePanel.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glfw/glfw3.h \
+ C:/Users/pc/Desktop/gameengine/src/utils/Utils.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glad/gl.h \
+ C:/Users/pc/Desktop/gameengine/includes/GLFW/glfw3.h \
+ C:/Users/pc/Desktop/gameengine/src/gui/HeriarchyPanel.hpp \
+ C:/Users/pc/Desktop/gameengine/src/gui/InspectorPanel.hpp \
  C:/w64devkit/include/windows.h C:/w64devkit/include/sdkddkver.h \
  C:/w64devkit/include/excpt.h C:/w64devkit/include/windef.h \
  C:/w64devkit/include/winapifamily.h C:/w64devkit/include/minwindef.h \
@@ -665,4 +672,5 @@ CMakeFiles/engine.dir/src/gui/AssetsBrowserPanel.cpp.obj: \
  C:/w64devkit/include/propsys.h \
  C:/w64devkit/include/structuredquerycondition.h \
  C:/w64devkit/include/propkeydef.h C:/w64devkit/include/objectarray.h \
- C:/w64devkit/include/sherrors.h
+ C:/w64devkit/include/sherrors.h \
+ C:/Users/pc/Desktop/gameengine/src/utils/WinMsg.hpp

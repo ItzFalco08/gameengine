@@ -460,4 +460,13 @@ CMakeFiles/engine.dir/src/core/ComponentFactory.cpp.obj: \
  C:/Users/pc/Desktop/gameengine/src/utils/Shader.hpp \
  C:/Users/pc/Desktop/gameengine/src/core/AssetsManager.hpp \
  C:/Users/pc/Desktop/gameengine/src/core/Scene.hpp \
- C:/Users/pc/Desktop/gameengine/src/core/Texture.hpp
+ C:/Users/pc/Desktop/gameengine/src/gui/ScenePanel.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/imgui/imgui.h \
+ C:/Users/pc/Desktop/gameengine/includes/imgui/imconfig.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/stdarg.h \
+ C:/w64devkit/include/stdarg.h C:/w64devkit/include/_mingw_stdarg.h \
+ C:/Users/pc/Desktop/gameengine/includes/glfw/glfw3.h \
+ C:/Users/pc/Desktop/gameengine/src/gui/AssetsBrowserPanel.hpp \
+ C:/Users/pc/Desktop/gameengine/src/core/Texture.hpp \
+ C:/Users/pc/Desktop/gameengine/src/gui/HeriarchyPanel.hpp \
+ C:/Users/pc/Desktop/gameengine/src/gui/InspectorPanel.hpp

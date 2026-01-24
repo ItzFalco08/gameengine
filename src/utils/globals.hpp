@@ -3,6 +3,10 @@
 #include "Shader.hpp"
 #include "../core/AssetsManager.hpp"
 #include "../core/Scene.hpp"
+#include "../gui/ScenePanel.hpp"
+#include "../gui/AssetsBrowserPanel.hpp"
+#include "../gui/HeriarchyPanel.hpp"
+#include "../gui/InspectorPanel.hpp"
 
 // Forward declarations to avoid circular includes
 class ScenePanel;
@@ -25,4 +29,6 @@ extern Scene* editorScene;
 namespace panels {
     extern ScenePanel scenePanel;
     extern AssetsBrowser assetsBrowserPanel;
+	extern HeriarchyPanel heriarchyPanel;
+    extern InspectorPanel inspectorPanel;
 };

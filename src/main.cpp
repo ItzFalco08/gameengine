@@ -2,7 +2,10 @@
 #include <iostream>
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
 #include "utils/Logger.hpp"
+#include "utils/WinMsg.hpp"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
@@ -10,12 +13,16 @@
 #include "utils/globals.hpp"
 #include "gui/ScenePanel.hpp"
 #include "gui/AssetsBrowserPanel.hpp"
+#include "windows.h"
 
 #include "core/GameObject.hpp"
 
 void drawImgui();
 void Update();
 void Start();
+
+// Global handle to the main window for cross-function access
+static GLFWwindow* gMainWindow = nullptr;
 
 int main() {
     glfwSetErrorCallback(Utils::GLFWErrorCallback);
@@ -37,6 +44,7 @@ int main() {
     
     GLFWwindow* window = glfwCreateWindow(1200, 700, "Game Engine", nullptr, nullptr);
     if (!window) {glfwTerminate(); return 1; };
+    gMainWindow = window;
 
     glfwMakeContextCurrent(window);
     if(!gladLoadGL(glfwGetProcAddress)) return 1;
@@ -111,10 +119,9 @@ void drawImgui()
     if (ImGui::BeginMenuBar()) {
         if (ImGui::BeginMenu("File")) {
             if (ImGui::MenuItem("Save Changes (Ctrl + S)")) {
-                std::cout << "changes saved!" << std::endl;
+                WinMsg::Info("Success", "Changes Saved!");
             } else if(ImGui::MenuItem("Exit Editor")) {
-                GLFWwindow* w = glfwGetCurrentContext();
-                if (w) glfwSetWindowShouldClose(w, GLFW_TRUE);
+                if (gMainWindow) glfwSetWindowShouldClose(gMainWindow, GLFW_TRUE);
             }
             ImGui::EndMenu();
         }
@@ -125,6 +132,8 @@ void drawImgui()
 
     panels::scenePanel.Render();
     panels::assetsBrowserPanel.Render();
+    panels::heriarchyPanel.Render();
+    panels::inspectorPanel.Render();
 
     // Render ImGui
     ImGui::Render();
