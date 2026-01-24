@@ -550,6 +550,30 @@ src/gui/AssetsBrowserPanel.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/gui/AssetsBrowserPanel.cpp.s
 .PHONY : src/gui/AssetsBrowserPanel.cpp.s
 
+src/gui/HeriarchyPanel.obj: src/gui/HeriarchyPanel.cpp.obj
+.PHONY : src/gui/HeriarchyPanel.obj
+
+# target to build an object file
+src/gui/HeriarchyPanel.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/gui/HeriarchyPanel.cpp.obj
+.PHONY : src/gui/HeriarchyPanel.cpp.obj
+
+src/gui/HeriarchyPanel.i: src/gui/HeriarchyPanel.cpp.i
+.PHONY : src/gui/HeriarchyPanel.i
+
+# target to preprocess a source file
+src/gui/HeriarchyPanel.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/gui/HeriarchyPanel.cpp.i
+.PHONY : src/gui/HeriarchyPanel.cpp.i
+
+src/gui/HeriarchyPanel.s: src/gui/HeriarchyPanel.cpp.s
+.PHONY : src/gui/HeriarchyPanel.s
+
+# target to generate assembly for a file
+src/gui/HeriarchyPanel.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/gui/HeriarchyPanel.cpp.s
+.PHONY : src/gui/HeriarchyPanel.cpp.s
+
 src/gui/ScenePanel.obj: src/gui/ScenePanel.cpp.obj
 .PHONY : src/gui/ScenePanel.obj
 
@@ -731,6 +755,9 @@ help:
 	@echo ... src/gui/AssetsBrowserPanel.obj
 	@echo ... src/gui/AssetsBrowserPanel.i
 	@echo ... src/gui/AssetsBrowserPanel.s
+	@echo ... src/gui/HeriarchyPanel.obj
+	@echo ... src/gui/HeriarchyPanel.i
+	@echo ... src/gui/HeriarchyPanel.s
 	@echo ... src/gui/ScenePanel.obj
 	@echo ... src/gui/ScenePanel.i
 	@echo ... src/gui/ScenePanel.s

@@ -39,6 +39,7 @@ set(OLD_GLOB
   "C:/Users/pc/Desktop/gameengine/src/core/components/Mesh.cpp"
   "C:/Users/pc/Desktop/gameengine/src/core/components/Transform.cpp"
   "C:/Users/pc/Desktop/gameengine/src/gui/AssetsBrowserPanel.cpp"
+  "C:/Users/pc/Desktop/gameengine/src/gui/HeriarchyPanel.cpp"
   "C:/Users/pc/Desktop/gameengine/src/gui/ScenePanel.cpp"
   "C:/Users/pc/Desktop/gameengine/src/main.cpp"
   "C:/Users/pc/Desktop/gameengine/src/utils/Shader.cpp"

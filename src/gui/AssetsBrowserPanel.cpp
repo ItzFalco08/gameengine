@@ -56,7 +56,8 @@ void AssetsBrowser::Render() {
         ImGui::BeginChild("##content", ImVec2(0, 0), false, ImGuiWindowFlags_NoScrollbar);
         ImGui::Indent(8);
         ImGui::Dummy(ImVec2(0, 8));
-        
+
+
         float panelWidth = ImGui::GetContentRegionAvail().x;
         DrawBreadcrumbBar();
 
@@ -121,7 +122,7 @@ void AssetsBrowser::Render() {
         if(isRenamePanelActive) {
             ShowTextInputDialoge(
                 "Rename File",
-                "NewScene",
+                toRename.stem().string().c_str(),
                 isRenamePanelActive,
                 [this](std::string input) { onRename(std::move(input)); }
             );
@@ -136,8 +137,23 @@ void AssetsBrowser::Render() {
             );
         };
 
+        if(isCreateScenePanelActive) {
+            ShowTextInputDialoge(
+                "Create Scene",
+                "NewScene",
+                isCreateScenePanelActive,
+                [this](std::string input) { onCreateScene(currentPath, std::move(input)); }
+            );
+        }
+
+        if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+            selectedItem = ""; // deselect on empty area click
+        }
+        
         ImGui::Unindent(8);
         ImGui::EndChild();
+
+
     
     ImGui::End();
 }
@@ -146,9 +162,18 @@ void AssetsBrowser::DrawBreadcrumbBar() {
 
 };
 
+void AssetsBrowser::onCreateScene(fs::path dir, std::string input) {
+    assetsManager.CreateScene(std::move(dir), std::move(input));
+}
+
+void AssetsBrowser::onOpenScene(fs::path& path) {
+    LOG::Info("Opening Scene: ", path.filename().string());
+    editorScene->Deserialize(path.string());
+}
+
 void AssetsBrowser::onRename(std::string input) {
     // Build the new path using the user-provided name and original parent directory
-    assetsManager.Rename(toRename, toRename.parent_path() / input);
+    assetsManager.Rename(toRename, toRename.parent_path() / (input + toRename.extension().string()));
 }
 
 void AssetsBrowser::onCreateFolder(std::string input) {
@@ -163,18 +188,44 @@ void AssetsBrowser::DrawAssetItem(
     fs::path itemPath
 )
 {
+    bool openDirectory = false;
+    ImGui::BeginGroup(); // makes image + text behave as one item
 
-    ImGui::BeginGroup(); // ⬅ makes image + text behave as one item
+    bool isActive = (selectedItem == itemPath);
+    
+    // Active style
+    if (isActive) {
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.18f, 0.18f, 0.18f, 1.00f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.18f, 0.18f, 0.18f, 1.00f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.16f, 0.16f, 0.16f, 1.00f));
+    } else {
+        // Transparent style you already use
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.00f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered , ImVec4(0.18f, 0.18f, 0.18f, 1.00f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.16f, 0.16f, 0.16f, 1.00f));
+    }
 
-    // Image button
-    if (ImGui::ImageButton(
+    bool clicked = ImGui::ImageButton(
         label,          // unique ID
         icon,
-        iconSize, {0,0}, {1,1}
-    ))
+        iconSize, {0,0}, {1,1}, ImVec4(0, 0, 0, 0)
+    );
+
+    ImGui::PopStyleColor(3);
+
+    if (clicked)
     {
-        if(selectedItem == itemPath) {
-            currentPath = selectedItem;
+        if (isActive) {
+            if (fs::is_directory(selectedItem)) {
+                openDirectory = true;
+            }
+            std::string extention = selectedItem.extension().string();
+            
+            if (extention == ".scene") {
+                onOpenScene(selectedItem);
+            } else if (extention == ".mat") {
+                // future implmentation
+            }
         } else {
             selectedItem = itemPath;
         }
@@ -213,9 +264,13 @@ void AssetsBrowser::DrawAssetItem(
 
     ImGui::EndGroup();
 
+    if (openDirectory) {
+        currentPath = selectedItem;
+    }
+
 }
 
-void AssetsBrowser::ShowTextInputDialoge(const char* title, const char* defaultValue = "enter text", bool isActive, std::function<void(std::string)> onOk) {
+void AssetsBrowser::ShowTextInputDialoge(const char* title, const char* defaultValue, bool& isActive, std::function<void(std::string)> onOk) {
     ImGui::SetNextWindowFocus();
     ImGui::SetNextWindowSize(ImVec2(300, 200), ImGuiCond_Always);
     ImGui::SetNextWindowPos(
@@ -236,6 +291,7 @@ void AssetsBrowser::ShowTextInputDialoge(const char* title, const char* defaultV
     ImGui::InputText("New Name", inputBuffer, sizeof(inputBuffer));
 
     if (ImGui::Button("OK")) {
+        LOG::Info("OK pressed");
         onOk(inputBuffer);
         isActive = false;
         inputBuffer[0] = '\0'; // reset buffer for next open
@@ -244,6 +300,7 @@ void AssetsBrowser::ShowTextInputDialoge(const char* title, const char* defaultV
     ImGui::SameLine();
     
     if (ImGui::Button("Cancel")) {
+        LOG::Info("Cancel pressed");
         isActive = false;
         inputBuffer[0] = '\0'; // reset buffer on cancel
     }

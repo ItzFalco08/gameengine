@@ -13,9 +13,9 @@
 
 #include "core/GameObject.hpp"
 
-void drawGraphics();
 void drawImgui();
-void test();
+void Update();
+void Start();
 
 int main() {
     glfwSetErrorCallback(Utils::GLFWErrorCallback);
@@ -49,7 +49,7 @@ int main() {
     // Initialize panel icons after GL is ready
     panels::assetsBrowserPanel.InitIcons();
 
-    test();
+    Start();
 
     while(!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -59,8 +59,7 @@ int main() {
         glViewport(0, 0, sceneView.SCENEVIEW_WIDTH, sceneView.SCENEVIEW_HEIGHT);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-        drawGraphics();
-        
+        Update();
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         drawImgui();
@@ -75,13 +74,11 @@ int main() {
     return 0;
 }
 
-void test() {
-    editorScene->AddGameObject();
-    editorScene->sceneFilePath = "../Assets/DefaultScene.json";
-    editorScene->Serialize();
+void Start() {
+  
 }
 
-void drawGraphics() {
+void Update() {
 
 }
 

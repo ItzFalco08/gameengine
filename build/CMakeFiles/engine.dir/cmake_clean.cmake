@@ -19,6 +19,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/engine.dir/src/gl.c.obj.d"
   "CMakeFiles/engine.dir/src/gui/AssetsBrowserPanel.cpp.obj"
   "CMakeFiles/engine.dir/src/gui/AssetsBrowserPanel.cpp.obj.d"
+  "CMakeFiles/engine.dir/src/gui/HeriarchyPanel.cpp.obj"
+  "CMakeFiles/engine.dir/src/gui/HeriarchyPanel.cpp.obj.d"
   "CMakeFiles/engine.dir/src/gui/ScenePanel.cpp.obj"
   "CMakeFiles/engine.dir/src/gui/ScenePanel.cpp.obj.d"
   "CMakeFiles/engine.dir/src/main.cpp.obj"

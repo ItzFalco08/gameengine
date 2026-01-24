@@ -177,6 +177,20 @@ CMakeFiles/engine.dir/src/gui/AssetsBrowserPanel.cpp.obj: \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/stl_uninitialized.h \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/fs_dir.h \
  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/fs_ops.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/functional \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/std_function.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/unordered_map \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/unordered_map.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/hashtable.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/hashtable_policy.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/enable_special_members.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/node_handle.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/erase_if.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/vector \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/stl_vector.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/stl_bvector.h \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/vector.tcc \
+ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/array \
  C:/Users/pc/Desktop/gameengine/src/core/Texture.hpp \
  C:/Users/pc/Desktop/gameengine/includes/GLAD/gl.h \
  C:/Users/pc/Desktop/gameengine/includes/KHR/khrplatform.h \
@@ -229,20 +243,6 @@ CMakeFiles/engine.dir/src/gui/AssetsBrowserPanel.cpp.obj: \
  C:/Users/pc/Desktop/gameengine/includes/glm/detail/type_vec3.hpp \
  C:/Users/pc/Desktop/gameengine/includes/glm/detail/type_vec3.inl \
  C:/Users/pc/Desktop/gameengine/includes/glm/detail/compute_vector_decl.hpp \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/functional \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/std_function.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/unordered_map \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/unordered_map.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/hashtable.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/hashtable_policy.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/enable_special_members.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/node_handle.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/erase_if.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/vector \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/stl_vector.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/stl_bvector.h \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/vector.tcc \
- C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/array \
  C:/Users/pc/Desktop/gameengine/includes/glm/detail/_vectorize.hpp \
  C:/Users/pc/Desktop/gameengine/includes/glm/ext/vector_bool3_precision.hpp \
  C:/Users/pc/Desktop/gameengine/includes/glm/ext/vector_float3.hpp \

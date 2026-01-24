@@ -42,8 +42,10 @@ struct Scene { // used single instance of Scene for the GameEngine Editor
 
     // J S O N -> S C E N E
     void Deserialize(std::string scenePath) { // Load Scene from json (used from runtime game script)
+        gameObjects.clear();
         sceneFilePath = scenePath;
         std::ifstream file(sceneFilePath);
+
         if(!file.is_open()) {
             LOG::Error("Failed to Load scene: ", sceneFilePath);
             return;
@@ -56,7 +58,6 @@ struct Scene { // used single instance of Scene for the GameEngine Editor
 
         // extract gameObjects
         auto& gameObjectsArray = sceneJson.at("gameObjects");
-        gameObjects.clear();
 
         for(auto& gameObjectJson : gameObjectsArray) {
             std::unique_ptr<GameObject> gameObject = std::make_unique<GameObject>(this);

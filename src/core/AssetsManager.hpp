@@ -16,4 +16,5 @@ public:
     static void CreateFile(const fs::path& path);
     static void Rename(const fs::path& from, const fs::path& to);
     static void Delete(const fs::path& path);
+    static void CreateScene(fs::path dir, std::string sceneName);
 };

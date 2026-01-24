@@ -1,5 +1,7 @@
 #include "AssetsManager.hpp"
 #include "../utils/Logger.hpp"
+#include "json/json.hpp"
+#include <fstream>
 
 std::vector<AssetItem> AssetsManager::List(const fs::path& directory) {
     if (!fs::exists(directory) || !fs::is_directory(directory))
@@ -50,4 +52,13 @@ void AssetsManager::Delete(const fs::path& path) {
     if(ec) {
         LOG::Error("Error While Deleting: ", path.filename().string());
     }
+};
+
+void AssetsManager::CreateScene(fs::path dir, std::string sceneName) {
+    std::ofstream sceneFile(dir/ (sceneName + ".scene") );
+    nlohmann::json defaultSceneJson;
+    defaultSceneJson["sceneName"] = sceneName;
+    defaultSceneJson["gameObjects"] = nlohmann::json::array();
+    sceneFile << defaultSceneJson;
+    
 };
