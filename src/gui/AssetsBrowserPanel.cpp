@@ -121,7 +121,7 @@ void AssetsBrowser::Render() {
 
         // rename panel
         if(isRenamePanelActive) {
-            ShowTextInputDialoge(
+            Utils::GUI::ShowTextInputDialoge(
                 "Rename File",
                 toRename.stem().string().c_str(),
                 isRenamePanelActive,
@@ -130,7 +130,7 @@ void AssetsBrowser::Render() {
         };
 
         if(isCreateFolderPanelActive) {
-            ShowTextInputDialoge(
+            Utils::GUI::ShowTextInputDialoge(
                 "Create Folder",
                 "NewFolder",
                 isCreateFolderPanelActive,
@@ -139,7 +139,7 @@ void AssetsBrowser::Render() {
         };
 
         if(isCreateScenePanelActive) {
-            ShowTextInputDialoge(
+            Utils::GUI::ShowTextInputDialoge(
                 "Create Scene",
                 "NewScene",
                 isCreateScenePanelActive,
@@ -272,43 +272,7 @@ void AssetsBrowser::DrawAssetItem(
 
 }
 
-void AssetsBrowser::ShowTextInputDialoge(const char* title, const char* defaultValue, bool& isActive, std::function<void(std::string)> onOk) {
-    ImGui::SetNextWindowFocus();
-    ImGui::SetNextWindowSize(ImVec2(300, 200), ImGuiCond_Always);
-    ImGui::SetNextWindowPos(
-        ImGui::GetMainViewport()->GetCenter(),
-        ImGuiCond_Always,
-        ImVec2(0.5f, 0.5f)
-    );
-    ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoMove;
-    ImGui::Begin(title, nullptr, flags);
 
-    // Persist what the user types; only seed the buffer the first time (or after manual clear)
-    static char inputBuffer[256] = {0};
-    if (inputBuffer[0] == '\0') {
-        strncpy(inputBuffer, defaultValue, sizeof(inputBuffer) - 1);
-        inputBuffer[sizeof(inputBuffer) - 1] = '\0';
-    }
-    
-    ImGui::InputText("New Name", inputBuffer, sizeof(inputBuffer));
-
-    if (ImGui::Button("OK")) {
-        LOG::Info("OK pressed");
-        onOk(inputBuffer);
-        isActive = false;
-        inputBuffer[0] = '\0'; // reset buffer for next open
-    }
-
-    ImGui::SameLine();
-    
-    if (ImGui::Button("Cancel")) {
-        LOG::Info("Cancel pressed");
-        isActive = false;
-        inputBuffer[0] = '\0'; // reset buffer on cancel
-    }
-
-    ImGui::End();
-}
 
 void AssetsBrowser::ShowOpenWithDialog(std::string filePath)
 {

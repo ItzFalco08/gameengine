@@ -3,12 +3,14 @@
 #include "json/json.hpp"
 #include <fstream>
 
-struct Scene { // used single instance of Scene for the GameEngine Editor
+class Scene { // used single instance of Scene for the GameEngine Editor
+public:
+    std::vector<std::unique_ptr<GameObject>> gameObjects;
+    std::vector<GameObject*> roots; 
     std::string sceneName;
     std::string sceneFilePath;
-    std::vector<std::unique_ptr<GameObject>> gameObjects;
     bool dirty = false; // Used for Editor (keeps track for changes)
-
+    
     // S C E N E -> J S O N
     void Serialize() { // Save Scene ( Only Used for Editor to change scene.json )
         if (!dirty) { LOG::Error("No Changes are Made yet"); return; }
@@ -60,7 +62,7 @@ struct Scene { // used single instance of Scene for the GameEngine Editor
         auto& gameObjectsArray = sceneJson.at("gameObjects");
 
         for(auto& gameObjectJson : gameObjectsArray) {
-            std::unique_ptr<GameObject> gameObject = std::make_unique<GameObject>(this);
+            std::unique_ptr<GameObject> gameObject = std::make_unique<GameObject>(this, gameObjectJson.at("name"));
             
             gameObject->Deserialize(gameObjectJson);
 
@@ -68,10 +70,16 @@ struct Scene { // used single instance of Scene for the GameEngine Editor
         }
     }
 
-    void AddGameObject() {
-        gameObjects.push_back(std::make_unique<GameObject>(this));
+    GameObject* AddGameObject(const std::string& goName) {
+        auto newGo = std::make_unique<GameObject>(this, goName);
+        GameObject* ptr = newGo.get();                          
+        
+        gameObjects.push_back(std::move(newGo));                 // Move ownership to vector
+        
         dirty = true;
+        return ptr;
     }; 
+
     void RemoveGameObject() {
         dirty = true;
         // future implementation
@@ -81,4 +89,11 @@ struct Scene { // used single instance of Scene for the GameEngine Editor
     void MakeDirty() {
         dirty = true;
     }
+
+    const char* GetNameString() {
+        static std::string nameStr;
+        nameStr = sceneName + (dirty ? "*" : "");
+        return nameStr.c_str();
+    };
+
 };

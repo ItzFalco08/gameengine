@@ -8,7 +8,7 @@
 
 void SetEditorStyle();
 
-void Utils::initImGui(GLFWwindow* window) {
+void Utils::GUI::initImGui(GLFWwindow* window) {
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags  |= ImGuiConfigFlags_NavEnableKeyboard;
@@ -214,7 +214,7 @@ void Utils::loadObj(std::vector<Vertex>& vertices, const char* objPath) {
 }
 
 
-void SetEditorStyle()
+void modernDark()
 {
     ImGuiStyle& style = ImGui::GetStyle();
     ImVec4* c = style.Colors;
@@ -263,12 +263,57 @@ void SetEditorStyle()
     // Tabs
     c[ImGuiCol_Tab]                  = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
     c[ImGuiCol_TabHovered]           = ImVec4(0.23f, 0.23f, 0.23f, 1.00f);
-    c[ImGuiCol_TabActive]            = ImVec4(0.17f, 0.17f, 0.17f, 1.00f);
+    c[ImGuiCol_TabActive]            = ImVec4(0.12f, 0.12f, 0.12f, 1.00f);
 
     // Style
     style.WindowRounding = 2.0f;
     style.FrameRounding  = 3.0f;
     style.ScrollbarRounding = 5.0f;
     style.GrabRounding   = 3.0f;
+    style.TabRounding       = 0.0f;
 }
 
+void SetEditorStyle()
+{
+    modernDark();
+}
+
+// G U I 
+
+void Utils::GUI::ShowTextInputDialoge(const char* title, const char* defaultValue, bool& isActive, std::function<void(std::string)> onOk /* takes both lambda and func ptr */) {
+    ImGui::SetNextWindowFocus();
+    ImGui::SetNextWindowSize(ImVec2(300, 200), ImGuiCond_Always);
+    ImGui::SetNextWindowPos(
+        ImGui::GetMainViewport()->GetCenter(),
+        ImGuiCond_Always,
+        ImVec2(0.5f, 0.5f)
+    );
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoMove;
+    ImGui::Begin(title, nullptr, flags);
+
+    // Persist what the user types; only seed the buffer the first time (or after manual clear)
+    static char inputBuffer[256] = {0};
+    if (inputBuffer[0] == '\0') {
+        strncpy(inputBuffer, defaultValue, sizeof(inputBuffer) - 1);
+        inputBuffer[sizeof(inputBuffer) - 1] = '\0';
+    }
+    
+    ImGui::InputText("Enter Text", inputBuffer, sizeof(inputBuffer));
+
+    if (ImGui::Button("OK")) {
+        LOG::Info("OK pressed");
+        onOk(inputBuffer);
+        isActive = false;
+        inputBuffer[0] = '\0'; // reset buffer for next open
+    }
+
+    ImGui::SameLine();
+    
+    if (ImGui::Button("Cancel")) {
+        LOG::Info("Cancel pressed");
+        isActive = false;
+        inputBuffer[0] = '\0'; // reset buffer on cancel
+    }
+
+    ImGui::End();
+}

@@ -10,6 +10,8 @@ Shader unlitShader;
 Scene* editorScene = new Scene();
 AssetsManager assetsManager;
 
+GameObject* selectedGameObject;
+
 namespace panels {
 	ScenePanel scenePanel;
 	AssetsBrowser assetsBrowserPanel;

@@ -26,6 +26,8 @@ extern Shader unlitShader;
 extern AssetsManager assetsManager;
 extern Scene* editorScene;
 
+extern GameObject* selectedGameObject; 
+
 namespace panels {
     extern ScenePanel scenePanel;
     extern AssetsBrowser assetsBrowserPanel;

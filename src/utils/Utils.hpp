@@ -14,9 +14,13 @@ struct Vertex {
 };
 
 namespace Utils {
-    void initImGui(GLFWwindow* window);
     void GLFWErrorCallback(int errorCode, const char* message);
     void genSceneFramebuffers();
     void updateFBODimensions();
     void loadObj(std::vector<Vertex>& vertices, const char* objPath);
+
+    namespace GUI {
+        void initImGui(GLFWwindow* window);
+        void ShowTextInputDialoge(const char* title, const char* defaultValue, bool& isActive,  std::function<void(std::string)> onOk);
+    }
 }

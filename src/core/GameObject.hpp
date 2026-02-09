@@ -18,14 +18,16 @@ extern std::unordered_map<std::string, std::function<std::unique_ptr<Component>(
 
 class GameObject {
 public:
-    std::string name = "GameObject";
+    std::string name;
     std::unique_ptr<Transform> transform;
     std::vector<std::unique_ptr<Component>> components;
     Scene* parentScene;
+    std::vector<GameObject*> childs;
 
-    GameObject(Scene* parentScene) 
+    GameObject(Scene* parentScene, const std::string& goName) 
     : transform(std::make_unique<Transform>())
-    , parentScene(parentScene) 
+    , parentScene(parentScene)
+    , name(goName)
     {
         components.reserve(4);
     }
