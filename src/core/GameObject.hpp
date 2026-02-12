@@ -15,7 +15,6 @@ class Scene; // forward declaration
 
 // Factory map defined in a .cpp to avoid include cycles
 extern std::unordered_map<std::string, std::function<std::unique_ptr<Component>()>> TypeToComponent;
-
 class GameObject {
 public:
     std::string name;
@@ -32,6 +31,10 @@ public:
         components.reserve(4);
     }
 
+    ~GameObject() {
+        LOG::Debug("GameObject Deleted: ", name);
+    }
+    
     template<typename T, typename... Args>
     void AddComponent(Args&&... args) {
         static_assert(std::is_base_of_v<Component, T>, "T must derive from Component");

@@ -27,6 +27,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/engine.dir/src/gui/ScenePanel.cpp.obj.d"
   "CMakeFiles/engine.dir/src/main.cpp.obj"
   "CMakeFiles/engine.dir/src/main.cpp.obj.d"
+  "CMakeFiles/engine.dir/src/utils/KeyManager.cpp.obj"
+  "CMakeFiles/engine.dir/src/utils/KeyManager.cpp.obj.d"
   "CMakeFiles/engine.dir/src/utils/Shader.cpp.obj"
   "CMakeFiles/engine.dir/src/utils/Shader.cpp.obj.d"
   "CMakeFiles/engine.dir/src/utils/Utils.cpp.obj"

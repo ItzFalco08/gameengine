@@ -12,9 +12,10 @@ private:
     // P A N E L S
     void CreateGameObjectPanel();
     bool showCreateGameObjPanel = false;
+    bool showRenamePanel = false;
 
     void HandleAddGameObject(std::string gameObjectName);
     void RenderHeriarchy(std::vector<GameObject*>& roots);
     void RenameSelected(const char* newName);
-    void DeleteSelected();
+    void DeleteSelected(std::vector<GameObject*>& roots);
 };

@@ -668,4 +668,5 @@ CMakeFiles/engine.dir/src/main.cpp.obj: \
  C:/Users/pc/Desktop/gameengine/src/gui/AssetsBrowserPanel.hpp \
  C:/Users/pc/Desktop/gameengine/src/core/Texture.hpp \
  C:/Users/pc/Desktop/gameengine/src/gui/HeriarchyPanel.hpp \
- C:/Users/pc/Desktop/gameengine/src/gui/InspectorPanel.hpp
+ C:/Users/pc/Desktop/gameengine/src/gui/InspectorPanel.hpp \
+ C:\Users\pc\Desktop\gameengine\src\utils/KeyManager.hpp

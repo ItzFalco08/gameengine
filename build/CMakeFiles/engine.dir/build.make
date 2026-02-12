@@ -281,11 +281,26 @@ CMakeFiles/engine.dir/src/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/engine.dir/src/main.cpp.s"
 	C:\w64devkit\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\pc\Desktop\gameengine\src\main.cpp -o CMakeFiles\engine.dir\src\main.cpp.s
 
+CMakeFiles/engine.dir/src/utils/KeyManager.cpp.obj: CMakeFiles/engine.dir/flags.make
+CMakeFiles/engine.dir/src/utils/KeyManager.cpp.obj: CMakeFiles/engine.dir/includes_CXX.rsp
+CMakeFiles/engine.dir/src/utils/KeyManager.cpp.obj: C:/Users/pc/Desktop/gameengine/src/utils/KeyManager.cpp
+CMakeFiles/engine.dir/src/utils/KeyManager.cpp.obj: CMakeFiles/engine.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\pc\Desktop\gameengine\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/engine.dir/src/utils/KeyManager.cpp.obj"
+	C:\w64devkit\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/engine.dir/src/utils/KeyManager.cpp.obj -MF CMakeFiles\engine.dir\src\utils\KeyManager.cpp.obj.d -o CMakeFiles\engine.dir\src\utils\KeyManager.cpp.obj -c C:\Users\pc\Desktop\gameengine\src\utils\KeyManager.cpp
+
+CMakeFiles/engine.dir/src/utils/KeyManager.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/engine.dir/src/utils/KeyManager.cpp.i"
+	C:\w64devkit\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\pc\Desktop\gameengine\src\utils\KeyManager.cpp > CMakeFiles\engine.dir\src\utils\KeyManager.cpp.i
+
+CMakeFiles/engine.dir/src/utils/KeyManager.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/engine.dir/src/utils/KeyManager.cpp.s"
+	C:\w64devkit\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\pc\Desktop\gameengine\src\utils\KeyManager.cpp -o CMakeFiles\engine.dir\src\utils\KeyManager.cpp.s
+
 CMakeFiles/engine.dir/src/utils/Shader.cpp.obj: CMakeFiles/engine.dir/flags.make
 CMakeFiles/engine.dir/src/utils/Shader.cpp.obj: CMakeFiles/engine.dir/includes_CXX.rsp
 CMakeFiles/engine.dir/src/utils/Shader.cpp.obj: C:/Users/pc/Desktop/gameengine/src/utils/Shader.cpp
 CMakeFiles/engine.dir/src/utils/Shader.cpp.obj: CMakeFiles/engine.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\pc\Desktop\gameengine\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/engine.dir/src/utils/Shader.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\pc\Desktop\gameengine\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/engine.dir/src/utils/Shader.cpp.obj"
 	C:\w64devkit\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/engine.dir/src/utils/Shader.cpp.obj -MF CMakeFiles\engine.dir\src\utils\Shader.cpp.obj.d -o CMakeFiles\engine.dir\src\utils\Shader.cpp.obj -c C:\Users\pc\Desktop\gameengine\src\utils\Shader.cpp
 
 CMakeFiles/engine.dir/src/utils/Shader.cpp.i: cmake_force
@@ -300,7 +315,7 @@ CMakeFiles/engine.dir/src/utils/Utils.cpp.obj: CMakeFiles/engine.dir/flags.make
 CMakeFiles/engine.dir/src/utils/Utils.cpp.obj: CMakeFiles/engine.dir/includes_CXX.rsp
 CMakeFiles/engine.dir/src/utils/Utils.cpp.obj: C:/Users/pc/Desktop/gameengine/src/utils/Utils.cpp
 CMakeFiles/engine.dir/src/utils/Utils.cpp.obj: CMakeFiles/engine.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\pc\Desktop\gameengine\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/engine.dir/src/utils/Utils.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\pc\Desktop\gameengine\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/engine.dir/src/utils/Utils.cpp.obj"
 	C:\w64devkit\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/engine.dir/src/utils/Utils.cpp.obj -MF CMakeFiles\engine.dir\src\utils\Utils.cpp.obj.d -o CMakeFiles\engine.dir\src\utils\Utils.cpp.obj -c C:\Users\pc\Desktop\gameengine\src\utils\Utils.cpp
 
 CMakeFiles/engine.dir/src/utils/Utils.cpp.i: cmake_force
@@ -315,7 +330,7 @@ CMakeFiles/engine.dir/src/utils/WinMsg.cpp.obj: CMakeFiles/engine.dir/flags.make
 CMakeFiles/engine.dir/src/utils/WinMsg.cpp.obj: CMakeFiles/engine.dir/includes_CXX.rsp
 CMakeFiles/engine.dir/src/utils/WinMsg.cpp.obj: C:/Users/pc/Desktop/gameengine/src/utils/WinMsg.cpp
 CMakeFiles/engine.dir/src/utils/WinMsg.cpp.obj: CMakeFiles/engine.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\pc\Desktop\gameengine\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/engine.dir/src/utils/WinMsg.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\pc\Desktop\gameengine\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/engine.dir/src/utils/WinMsg.cpp.obj"
 	C:\w64devkit\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/engine.dir/src/utils/WinMsg.cpp.obj -MF CMakeFiles\engine.dir\src\utils\WinMsg.cpp.obj.d -o CMakeFiles\engine.dir\src\utils\WinMsg.cpp.obj -c C:\Users\pc\Desktop\gameengine\src\utils\WinMsg.cpp
 
 CMakeFiles/engine.dir/src/utils/WinMsg.cpp.i: cmake_force
@@ -330,7 +345,7 @@ CMakeFiles/engine.dir/src/utils/globals.cpp.obj: CMakeFiles/engine.dir/flags.mak
 CMakeFiles/engine.dir/src/utils/globals.cpp.obj: CMakeFiles/engine.dir/includes_CXX.rsp
 CMakeFiles/engine.dir/src/utils/globals.cpp.obj: C:/Users/pc/Desktop/gameengine/src/utils/globals.cpp
 CMakeFiles/engine.dir/src/utils/globals.cpp.obj: CMakeFiles/engine.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\pc\Desktop\gameengine\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/engine.dir/src/utils/globals.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\pc\Desktop\gameengine\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/engine.dir/src/utils/globals.cpp.obj"
 	C:\w64devkit\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/engine.dir/src/utils/globals.cpp.obj -MF CMakeFiles\engine.dir\src\utils\globals.cpp.obj.d -o CMakeFiles\engine.dir\src\utils\globals.cpp.obj -c C:\Users\pc\Desktop\gameengine\src\utils\globals.cpp
 
 CMakeFiles/engine.dir/src/utils/globals.cpp.i: cmake_force
@@ -357,6 +372,7 @@ engine_OBJECTS = \
 "CMakeFiles/engine.dir/src/gui/InspectorPanel.cpp.obj" \
 "CMakeFiles/engine.dir/src/gui/ScenePanel.cpp.obj" \
 "CMakeFiles/engine.dir/src/main.cpp.obj" \
+"CMakeFiles/engine.dir/src/utils/KeyManager.cpp.obj" \
 "CMakeFiles/engine.dir/src/utils/Shader.cpp.obj" \
 "CMakeFiles/engine.dir/src/utils/Utils.cpp.obj" \
 "CMakeFiles/engine.dir/src/utils/WinMsg.cpp.obj" \
@@ -379,6 +395,7 @@ engine.exe: CMakeFiles/engine.dir/src/gui/HeriarchyPanel.cpp.obj
 engine.exe: CMakeFiles/engine.dir/src/gui/InspectorPanel.cpp.obj
 engine.exe: CMakeFiles/engine.dir/src/gui/ScenePanel.cpp.obj
 engine.exe: CMakeFiles/engine.dir/src/main.cpp.obj
+engine.exe: CMakeFiles/engine.dir/src/utils/KeyManager.cpp.obj
 engine.exe: CMakeFiles/engine.dir/src/utils/Shader.cpp.obj
 engine.exe: CMakeFiles/engine.dir/src/utils/Utils.cpp.obj
 engine.exe: CMakeFiles/engine.dir/src/utils/WinMsg.cpp.obj
@@ -388,7 +405,7 @@ engine.exe: libimgui.a
 engine.exe: CMakeFiles/engine.dir/linkLibs.rsp
 engine.exe: CMakeFiles/engine.dir/objects1.rsp
 engine.exe: CMakeFiles/engine.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=C:\Users\pc\Desktop\gameengine\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Linking CXX executable engine.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=C:\Users\pc\Desktop\gameengine\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Linking CXX executable engine.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\engine.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

@@ -14,7 +14,7 @@
 #include "gui/ScenePanel.hpp"
 #include "gui/AssetsBrowserPanel.hpp"
 #include "windows.h"
-
+#include "utils/KeyManager.hpp"
 #include "core/GameObject.hpp"
 
 void drawImgui();
@@ -58,6 +58,8 @@ int main() {
     panels::assetsBrowserPanel.InitIcons();
 
     Start();
+
+    glfwSetKeyCallback(window, keyCallback);
 
     while(!glfwWindowShouldClose(window)) {
         glfwPollEvents();

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#define _DEBUG
 
 namespace Color {
     // Reset

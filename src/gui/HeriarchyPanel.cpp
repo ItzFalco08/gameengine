@@ -3,20 +3,46 @@
 extern Scene* editorScene;
 extern GameObject* selectedGameObject;
 
-void HeriarchyPanel::DeleteSelected() {
+
+void HeriarchyPanel::DeleteSelected(std::vector<GameObject*>& roots) {
     if(!selectedGameObject) return;
 
-    for(auto& itr = editorScene->gameObjects.begin(); itr != editorScene->gameObjects.end(); itr++) {
-        if((*itr).get() == selectedGameObject) {
-            editorScene->gameObjects.erase(itr);
+    // delete child from tree node
+    for (auto itr = roots.begin(); itr != roots.end(); itr++) {
+        if (selectedGameObject == *itr) {
+            (*itr) = roots.back();
+            roots.pop_back();
+            break;
         }
-        break;
+    }
+
+
+    // delete from memory
+    std::cout << " GAY" << std::endl;
+    for(auto itr = editorScene->gameObjects.begin(); itr != editorScene->gameObjects.end(); itr++) {
+        if((*itr).get() == selectedGameObject) {
+            *itr = std::move(editorScene->gameObjects.back());
+            editorScene->gameObjects.pop_back();
+            editorScene->MakeDirty();
+            selectedGameObject = nullptr;
+            break;
+        }
     }
 }
 
+void PrintGameObjects() {
+    std::cout << "[ ";
+    for (auto itr = editorScene->gameObjects.begin(); itr != editorScene->gameObjects.end(); itr++) {
+        std::cout << (*itr)->name << ", ";
+    }
+    std::cout << " ]" << std::endl;
+}
 
 void HeriarchyPanel::RenameSelected(const char* newName) {
-    
+    if(!selectedGameObject) return;
+
+    selectedGameObject->name = newName;
+    editorScene->MakeDirty();
 }
 
 void HeriarchyPanel::RenderHeriarchy(std::vector<GameObject*>& roots) {
@@ -39,9 +65,16 @@ void HeriarchyPanel::RenderHeriarchy(std::vector<GameObject*>& roots) {
 
         // right click
         if (ImGui::BeginPopupContextItem()) {
+            selectedGameObject = gameObject;
+
             if(ImGui::MenuItem("Rename")) {
+                showRenamePanel = true;
+            }
+            if(ImGui::MenuItem("Delete")) {
+                PrintGameObjects();
+                DeleteSelected(roots);
+                PrintGameObjects();
             } 
-            ImGui::MenuItem("Delete"); 
 
             ImGui::EndPopup();
         }
@@ -53,6 +86,12 @@ void HeriarchyPanel::RenderHeriarchy(std::vector<GameObject*>& roots) {
             ImGui::TreePop();
         };
     };
+
+    if (showRenamePanel) {
+        Utils::GUI::ShowTextInputDialoge("Rename GameObject", "NewName", showRenamePanel, [this](std::string input) {
+            RenameSelected(input.c_str());
+        });
+    }
 }
 
 void HeriarchyPanel::Render() {
