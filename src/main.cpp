@@ -14,7 +14,6 @@
 #include "gui/ScenePanel.hpp"
 #include "gui/AssetsBrowserPanel.hpp"
 #include "windows.h"
-#include "utils/KeyManager.hpp"
 #include "core/GameObject.hpp"
 
 void drawImgui();
@@ -59,7 +58,9 @@ int main() {
 
     Start();
 
-    glfwSetKeyCallback(window, keyCallback);
+    glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+        inputManager.inputCallback(window, key, scancode, action, mods);
+    });
 
     while(!glfwWindowShouldClose(window)) {
         glfwPollEvents();

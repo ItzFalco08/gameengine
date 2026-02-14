@@ -7,6 +7,7 @@
 #include "../gui/AssetsBrowserPanel.hpp"
 #include "../gui/HeriarchyPanel.hpp"
 #include "../gui/InspectorPanel.hpp"
+#include "InputManager.hpp"
 
 // Forward declarations to avoid circular includes
 class ScenePanel;
@@ -25,6 +26,7 @@ extern Shader litShader;
 extern Shader unlitShader;
 extern AssetsManager assetsManager;
 extern Scene* editorScene;
+extern InputManager inputManager;
 
 extern GameObject* selectedGameObject; 
 
