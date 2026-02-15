@@ -466,6 +466,7 @@ CMakeFiles/engine.dir/src/gui/AssetsBrowserPanel.cpp.obj: \
  C:/Users/pc/Desktop/gameengine/includes/GLFW/glfw3.h \
  C:/Users/pc/Desktop/gameengine/src/gui/HeriarchyPanel.hpp \
  C:/Users/pc/Desktop/gameengine/src/gui/InspectorPanel.hpp \
+ C:/Users/pc/Desktop/gameengine/src/utils/InputManager.hpp \
  C:/w64devkit/include/windows.h C:/w64devkit/include/sdkddkver.h \
  C:/w64devkit/include/excpt.h C:/w64devkit/include/windef.h \
  C:/w64devkit/include/winapifamily.h C:/w64devkit/include/minwindef.h \

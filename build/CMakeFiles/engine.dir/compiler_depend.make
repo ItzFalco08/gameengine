@@ -474,6 +474,7 @@ CMakeFiles/engine.dir/src/core/ComponentFactory.cpp.obj: C:/Users/pc/Desktop/gam
   C:/Users/pc/Desktop/gameengine/src/gui/HeriarchyPanel.hpp \
   C:/Users/pc/Desktop/gameengine/src/gui/InspectorPanel.hpp \
   C:/Users/pc/Desktop/gameengine/src/gui/ScenePanel.hpp \
+  C:/Users/pc/Desktop/gameengine/src/utils/InputManager.hpp \
   C:/Users/pc/Desktop/gameengine/src/utils/Logger.hpp \
   C:/Users/pc/Desktop/gameengine/src/utils/Shader.hpp \
   C:/Users/pc/Desktop/gameengine/src/utils/Utils.hpp \
@@ -1564,6 +1565,7 @@ CMakeFiles/engine.dir/src/core/components/Material.cpp.obj: C:/Users/pc/Desktop/
   C:/Users/pc/Desktop/gameengine/src/gui/HeriarchyPanel.hpp \
   C:/Users/pc/Desktop/gameengine/src/gui/InspectorPanel.hpp \
   C:/Users/pc/Desktop/gameengine/src/gui/ScenePanel.hpp \
+  C:/Users/pc/Desktop/gameengine/src/utils/InputManager.hpp \
   C:/Users/pc/Desktop/gameengine/src/utils/Logger.hpp \
   C:/Users/pc/Desktop/gameengine/src/utils/Shader.hpp \
   C:/Users/pc/Desktop/gameengine/src/utils/Utils.hpp \
@@ -2955,6 +2957,7 @@ CMakeFiles/engine.dir/src/gui/AssetsBrowserPanel.cpp.obj: C:/Users/pc/Desktop/ga
   C:/Users/pc/Desktop/gameengine/src/gui/HeriarchyPanel.hpp \
   C:/Users/pc/Desktop/gameengine/src/gui/InspectorPanel.hpp \
   C:/Users/pc/Desktop/gameengine/src/gui/ScenePanel.hpp \
+  C:/Users/pc/Desktop/gameengine/src/utils/InputManager.hpp \
   C:/Users/pc/Desktop/gameengine/src/utils/Logger.hpp \
   C:/Users/pc/Desktop/gameengine/src/utils/Shader.hpp \
   C:/Users/pc/Desktop/gameengine/src/utils/Utils.hpp \
@@ -3517,6 +3520,7 @@ CMakeFiles/engine.dir/src/gui/HeriarchyPanel.cpp.obj: C:/Users/pc/Desktop/gameen
   C:/Users/pc/Desktop/gameengine/includes/GLFW/glfw3.h \
   C:/Users/pc/Desktop/gameengine/includes/KHR/khrplatform.h \
   C:/Users/pc/Desktop/gameengine/includes/glad/gl.h \
+  C:/Users/pc/Desktop/gameengine/includes/glfw/glfw3.h \
   C:/Users/pc/Desktop/gameengine/includes/glm/common.hpp \
   C:/Users/pc/Desktop/gameengine/includes/glm/detail/_fixes.hpp \
   C:/Users/pc/Desktop/gameengine/includes/glm/detail/_vectorize.hpp \
@@ -3703,6 +3707,7 @@ CMakeFiles/engine.dir/src/gui/HeriarchyPanel.cpp.obj: C:/Users/pc/Desktop/gameen
   C:/Users/pc/Desktop/gameengine/src/core/Scene.hpp \
   C:/Users/pc/Desktop/gameengine/src/core/components/Component.hpp \
   C:/Users/pc/Desktop/gameengine/src/core/components/Transform.hpp \
+  C:/Users/pc/Desktop/gameengine/src/utils/InputManager.hpp \
   C:/Users/pc/Desktop/gameengine/src/utils/Logger.hpp \
   C:/Users/pc/Desktop/gameengine/src/utils/Utils.hpp \
   C:/w64devkit/include/_mingw.h \
@@ -4185,6 +4190,7 @@ CMakeFiles/engine.dir/src/gui/ScenePanel.cpp.obj: C:/Users/pc/Desktop/gameengine
   C:/Users/pc/Desktop/gameengine/src/gui/AssetsBrowserPanel.hpp \
   C:/Users/pc/Desktop/gameengine/src/gui/HeriarchyPanel.hpp \
   C:/Users/pc/Desktop/gameengine/src/gui/InspectorPanel.hpp \
+  C:/Users/pc/Desktop/gameengine/src/utils/InputManager.hpp \
   C:/Users/pc/Desktop/gameengine/src/utils/Logger.hpp \
   C:/Users/pc/Desktop/gameengine/src/utils/Shader.hpp \
   C:/Users/pc/Desktop/gameengine/src/utils/Utils.hpp \
@@ -5205,13 +5211,14 @@ CMakeFiles/engine.dir/src/main.cpp.obj: C:/Users/pc/Desktop/gameengine/src/main.
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/xsaveoptintrin.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/xsavesintrin.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/xtestintrin.h \
+  C:/Users/pc/Desktop/gameengine/src/utils/InputManager.hpp \
   C:/Users/pc/Desktop/gameengine/src/utils/Logger.hpp \
   C:/Users/pc/Desktop/gameengine/src/utils/Shader.hpp \
   C:/Users/pc/Desktop/gameengine/src/utils/Utils.hpp \
   C:/Users/pc/Desktop/gameengine/src/utils/WinMsg.hpp \
   C:/Users/pc/Desktop/gameengine/src/utils/globals.hpp
 
-CMakeFiles/engine.dir/src/utils/KeyManager.cpp.obj: C:/Users/pc/Desktop/gameengine/src/utils/KeyManager.cpp \
+CMakeFiles/engine.dir/src/utils/InputManager.cpp.obj: C:/Users/pc/Desktop/gameengine/src/utils/InputManager.cpp \
   C:/Users/pc/Desktop/gameengine/includes/glfw/glfw3.h \
   C:/w64devkit/include/GL/gl.h \
   C:/w64devkit/include/_mingw.h \
@@ -5267,12 +5274,16 @@ CMakeFiles/engine.dir/src/utils/KeyManager.cpp.obj: C:/Users/pc/Desktop/gameengi
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/cpp_type_traits.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/cxxabi_forced.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/cxxabi_init_exception.h \
+  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/enable_special_members.h \
+  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/erase_if.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/exception.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/exception_defines.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/exception_ptr.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/functexcept.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/functional_hash.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/hash_bytes.h \
+  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/hashtable.h \
+  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/hashtable_policy.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/invoke.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/ios_base.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/istream.tcc \
@@ -5288,6 +5299,7 @@ CMakeFiles/engine.dir/src/utils/KeyManager.cpp.obj: C:/Users/pc/Desktop/gameengi
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/move.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/nested_exception.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/new_allocator.h \
+  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/node_handle.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/ostream.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/ostream.tcc \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/ostream_insert.h \
@@ -5313,6 +5325,7 @@ CMakeFiles/engine.dir/src/utils/KeyManager.cpp.obj: C:/Users/pc/Desktop/gameengi
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/streambuf_iterator.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/string_view.tcc \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/stringfwd.h \
+  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/unordered_map.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/uses_allocator.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/uses_allocator_args.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/utility.h \
@@ -5330,6 +5343,7 @@ CMakeFiles/engine.dir/src/utils/KeyManager.cpp.obj: C:/Users/pc/Desktop/gameengi
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/debug/assertions.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/debug/debug.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/exception \
+  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/ext/aligned_buffer.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/ext/alloc_traits.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/ext/atomicity.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/ext/numeric_traits.h \
@@ -5354,6 +5368,7 @@ CMakeFiles/engine.dir/src/utils/KeyManager.cpp.obj: C:/Users/pc/Desktop/gameengi
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/tuple \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/type_traits \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/typeinfo \
+  C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/unordered_map \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32/bits/atomic_word.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32/bits/c++allocator.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32/bits/c++config.h \
@@ -5370,7 +5385,7 @@ CMakeFiles/engine.dir/src/utils/KeyManager.cpp.obj: C:/Users/pc/Desktop/gameengi
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/stddef.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/stdint.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/syslimits.h \
-  C:/Users/pc/Desktop/gameengine/src/utils/KeyManager.hpp \
+  C:/Users/pc/Desktop/gameengine/src/utils/InputManager.hpp \
   C:/Users/pc/Desktop/gameengine/src/utils/Logger.hpp
 
 CMakeFiles/engine.dir/src/utils/Shader.cpp.obj: C:/Users/pc/Desktop/gameengine/src/utils/Shader.cpp \
@@ -6243,6 +6258,7 @@ CMakeFiles/engine.dir/src/utils/Utils.cpp.obj: C:/Users/pc/Desktop/gameengine/sr
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/stddef.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/stdint.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/syslimits.h \
+  C:/Users/pc/Desktop/gameengine/src/utils/InputManager.hpp \
   C:/Users/pc/Desktop/gameengine/src/utils/Logger.hpp \
   C:/Users/pc/Desktop/gameengine/src/utils/Shader.hpp \
   C:/Users/pc/Desktop/gameengine/src/utils/Utils.hpp \
@@ -7097,6 +7113,7 @@ CMakeFiles/engine.dir/src/utils/globals.cpp.obj: C:/Users/pc/Desktop/gameengine/
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/stddef.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/stdint.h \
   C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/syslimits.h \
+  C:/Users/pc/Desktop/gameengine/src/utils/InputManager.hpp \
   C:/Users/pc/Desktop/gameengine/src/utils/Shader.hpp \
   C:/Users/pc/Desktop/gameengine/src/utils/globals.hpp
 
@@ -7579,9 +7596,9 @@ C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/avx512bf16vlintrin.h:
 
 C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/ranges_util.h:
 
-C:/Users/pc/Desktop/gameengine/includes/glm/packing.hpp:
-
 C:/w64devkit/include/commdlg.h:
+
+C:/Users/pc/Desktop/gameengine/includes/glm/packing.hpp:
 
 C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/bits/shared_ptr.h:
 
@@ -8227,6 +8244,10 @@ C:/Users/pc/Desktop/gameengine/includes/glm/ext/vector_double2.hpp:
 
 C:/Users/pc/Desktop/gameengine/includes/glm/ext/vector_double3_precision.hpp:
 
+C:/w64devkit/include/winspool.h:
+
+C:/Users/pc/Desktop/gameengine/src/utils/InputManager.hpp:
+
 C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/avx10_2mediaintrin.h:
 
 C:/w64devkit/include/rpc.h:
@@ -8309,8 +8330,6 @@ C:/w64devkit/include/_mingw_stdarg.h:
 
 C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/cfloat:
 
-C:/Users/pc/Desktop/gameengine/src/utils/KeyManager.cpp:
-
 C:/Users/pc/Desktop/gameengine/src/core/components/Light.hpp:
 
 C:/Users/pc/Desktop/gameengine/src/core/components/Material.hpp:
@@ -8320,8 +8339,6 @@ C:/w64devkit/include/winerror.h:
 C:/Users/pc/Desktop/gameengine/includes/STB/stb_image.h:
 
 C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/math.h:
-
-C:/Users/pc/Desktop/gameengine/src/utils/KeyManager.hpp:
 
 C:/Users/pc/Desktop/gameengine/src/core/components/Light.cpp:
 
@@ -8533,8 +8550,6 @@ C:/w64devkit/include/winscard.h:
 
 C:/w64devkit/include/winsmcrd.h:
 
-C:/w64devkit/include/winspool.h:
-
 C:/w64devkit/include/winsvc.h:
 
 C:/w64devkit/lib/gcc/x86_64-w64-mingw32/15.1.0/include/avxvnniint8intrin.h:
@@ -8676,6 +8691,8 @@ C:/Users/pc/Desktop/gameengine/src/gui/HeriarchyPanel.cpp:
 C:/Users/pc/Desktop/gameengine/includes/GLFW/glfw3native.h:
 
 C:/Users/pc/Desktop/gameengine/includes/imgui/imgui_impl_opengl3.h:
+
+C:/Users/pc/Desktop/gameengine/src/utils/InputManager.cpp:
 
 C:/Users/pc/Desktop/gameengine/includes/glm/ext/vector_bool1.hpp:
 

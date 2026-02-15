@@ -456,4 +456,6 @@ CMakeFiles/engine.dir/src/gui/HeriarchyPanel.cpp.obj: \
  C:/Users/pc/Desktop/gameengine/src/utils/Utils.hpp \
  C:/Users/pc/Desktop/gameengine/includes/glad/gl.h \
  C:/Users/pc/Desktop/gameengine/includes/KHR/khrplatform.h \
- C:/Users/pc/Desktop/gameengine/includes/GLFW/glfw3.h
+ C:/Users/pc/Desktop/gameengine/includes/GLFW/glfw3.h \
+ C:/Users/pc/Desktop/gameengine/src/utils/InputManager.hpp \
+ C:/Users/pc/Desktop/gameengine/includes/glfw/glfw3.h

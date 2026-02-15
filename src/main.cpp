@@ -63,6 +63,7 @@ int main() {
     });
 
     while(!glfwWindowShouldClose(window)) {
+        InputManager::clearFrameStates(); // clear previous frame's released key cache;
         glfwPollEvents();
         
         // NOTE: if fbo bounded, opengl draws into it. else backbuffer.
@@ -75,6 +76,9 @@ int main() {
 
         drawImgui();
         glfwSwapBuffers(window);
+        
+        // Clear single-frame input states (PRESSED/RELEASED) at end of frame
+        InputManager::clearFrameStates();
     }
 
     ImGui_ImplOpenGL3_Shutdown();
@@ -89,8 +93,18 @@ void Start() {
   
 }
 
-void Update() {
+static double lastLogTime = 0.0;
 
+void Update() {
+    if (InputManager::isKeyPressed(GLFW_KEY_W)) {
+        LOG::Info("W Pressed");
+    }
+    if (InputManager::isKeyHold(GLFW_KEY_W)) {
+        LOG::Info("W Hold");
+    }
+    if (InputManager::isKeyReleased(GLFW_KEY_W)) {
+        LOG::Info("W Released");
+    }
 }
 
 void drawImgui()

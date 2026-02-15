@@ -1,5 +1,6 @@
 #include "HeriarchyPanel.hpp"
 #include "../utils/Utils.hpp"
+#include "../utils/InputManager.hpp"
 extern Scene* editorScene;
 extern GameObject* selectedGameObject;
 
@@ -125,6 +126,11 @@ void HeriarchyPanel::Render() {
     ImGui::PopStyleVar();
     ImGui::PopStyleColor();
 
+    // Save Scene
+    if(InputManager::isSpecialPressed(GLFW_MOD_CONTROL) && InputManager::isKeyPressed(GLFW_KEY_S)) {
+        editorScene->SaveScene();
+    };
+
     // left click (content);
     if(ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImGui::IsWindowHovered() && !ImGui::IsAnyItemHovered()) {
         selectedGameObject = nullptr;
@@ -141,7 +147,6 @@ void HeriarchyPanel::Render() {
 
     // E X T E R N A L _ P A N E L S
     if (showCreateGameObjPanel) CreateGameObjectPanel();
-
 }
 
 void HeriarchyPanel::CreateGameObjectPanel() {

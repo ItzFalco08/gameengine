@@ -646,29 +646,29 @@ src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
-src/utils/KeyManager.obj: src/utils/KeyManager.cpp.obj
-.PHONY : src/utils/KeyManager.obj
+src/utils/InputManager.obj: src/utils/InputManager.cpp.obj
+.PHONY : src/utils/InputManager.obj
 
 # target to build an object file
-src/utils/KeyManager.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/utils/KeyManager.cpp.obj
-.PHONY : src/utils/KeyManager.cpp.obj
+src/utils/InputManager.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/utils/InputManager.cpp.obj
+.PHONY : src/utils/InputManager.cpp.obj
 
-src/utils/KeyManager.i: src/utils/KeyManager.cpp.i
-.PHONY : src/utils/KeyManager.i
+src/utils/InputManager.i: src/utils/InputManager.cpp.i
+.PHONY : src/utils/InputManager.i
 
 # target to preprocess a source file
-src/utils/KeyManager.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/utils/KeyManager.cpp.i
-.PHONY : src/utils/KeyManager.cpp.i
+src/utils/InputManager.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/utils/InputManager.cpp.i
+.PHONY : src/utils/InputManager.cpp.i
 
-src/utils/KeyManager.s: src/utils/KeyManager.cpp.s
-.PHONY : src/utils/KeyManager.s
+src/utils/InputManager.s: src/utils/InputManager.cpp.s
+.PHONY : src/utils/InputManager.s
 
 # target to generate assembly for a file
-src/utils/KeyManager.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/utils/KeyManager.cpp.s
-.PHONY : src/utils/KeyManager.cpp.s
+src/utils/InputManager.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\engine.dir\build.make CMakeFiles/engine.dir/src/utils/InputManager.cpp.s
+.PHONY : src/utils/InputManager.cpp.s
 
 src/utils/Shader.obj: src/utils/Shader.cpp.obj
 .PHONY : src/utils/Shader.obj
@@ -839,9 +839,9 @@ help:
 	@echo ... src/main.obj
 	@echo ... src/main.i
 	@echo ... src/main.s
-	@echo ... src/utils/KeyManager.obj
-	@echo ... src/utils/KeyManager.i
-	@echo ... src/utils/KeyManager.s
+	@echo ... src/utils/InputManager.obj
+	@echo ... src/utils/InputManager.i
+	@echo ... src/utils/InputManager.s
 	@echo ... src/utils/Shader.obj
 	@echo ... src/utils/Shader.i
 	@echo ... src/utils/Shader.s

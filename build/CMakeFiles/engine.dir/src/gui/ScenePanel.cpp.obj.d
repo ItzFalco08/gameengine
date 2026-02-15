@@ -462,6 +462,7 @@ CMakeFiles/engine.dir/src/gui/ScenePanel.cpp.obj: \
  C:/Users/pc/Desktop/gameengine/src/core/Texture.hpp \
  C:/Users/pc/Desktop/gameengine/src/gui/HeriarchyPanel.hpp \
  C:/Users/pc/Desktop/gameengine/src/gui/InspectorPanel.hpp \
+ C:/Users/pc/Desktop/gameengine/src/utils/InputManager.hpp \
  C:/Users/pc/Desktop/gameengine/includes/glfw/glfw3.h \
  C:/Users/pc/Desktop/gameengine/src/utils/Utils.hpp \
  C:/Users/pc/Desktop/gameengine/includes/glad/gl.h \

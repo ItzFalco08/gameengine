@@ -90,6 +90,11 @@ public:
         dirty = true;
     }
 
+    void SaveScene() {
+        Serialize(); // serialize into where its serialized from
+        dirty = false;
+    }
+
     const char* GetNameString() {
         static std::string nameStr;
         nameStr = sceneName + (dirty ? "*" : "");

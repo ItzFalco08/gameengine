@@ -8,14 +8,18 @@
 class InputManager {
 public:
     static std::unordered_map<int, bool[3]> keyMap;
-    static enum KeyState {
+    static int mods;
+    enum KeyState {
         PRESSED = 0,
         HOLD = 1,
         RELEASED = 2
     };
     
     static void inputCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+    static void clearFrameStates(); // Call this at the end of each frame
+
     static bool isKeyPressed(int keyId);
     static bool isKeyHold(int keyId);
     static bool isKeyReleased(int keyId);
+    static bool isSpecialPressed(int specialKeyId);
 };

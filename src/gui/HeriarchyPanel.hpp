@@ -14,7 +14,6 @@ private:
     bool showCreateGameObjPanel = false;
     bool showRenamePanel = false;
 
-    void HandleAddGameObject(std::string gameObjectName);
     void RenderHeriarchy(std::vector<GameObject*>& roots);
     void RenameSelected(const char* newName);
     void DeleteSelected(std::vector<GameObject*>& roots);

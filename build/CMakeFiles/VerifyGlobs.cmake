@@ -43,7 +43,7 @@ set(OLD_GLOB
   "C:/Users/pc/Desktop/gameengine/src/gui/InspectorPanel.cpp"
   "C:/Users/pc/Desktop/gameengine/src/gui/ScenePanel.cpp"
   "C:/Users/pc/Desktop/gameengine/src/main.cpp"
-  "C:/Users/pc/Desktop/gameengine/src/utils/KeyManager.cpp"
+  "C:/Users/pc/Desktop/gameengine/src/utils/InputManager.cpp"
   "C:/Users/pc/Desktop/gameengine/src/utils/Shader.cpp"
   "C:/Users/pc/Desktop/gameengine/src/utils/Utils.cpp"
   "C:/Users/pc/Desktop/gameengine/src/utils/WinMsg.cpp"
