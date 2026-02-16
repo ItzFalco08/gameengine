@@ -1,49 +1,145 @@
 {
-    "gameObjects": [
+  "gameObjects": [
+    {
+      "childs": [
         {
-            "components": [],
-            "name": "GameObject",
-            "transform": {
+          "childs": [
+            {
+              "childs": [],
+              "components": [],
+              "name": "bameObject",
+              "transform": {
                 "position": [
-                    0.0,
-                    0.0,
-                    0.0
+                  0.0,
+                  0.0,
+                  0.0
                 ],
                 "rotation": [
-                    1.0,
-                    0.0,
-                    0.0,
-                    0.0
+                  1.0,
+                  0.0,
+                  0.0,
+                  0.0
                 ],
                 "scale": [
-                    1.0,
-                    1.0,
-                    1.0
+                  1.0,
+                  1.0,
+                  1.0
                 ]
+              }
             }
+          ],
+          "components": [],
+          "name": "child1",
+          "transform": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
         },
         {
-            "components": [],
-            "name": "GameObject",
-            "transform": {
-                "position": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "rotation": [
-                    1.0,
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
+          "childs": [],
+          "components": [],
+          "name": "childdd222222",
+          "transform": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
         }
-    ],
-    "sceneName": "NewScene"
+      ],
+      "components": [],
+      "name": "GameObject",
+      "transform": {
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rotation": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "childs": [],
+      "components": [],
+      "name": "obj2",
+      "transform": {
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rotation": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "childs": [],
+      "components": [],
+      "name": "obj3",
+      "transform": {
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rotation": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    }
+  ],
+  "sceneName": "NewScene"
 }

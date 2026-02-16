@@ -59,6 +59,7 @@ void Transform::reset() {
     dirty = true;
 }
 
+
 void Transform::Serialize(nlohmann::json& json) {
     json["position"] = {position.x, position.y, position.z};
     json["rotation"] = {rotation.w, rotation.x, rotation.y, rotation.z};
@@ -66,7 +67,7 @@ void Transform::Serialize(nlohmann::json& json) {
 }
 
 void Transform::Deserialize(nlohmann::json& json) {
-    position = glm::vec3(json.at("transfrom")[0], json.at("transfrom")[1], json.at("transfrom")[2]);
+    position = glm::vec3(json.at("position")[0], json.at("position")[1], json.at("position")[2]);
     rotation = glm::quat(json.at("rotation")[0], json.at("rotation")[1], json.at("rotation")[2], json.at("rotation")[3]);
     scale = glm::vec3(json.at("scale")[0], json.at("scale")[1], json.at("scale")[2]);
 }

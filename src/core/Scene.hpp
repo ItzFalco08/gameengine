@@ -10,7 +10,24 @@ public:
     std::string sceneName;
     std::string sceneFilePath;
     bool dirty = false; // Used for Editor (keeps track for changes)
-    
+
+    void recursiveJsonGen(nlohmann::json& gameObjectsArray, std::vector<GameObject*>& nodes) {
+        if(nodes.empty()) return;
+
+        for (const auto& node: nodes) {
+            nlohmann::json gameObjJson;
+
+            node->Serialize(gameObjJson);
+
+            // child recursion
+            nlohmann::json childJsonArr = nlohmann::json::array();
+            recursiveJsonGen(childJsonArr, node->childs);
+            gameObjJson["childs"] = std::move(childJsonArr);
+
+            gameObjectsArray.push_back(std::move(gameObjJson));
+        }
+    };
+
     // S C E N E -> J S O N
     void Serialize() { // Save Scene ( Only Used for Editor to change scene.json )
         if (!dirty) { LOG::Error("No Changes are Made yet"); return; }
@@ -21,12 +38,9 @@ public:
         nlohmann::json gameObjectsArray = nlohmann::json::array();
         sceneJson["sceneName"] = sceneName;
 
-        for (const auto& gameObject : gameObjects) {
-            nlohmann::json gameObjectJson;
-            gameObject->Serialize(gameObjectJson);
-            gameObjectsArray.push_back(std::move(gameObjectJson));
-        }
-
+        // recursively serialize gameObjects 
+        recursiveJsonGen(gameObjectsArray, roots);
+        
         sceneJson["gameObjects"] = std::move(gameObjectsArray);
 
         // upload to file
@@ -36,15 +50,31 @@ public:
             return;
         }
 
-        file << sceneJson.dump(4);
+        file << sceneJson.dump(2);
         file.close();
 
         dirty = false;
     }
 
+    void recursion(std::vector<GameObject*>& nodes, nlohmann::json& goArr) {
+        if(goArr.empty()) return;
+
+        for (auto& go : goArr ) {
+            // extract go;
+            std::unique_ptr<GameObject> gameObjInstance = std::make_unique<GameObject>(this, go["name"]);
+            gameObjInstance->Deserialize(go);
+
+            nodes.push_back(gameObjInstance.get());
+            recursion(gameObjInstance->childs, go["childs"]);
+            gameObjects.push_back(std::move(gameObjInstance));
+        }
+    };
+
     // J S O N -> S C E N E
     void Deserialize(std::string scenePath) { // Load Scene from json (used from runtime game script)
         gameObjects.clear();
+        roots.clear();
+
         sceneFilePath = scenePath;
         std::ifstream file(sceneFilePath);
 
@@ -61,13 +91,8 @@ public:
         // extract gameObjects
         auto& gameObjectsArray = sceneJson.at("gameObjects");
 
-        for(auto& gameObjectJson : gameObjectsArray) {
-            std::unique_ptr<GameObject> gameObject = std::make_unique<GameObject>(this, gameObjectJson.at("name"));
-            
-            gameObject->Deserialize(gameObjectJson);
-
-            gameObjects.push_back(std::move(gameObject));
-        }
+        // recursively add all gameObjects from json into scene
+        recursion(roots, gameObjectsArray);
     }
 
     GameObject* AddGameObject(const std::string& goName) {

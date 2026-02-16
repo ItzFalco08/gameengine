@@ -101,9 +101,7 @@ public:
         json["components"] = componentsJson;
     }
     
-    void Deserialize(nlohmann::json& json) {
-        name = json.at("name");
-        
+    void Deserialize(nlohmann::json& json) {        
         transform = std::make_unique<Transform>();
         transform->Deserialize(json["transform"]);
 
