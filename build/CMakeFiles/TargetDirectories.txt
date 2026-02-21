@@ -1,4 +1,0 @@
-C:/Users/pc/Desktop/gameengine/build/CMakeFiles/engine.dir
-C:/Users/pc/Desktop/gameengine/build/CMakeFiles/imgui.dir
-C:/Users/pc/Desktop/gameengine/build/CMakeFiles/edit_cache.dir
-C:/Users/pc/Desktop/gameengine/build/CMakeFiles/rebuild_cache.dir
