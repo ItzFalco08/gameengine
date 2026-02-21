@@ -4,7 +4,7 @@
 #include "../utils/Logger.hpp"
 #include "memory"
 #include "vector"
-#include <typeinfo>
+#include <typeindex>
 #include <functional>
 #include <unordered_map>
 #include "components/Transform.hpp"
@@ -12,6 +12,11 @@
 #include "json/json.hpp"
 
 class Scene; // forward declaration 
+
+struct ComponentRegistryEntry {
+    std::string name;
+    std::unique_ptr<Component> (*create)();
+};
 
 // Factory map defined in a .cpp to avoid include cycles
 extern std::unordered_map<std::string, std::function<std::unique_ptr<Component>()>> TypeToComponent;
@@ -22,6 +27,7 @@ public:
     std::vector<std::unique_ptr<Component>> components;
     Scene* parentScene;
     std::vector<GameObject*> childs;
+
 
     GameObject(Scene* parentScene, const std::string& goName) 
     : transform(std::make_unique<Transform>())

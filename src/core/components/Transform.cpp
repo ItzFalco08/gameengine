@@ -1,6 +1,13 @@
 #include "Transform.hpp"
 
+void Transform::MakeDirty() {
+    if (!dirty) {
+        dirty = true;
+    }
+}
+
 void Transform::recalculateMatrix() {
+    // POSSIBLE OPTIMIZATION
     model = glm::translate(glm::mat4(1.0f), position) * glm::toMat4(rotation) * glm::scale(glm::mat4(1.0f), scale);
 }
 
@@ -10,7 +17,7 @@ void Transform::Rotate(const glm::vec3& deltaGlobalEulars) {
     dirty = true;
 }
 
-void Transform::RotateLocal(const glm::vec3 localEulars) {
+void Transform::RotateLocal(const glm::vec3& localEulars) {
     rotation = glm::normalize(rotation * glm::quat(glm::radians(localEulars)));
     dirty = true;
 }

@@ -2,10 +2,7 @@
 
 class InspectorPanel {
 public:
-    void Render() {
-        ImGui::Begin("Inspector");
-        ImGui::End();
-    }
+    void Render();
     
 private:
 };

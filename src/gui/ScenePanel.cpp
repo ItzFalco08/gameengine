@@ -1,7 +1,9 @@
 #include "ScenePanel.hpp"
 
 void ScenePanel::Render() {
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0,0));
     ImGui::Begin("Scene");
+    ImGui::PopStyleVar();
 
     // U P D A T E _ S C E N E _ D I M E N S I O N S
     int p_w = sceneView.SCENEVIEW_WIDTH;

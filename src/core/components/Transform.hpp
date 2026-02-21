@@ -11,7 +11,7 @@ private:
     void recalculateMatrix();
     glm::mat4 model = glm::mat4(1.0f);
 
-    bool dirty = false;
+    bool dirty = false; // so that matrix is calculated only once each frame by renderer.
 
 public:
     glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f); // Identity quaternion (w, x, y, z)
@@ -19,9 +19,10 @@ public:
     glm::vec3 scale = glm::vec3(1.0f);
 
     size_t GetId() override;
+    void MakeDirty();
     void Rotate(const glm::vec3& deltaGlobalEulars);
     void SetRotation(const glm::vec3& globalEulars);
-    void RotateLocal(const glm::vec3 localEulars);
+    void RotateLocal(const glm::vec3& localEulars);
     void Translate(const glm::vec3& offset);
     void Scale(const glm::vec3& factor);
     glm::mat4 getModel();

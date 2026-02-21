@@ -70,7 +70,7 @@ int main() {
         glBindFramebuffer(GL_FRAMEBUFFER, sceneView.framebuffObj);
         glViewport(0, 0, sceneView.SCENEVIEW_WIDTH, sceneView.SCENEVIEW_HEIGHT);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         Update();
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
