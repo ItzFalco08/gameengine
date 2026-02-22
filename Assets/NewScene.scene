@@ -119,7 +119,14 @@
     },
     {
       "childs": [],
-      "components": [],
+      "components": [
+        {
+          "type": "Mesh"
+        },
+        {
+          "type": "Light"
+        }
+      ],
       "name": "obj3",
       "transform": {
         "position": [

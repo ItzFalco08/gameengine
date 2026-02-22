@@ -1,5 +1,6 @@
 #pragma once
 #define GLM_ENABLE_EXPERIMENTAL
+#define TypeToStr(x) #x
 #include "glm/glm.hpp"
 #include "../utils/Logger.hpp"
 #include "memory"
@@ -19,15 +20,15 @@ struct ComponentRegistryEntry {
 };
 
 // Factory map defined in a .cpp to avoid include cycles
-extern std::unordered_map<std::string, std::function<std::unique_ptr<Component>()>> TypeToComponent;
+extern std::unordered_map<std::string, std::function<std::unique_ptr<Component>()>> componentRegistry;
+
 class GameObject {
 public:
     std::string name;
     std::unique_ptr<Transform> transform;
-    std::vector<std::unique_ptr<Component>> components;
+    std::unordered_map<std::string, std::unique_ptr<Component>> components;
     Scene* parentScene;
     std::vector<GameObject*> childs;
-
 
     GameObject(Scene* parentScene, const std::string& goName) 
     : transform(std::make_unique<Transform>())
@@ -44,44 +45,38 @@ public:
     template<typename T, typename... Args>
     void AddComponent(Args&&... args) {
         static_assert(std::is_base_of_v<Component, T>, "T must derive from Component");
+        char* compTypeStr = TypeToStr(T);
 
-        size_t compId = typeid(T).hash_code();
-
-        for (const auto& c : components) {
-            if (compId == c->GetId()) {
-                LOG::Error("AddComponent Failed! Component Already Exists.");
-                return;
-            }
+        if (components.find(compTypeStr) != components.end()) {
+            LOG::Error("AddComponent Failed! Component Already Exists.");
+            return;
         }
 
-        components.push_back(std::make_unique<T>(std::forward<Args>(args)...));
+        components[compTypeStr] = std::make_unique<T>(std::forward<Args>(args)...);
     }
 
     template<typename T>
     void RemoveComponent() {
-        size_t compId = typeid(T).hash_code();
+        static_assert(std::is_base_of_v<Component, T>, "T must derive from Component");
 
-        for (auto itr = components.begin(); itr != components.end(); ++itr) {
-            if ((*itr)->GetId() == compId) {
-                components.erase(itr);
-                LOG::Success("Component Deleted of type: ", typeid(T).name());
-                return;
-            }
+        const char* typeStr = TypeToStr(T);
+        if(components.find(typeStr) != components.end()) {
+            components.erase(typeStr);
+            return;
         }
 
-        LOG::Error("No Component found of type: ", typeid(T).name());
+        LOG::Error("No Component found of type: ", typeStr);
     }
 
     template<typename T>
     T* GetComponent() {
         static_assert(std::is_base_of_v<Component, T>, "T must derive from Component");
 
-        size_t compId = typeid(T).hash_code();
+        char* key = TypeToStr(T);
 
-        for (const auto& c : components) {
-            if (c->GetId() == compId) {
-                return static_cast<T*>(c.get());
-            }
+        auto& comp = components.find(key);
+        if (comp != components.end()) {
+            return static_cast<T*>((*comp).second.get());
         }
 
         return nullptr;
@@ -96,7 +91,7 @@ public:
 
         transform->Serialize(transformJson);
 
-        for (std::unique_ptr<Component>& component : components) {
+        for (auto& [name, component] : components) {
             nlohmann::json componentJson;
             componentJson["type"] = component->GetType();
             component->Serialize(componentJson);
@@ -111,10 +106,10 @@ public:
         transform = std::make_unique<Transform>();
         transform->Deserialize(json["transform"]);
 
-        for(nlohmann::json& component : json["components"]) {
-            std::unique_ptr<Component> c = TypeToComponent[component["type"]]();
-            c->Deserialize(component);
-            components.push_back(std::move(c));
+        for(nlohmann::json& componentJson : json["components"]) {
+            std::unique_ptr<Component> c = componentRegistry[componentJson["type"]]();
+            c->Deserialize(componentJson);
+            components[componentJson.at("name")] = std::move(c);
         }
     }
 };

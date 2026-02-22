@@ -1,9 +1,9 @@
 # How to Run
 
 ## Prerequisites
-- Ninja build system
-- CMake
-- MSVC 2022 C++ Compiler
+- `Ninja` build system
+- `CMake`
+- `MSVC` 2022 C++ Compiler
 
 ## Build Protocol
 

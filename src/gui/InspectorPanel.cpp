@@ -12,6 +12,8 @@ enum ComponentsRegistry {
     Script,
 };
 
+extern std::unordered_map<std::string, std::function<std::unique_ptr<Component>()>> componentRegistry;
+
 void InspectorPanel::Render() {
     ImGui::Begin("Inspector");
 
@@ -46,14 +48,27 @@ void InspectorPanel::Render() {
             ImGui::Dummy(ImVec2(0.0f, 6.0f));
         }
 
+        for (auto& [key, component] : selectedGameObject->components) {
+            if(ImGui::CollapsingHeader(key.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
+
+            }
+        }
+
         if(ImGui::Button("Add Component", ImVec2(ImGui::GetContentRegionAvail().x,24))) 
             ImGui::OpenPopup("AddComponentPopup");
 
         if(ImGui::BeginPopup("AddComponentPopup")) {
-            char buf[50]; // temp value, internally managed by imgui
-            ImGui::InputTextWithHint("", "Search Component.", &buf[0], 50);
+            char buf[50] = {}; // temp value, internally managed by imgui
+            ImGui::InputTextWithHint("Search", "Search Component.", &buf[0], 50);
 
-            
+            for(auto& [key,val] : componentRegistry) {
+                if (selectedGameObject->components.find(key) == selectedGameObject->components.end() && strstr(key.c_str(), buf)) {
+                    if(ImGui::Selectable(key.c_str())) {
+                        selectedGameObject->components[key] = val();
+                        editorScene->MakeDirty();
+                    }
+                }
+            };
 
             ImGui::EndPopup();
         }
