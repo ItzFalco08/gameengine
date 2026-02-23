@@ -109,7 +109,7 @@ public:
         for(nlohmann::json& componentJson : json["components"]) {
             std::unique_ptr<Component> c = componentRegistry[componentJson["type"]]();
             c->Deserialize(componentJson);
-            components[componentJson.at("name")] = std::move(c);
+            components[componentJson.at("type")] = std::move(c);
         }
     }
 };

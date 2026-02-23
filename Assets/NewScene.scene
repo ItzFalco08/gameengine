@@ -121,10 +121,13 @@
       "childs": [],
       "components": [
         {
-          "type": "Mesh"
+          "type": "Material"
         },
         {
           "type": "Light"
+        },
+        {
+          "type": "Mesh"
         }
       ],
       "name": "obj3",
