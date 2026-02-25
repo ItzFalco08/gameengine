@@ -112,9 +112,16 @@ void Utils::updateFBODimensions()
 }
 
 
-void Utils::loadObj(std::vector<Vertex>& vertices, const char* objPath) {
-    // positions[0] and uvs[0] is the x, y, z, u, v of first vertex
+bool Utils::loadObj(std::vector<Vertex>& vertices, const char* objPath) {
+    // ~~~~~~~~~~~~~~~~~~~~
+    // edits vertices into:
+    // [ Vertex{x,y,z   u,v   nx, ny, nz} ...]
+    // ~~~~~~~~~~~~~~~~~~~~
     std::ifstream objFile(objPath);
+    if(!objFile) {
+        LOG::Warning("MESH LOADING: Mesh File(.obj) does not exist in path: ",  objPath);
+        return false;
+    }
 
     std::vector<glm::vec3> tempPositions;
     std::vector<glm::vec2> tempUvs;
@@ -161,13 +168,12 @@ void Utils::loadObj(std::vector<Vertex>& vertices, const char* objPath) {
                 faceVerts.push_back(vert);
             }
 
-
-            if (faceVerts.size() > 3) {
+            if (faceVerts.size() == 4) {
                 std::array<int, 6> order = {0, 1, 2, 0, 2 ,3}; // convert to 2 triangles
 
-                for (int i = 0; i < order.size(); i++) { // 0 -> 5
+                for (int vertIdx : order) { // 0 -> 5
                     int v, vt, vn;
-                    std::stringstream vertexSS(faceVerts[order[i]]);
+                    std::stringstream vertexSS(faceVerts[vertIdx]);
                     std::string token;
 
                     std::getline(vertexSS, token, '/'); v = stoi(token);
@@ -211,6 +217,8 @@ void Utils::loadObj(std::vector<Vertex>& vertices, const char* objPath) {
             }
         }
     }
+    
+    return true;
 }
 
 

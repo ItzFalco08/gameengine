@@ -2,15 +2,18 @@
 #include "../core/GameObject.hpp"
 #include "../core/Scene.hpp"
 #include "glm/glm.hpp"
+#include "../core/components/Mesh.hpp"
 extern GameObject* selectedGameObject;
 extern Scene* editorScene;
 
-enum ComponentsRegistry {
+enum class ComponentsRegistry {
     Mesh,
     Material,
     Light,
     Script,
 };
+
+
 
 extern std::unordered_map<std::string, std::function<std::unique_ptr<Component>()>> componentRegistry;
 
@@ -50,7 +53,58 @@ void InspectorPanel::Render() {
 
         for (auto& [key, component] : selectedGameObject->components) {
             if(ImGui::CollapsingHeader(key.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
+                if (key == "Mesh") {
+                    if (auto* mesh = dynamic_cast<Mesh*>(component.get())) {
+                        const char* items[] = { "FRONT", "BACK", "BOTH" };
+                        if(ImGui::Combo("Face Culling", &curIdx, items, IM_ARRAYSIZE(items))) {
+                            mesh->cullDir = static_cast<CullDir>(curIdx);
+                            editorScene->MakeDirty();
+                        }
 
+                        std::string objPathStr = mesh->objFilePath.has_value() ? mesh->objFilePath.value() : "Empty (Drop .obj here)";
+                        
+                        float labelWidth = ImGui::CalcTextSize("Mesh Object").x;
+
+                        ImGui::Button(objPathStr.c_str());
+                        ImGui::SameLine(labelWidth);
+                        
+                        // Make the button a drop target
+                        if (ImGui::BeginDragDropTarget()) {
+                            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+                                const wchar_t* path = (const wchar_t*)payload->Data;
+                                std::filesystem::path p(path);
+                                
+                                if (p.extension() == ".obj") {
+                                    if(mesh->Initialize(p.string().c_str())) editorScene->MakeDirty();
+                                }
+                            }
+                            ImGui::EndDragDropTarget();
+                        }
+                        
+                        ImGui::SameLine();
+                        ImGui::Text("Mesh Object");
+                        
+                        // Label next to it or above it? 
+                        // Since Button takes full width above, let's keep it simple or add a label before if you prefer:
+                        // ImGui::Text("Mesh Object"); ImGui::SameLine(); ...
+                    }
+
+                } else if (key == "Material") {
+                    ImGui::Text("Mesh");
+                    
+                } else if (key == "Light") {
+                    ImGui::Text("Mesh");
+
+                } else if (key == "Script") {
+                    ImGui::Text("Mesh");
+
+                } else if (key == "Camera") {
+                    ImGui::Text("Mesh");
+
+                }
+
+                // gap
+                ImGui::Dummy(ImVec2(0, 4));
             }
         }
 

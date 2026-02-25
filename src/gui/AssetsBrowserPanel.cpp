@@ -72,6 +72,18 @@ void AssetsBrowser::Render() {
                 if(ImGui::MenuItem("Scene")) {
                     isCreateScenePanelActive = true;
                 }
+                if(ImGui::BeginMenu("Mesh")) {
+                    if(ImGui::MenuItem("Cube")) {
+                        AssetsManager::CreateMesh(MeshType::CUBE, currentPath);
+                    } else if(ImGui::MenuItem("Cylinder")) {
+                        AssetsManager::CreateMesh(MeshType::CYLINDER, currentPath);
+                    } else if(ImGui::MenuItem("Capsule")) {
+                        AssetsManager::CreateMesh(MeshType::CAPSULE, currentPath);
+                    } else if(ImGui::MenuItem("Sphere")) {
+                        AssetsManager::CreateMesh(MeshType::SPHERE, currentPath);
+                    }
+                    ImGui::EndMenu();
+                }
                 ImGui::MenuItem("Script");
                 ImGui::MenuItem("Material");
                 ImGui::MenuItem("Texture");
@@ -211,6 +223,13 @@ void AssetsBrowser::DrawAssetItem(
         icon,
         iconSize, {0,0}, {1,1}, ImVec4(0, 0, 0, 0)
     );
+
+    if (ImGui::BeginDragDropSource()) {
+        const wchar_t* itemPathW = itemPath.c_str();
+        ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPathW, (wcslen(itemPathW) + 1) * sizeof(wchar_t));
+        ImGui::Text("%s", label); 
+        ImGui::EndDragDropSource();
+    }
 
     ImGui::PopStyleColor(3);
 

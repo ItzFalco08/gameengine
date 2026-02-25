@@ -17,7 +17,7 @@ namespace Utils {
     void GLFWErrorCallback(int errorCode, const char* message);
     void genSceneFramebuffers();
     void updateFBODimensions();
-    void loadObj(std::vector<Vertex>& vertices, const char* objPath);
+    bool loadObj(std::vector<Vertex>& vertices, const char* objPath);
 
     namespace GUI {
         void initImGui(GLFWwindow* window);

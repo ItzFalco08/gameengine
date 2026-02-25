@@ -7,22 +7,16 @@ size_t Mesh::GetId() {
 }
 
 Mesh::Mesh(const char* objPath) {
-    std::vector<Vertex> vertices;
-    Utils::loadObj(vertices, objPath);
-    uploadVertices(vertices);
-    LOG::Info("Mesh Created");
-    objFilePath = objPath;
+    Initialize(objPath);
 }
 
 Mesh::Mesh() {};
 
 Mesh::Mesh(const std::vector<Vertex>&& vertices) {
     uploadVertices(vertices);
-    LOG::Info("Mesh Created");
 }
 
 Mesh::~Mesh() {
-    LOG::Info("Mesh Destroyed");
 }
 
 void Mesh::uploadVertices(const std::vector<Vertex>& vertices) {
@@ -50,4 +44,14 @@ void Mesh::uploadVertices(const std::vector<Vertex>& vertices) {
 
 std::string Mesh::GetType() {
     return "Mesh";
+}
+
+bool Mesh::Initialize(const char* objPath) {
+    if (objPath == objFilePath) {LOG::Warning("Mesh with path Already Added: ", objPath); return false;};
+    std::vector<Vertex> vertices;
+    if(!Utils::loadObj(vertices, objPath)) return false;
+    uploadVertices(vertices);
+    LOG::Info("Mesh Created");
+    objFilePath = objPath;
+    return true;
 }

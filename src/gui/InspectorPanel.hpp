@@ -5,4 +5,5 @@ public:
     void Render();
     
 private:
+    int curIdx = 0;
 };

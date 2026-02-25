@@ -72,6 +72,10 @@ public:
 
     // J S O N -> S C E N E
     void Deserialize(std::string scenePath) { // Load Scene from json (used from runtime game script)
+        if (scenePath == sceneFilePath) {
+            LOG::Warning("Scene Already Loaded! (Tried to load a already loaded active scene): ", scenePath);
+            return;
+        }
         gameObjects.clear();
         roots.clear();
 

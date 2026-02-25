@@ -1,79 +1,14 @@
 {
   "gameObjects": [
     {
-      "childs": [
+      "childs": [],
+      "components": [
         {
-          "childs": [
-            {
-              "childs": [],
-              "components": [],
-              "name": "bameObject",
-              "transform": {
-                "position": [
-                  0.0,
-                  0.0,
-                  0.0
-                ],
-                "rotation": [
-                  1.0,
-                  0.0,
-                  0.0,
-                  0.0
-                ],
-                "scale": [
-                  1.0,
-                  1.0,
-                  1.0
-                ]
-              }
-            }
-          ],
-          "components": [],
-          "name": "child1",
-          "transform": {
-            "position": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "rotation": [
-              1.0,
-              0.0,
-              0.0,
-              0.0
-            ],
-            "scale": [
-              1.0,
-              1.0,
-              1.0
-            ]
-          }
-        },
-        {
-          "childs": [],
-          "components": [],
-          "name": "childdd222222",
-          "transform": {
-            "position": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "rotation": [
-              1.0,
-              0.0,
-              0.0,
-              0.0
-            ],
-            "scale": [
-              1.0,
-              1.0,
-              1.0
-            ]
-          }
+          "cullDir": 0,
+          "filePath": "../Assets\\Cube.obj",
+          "type": "Mesh"
         }
       ],
-      "components": [],
       "name": "GameObject",
       "transform": {
         "position": [
@@ -84,62 +19,6 @@
         "rotation": [
           1.0,
           0.0,
-          0.0,
-          0.0
-        ],
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      }
-    },
-    {
-      "childs": [],
-      "components": [],
-      "name": "obj2",
-      "transform": {
-        "position": [
-          0.0,
-          0.0,
-          0.0
-        ],
-        "rotation": [
-          1.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      }
-    },
-    {
-      "childs": [],
-      "components": [
-        {
-          "type": "Material"
-        },
-        {
-          "type": "Light"
-        },
-        {
-          "type": "Mesh"
-        }
-      ],
-      "name": "obj3",
-      "transform": {
-        "position": [
-          1.0,
-          2.0,
-          0.0
-        ],
-        "rotation": [
-          0.5372995734214783,
-          0.843391478061676,
           0.0,
           0.0
         ],
