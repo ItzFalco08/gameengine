@@ -97,12 +97,12 @@ void InspectorPanel::Render() {
                     case MaterialType::LIT: {
                         LitMaterial* matProps = static_cast<LitMaterial*>(mat->matprops.get());
 
-                        bool change;
-                        change = ImGui::ColorEdit3("Ambient Color", &matProps->ambientColor.x);
-                        change = ImGui::DragFloat("ambientStrength", &matProps->ambientStrength, 0.01f, 0.0f, 1.0f);
-                        change = ImGui::DragFloat("diffuseStrength", &matProps->diffuseStrength, 0.01f, 0.0f, 1.0f);
-                        change = ImGui::DragFloat("specularStrength", &matProps->specularStrength, 0.01f, 0.0f, 1.0f);
-                        change = ImGui::DragFloat("shininess", &matProps->shininess, 0.1f, 0.0f, 64.0f);
+                        bool change = false;
+                        change |= ImGui::ColorEdit3("Ambient Color", &matProps->ambientColor.x);
+                        change |= ImGui::DragFloat("ambientStrength", &matProps->ambientStrength, 0.01f, 0.0f, 1.0f);
+                        change |= ImGui::DragFloat("diffuseStrength", &matProps->diffuseStrength, 0.01f, 0.0f, 1.0f);
+                        change |= ImGui::DragFloat("specularStrength", &matProps->specularStrength, 0.01f, 0.0f, 1.0f);
+                        change |= ImGui::DragFloat("shininess", &matProps->shininess, 0.1f, 0.0f, 64.0f);
                         if(change) editorScene->MakeDirty();
 
                         break;
@@ -111,8 +111,8 @@ void InspectorPanel::Render() {
                     case MaterialType::UNLIT: {
                         UnlitMaterial* matProps = static_cast<UnlitMaterial*>(mat->matprops.get());
                         
-                        bool change;
-                        change = ImGui::ColorEdit3("Ambient Color", &matProps->ambientColor.x);
+                        bool change = false;
+                        change |= ImGui::ColorEdit3("Ambient Color", &matProps->ambientColor.x);
                         if(change) editorScene->MakeDirty();
                         break;
                     }
