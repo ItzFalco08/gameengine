@@ -17,8 +17,7 @@ public:
     float constant = 1.0f;
     float linear =  0.07f;
     float quadratic = 0.017f;
-    
-    size_t GetId() override;
-    std::string GetType() override;
+
+    std::string GetType() override { return "Light"; }    
     ~Light() noexcept override;
 };

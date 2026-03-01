@@ -16,7 +16,7 @@ public:
     std::optional<std::string> objFilePath;
     CullDir cullDir = FRONT; // read and set by renderer
 
-    size_t GetId() override;
+    std::string GetType() override { return "Mesh"; }
     Mesh();
     Mesh(const char* objPath);
     bool Initialize(const char* objPath);
@@ -32,7 +32,6 @@ public:
     }
 
     ~Mesh() override;
-    std::string GetType() override;
 
 
 private:

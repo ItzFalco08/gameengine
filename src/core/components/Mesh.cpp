@@ -2,10 +2,6 @@
 #include "../../utils/Logger.hpp"
 #include <typeinfo>
 
-size_t Mesh::GetId() {
-    return typeid(Mesh).hash_code();
-}
-
 Mesh::Mesh(const char* objPath) {
     Initialize(objPath);
 }
@@ -42,9 +38,6 @@ void Mesh::uploadVertices(const std::vector<Vertex>& vertices) {
     glBindVertexArray(0);
 }
 
-std::string Mesh::GetType() {
-    return "Mesh";
-}
 
 bool Mesh::Initialize(const char* objPath) {
     if (objPath == objFilePath) {LOG::Warning("Mesh with path Already Added: ", objPath); return false;};

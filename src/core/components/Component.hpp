@@ -10,8 +10,7 @@ class Component {
 public:
     virtual ~Component() noexcept = default;
     GameObject* owner = nullptr;
-    virtual size_t GetId() { return 0; }
-    virtual std::string GetType() {return "";};
+    virtual std::string GetType() = 0;
     virtual void Serialize(nlohmann::json& json) {};
     virtual void Deserialize(nlohmann::json& json) {};
 

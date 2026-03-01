@@ -3,16 +3,9 @@
 #include "../core/Scene.hpp"
 #include "glm/glm.hpp"
 #include "../core/components/Mesh.hpp"
+#include "../core/components/Material.hpp"
 extern GameObject* selectedGameObject;
 extern Scene* editorScene;
-
-enum class ComponentsRegistry {
-    Mesh,
-    Material,
-    Light,
-    Script,
-};
-
 
 
 extern std::unordered_map<std::string, std::function<std::unique_ptr<Component>()>> componentRegistry;
@@ -56,8 +49,8 @@ void InspectorPanel::Render() {
                 if (key == "Mesh") {
                     if (auto* mesh = dynamic_cast<Mesh*>(component.get())) {
                         const char* items[] = { "FRONT", "BACK", "BOTH" };
-                        if(ImGui::Combo("Face Culling", &curIdx, items, IM_ARRAYSIZE(items))) {
-                            mesh->cullDir = static_cast<CullDir>(curIdx);
+                        if(ImGui::Combo("Face Culling", &faceCullingIdx, items, IM_ARRAYSIZE(items))) {
+                            mesh->cullDir = static_cast<CullDir>(faceCullingIdx);
                             editorScene->MakeDirty();
                         }
 
@@ -83,14 +76,50 @@ void InspectorPanel::Render() {
                         
                         ImGui::SameLine();
                         ImGui::Text("Mesh Object");
-                        
-                        // Label next to it or above it? 
-                        // Since Button takes full width above, let's keep it simple or add a label before if you prefer:
-                        // ImGui::Text("Mesh Object"); ImGui::SameLine(); ...
+
                     }
 
                 } else if (key == "Material") {
-                    ImGui::Text("Mesh");
+                    Material* mat = static_cast<Material*>(component.get());
+                    MaterialType matType = static_cast<MaterialType>(mat->matprops->GetMatType());
+
+                    // S H A D E R _ T Y P E
+                    std::array<const char*, 2> items = { "Lit", "Unlit" };
+
+                    if(ImGui::Combo("Shader Type", &shaderTypeIdx, items.data(), items.size())) {
+                        mat->SetMaterialType(static_cast<MaterialType>(shaderTypeIdx));
+                        editorScene->MakeDirty();
+                    }
+
+                    // M A T E R I A L _ P R O P E R T I E S
+                    switch (matType)
+                    {
+                    case MaterialType::LIT: {
+                        LitMaterial* matProps = static_cast<LitMaterial*>(mat->matprops.get());
+
+                        bool change;
+                        change = ImGui::ColorEdit3("Ambient Color", &matProps->ambientColor.x);
+                        change = ImGui::DragFloat("ambientStrength", &matProps->ambientStrength, 0.01f, 0.0f, 1.0f);
+                        change = ImGui::DragFloat("diffuseStrength", &matProps->diffuseStrength, 0.01f, 0.0f, 1.0f);
+                        change = ImGui::DragFloat("specularStrength", &matProps->specularStrength, 0.01f, 0.0f, 1.0f);
+                        change = ImGui::DragFloat("shininess", &matProps->shininess, 0.1f, 0.0f, 64.0f);
+                        if(change) editorScene->MakeDirty();
+
+                        break;
+                    }
+
+                    case MaterialType::UNLIT: {
+                        UnlitMaterial* matProps = static_cast<UnlitMaterial*>(mat->matprops.get());
+                        
+                        bool change;
+                        change = ImGui::ColorEdit3("Ambient Color", &matProps->ambientColor.x);
+                        if(change) editorScene->MakeDirty();
+                        break;
+                    }
+
+                    default:
+                        break;
+                    }
                     
                 } else if (key == "Light") {
                     ImGui::Text("Mesh");

@@ -38,9 +38,7 @@ void Transform::Scale(const glm::vec3& factor) {
     dirty = true;
 }
 
-size_t Transform::GetId() {
-    return typeid(Transform).hash_code();
-}
+
 
 glm::mat4 Transform::getModel() {
     if(dirty) {

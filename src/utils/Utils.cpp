@@ -186,11 +186,11 @@ bool Utils::loadObj(std::vector<Vertex>& vertices, const char* objPath) {
                     vertex.normal = tempNormals[vn - 1];
                     vertices.push_back(vertex);
                     
-                    // LOG::Info(
-                    //     "Vertex Added: ", "pos: ", vertex.position.x, ", ", vertex.position.y, ", ", vertex.position.z, "\n",
-                    //     "uv: ", vertex.uv.x, ", ", vertex.uv.y, "\n",
-                    //     "normal: ", vertex.normal.x, ", ", vertex.normal.y, ", ", vertex.normal.z
-                    // );
+                    LOG::Debug(
+                        "Vertex Added: ", "pos: ", vertex.position.x, ", ", vertex.position.y, ", ", vertex.position.z, "\n",
+                        "uv: ", vertex.uv.x, ", ", vertex.uv.y, "\n",
+                        "normal: ", vertex.normal.x, ", ", vertex.normal.y, ", ", vertex.normal.z
+                    );
                 }
             } else {
                 for (int i = 0; i <= 2; i++) { // 0, 1, 2
@@ -208,7 +208,7 @@ bool Utils::loadObj(std::vector<Vertex>& vertices, const char* objPath) {
                     vertex.normal = tempNormals[vn - 1];
                     vertices.push_back(vertex);
                     
-                    LOG::Info(
+                    LOG::Debug(
                         "Vertex Added: ", "pos: ", vertex.position.x, ", ", vertex.position.y, ", ", vertex.position.z, "\n",
                         "uv: ", vertex.uv.x, ", ", vertex.uv.y, "\n",
                         "normal: ", vertex.normal.x, ", ", vertex.normal.y, ", ", vertex.normal.z
