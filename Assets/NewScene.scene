@@ -4,11 +4,6 @@
       "childs": [],
       "components": [
         {
-          "cullDir": 0,
-          "filePath": "",
-          "type": "Mesh"
-        },
-        {
           "ambientColor": [
             1.0,
             1.0,
@@ -19,8 +14,13 @@
           "materialType": 0,
           "shininess": 32.0,
           "specularStrength": 0.4000000059604645,
-          "texturePath": "",
+          "texturePath": "../Assets\\Screenshot 2026-03-02 184605.png",
           "type": "Material"
+        },
+        {
+          "cullDir": 0,
+          "filePath": "",
+          "type": "Mesh"
         }
       ],
       "name": "GameObject",
