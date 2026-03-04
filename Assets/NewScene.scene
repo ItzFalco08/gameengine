@@ -5,7 +5,7 @@
       "components": [
         {
           "cullDir": 0,
-          "filePath": "../Assets\\Cube.obj",
+          "filePath": "",
           "type": "Mesh"
         },
         {
@@ -19,6 +19,7 @@
           "materialType": 0,
           "shininess": 32.0,
           "specularStrength": 0.4000000059604645,
+          "texturePath": "",
           "type": "Material"
         }
       ],

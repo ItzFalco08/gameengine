@@ -2,12 +2,13 @@
 #include "GLAD/gl.h"
 #include "Shader.hpp"
 #include "../core/AssetsManager.hpp"
+#include "../core/ResourceManager.hpp"
 #include "../core/Scene.hpp"
+#include "InputManager.hpp"
 #include "../gui/ScenePanel.hpp"
 #include "../gui/AssetsBrowserPanel.hpp"
 #include "../gui/HeriarchyPanel.hpp"
 #include "../gui/InspectorPanel.hpp"
-#include "InputManager.hpp"
 
 // Forward declarations to avoid circular includes
 class ScenePanel;
@@ -25,9 +26,10 @@ extern SceneView sceneView;
 extern Shader litShader;
 extern Shader unlitShader;
 extern AssetsManager assetsManager;
-extern Scene* editorScene;
 extern InputManager inputManager;
+extern ResourceManager resourceManager;
 
+extern Scene* editorScene;
 extern GameObject* selectedGameObject; 
 
 namespace panels {

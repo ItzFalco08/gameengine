@@ -44,9 +44,14 @@ void Material::SetMaterialType(MaterialType matType) {
         matprops = std::make_unique<LitMaterial>();
         break;
 
-    case MaterialType::UNLIT:
+    case MaterialType::UNLIT: {
+        if (auto* litMat = dynamic_cast<LitMaterial*>(matprops.get())) {
+            resourceManager.DeleteTexture(litMat->texturePath);
+        }
+
         matprops = std::make_unique<UnlitMaterial>();
         break;
+    }
     
     default:
         break;
@@ -64,6 +69,7 @@ void LitMaterial::Serialize(nlohmann::json& json) {
     json["diffuseStrength"] = diffuseStrength;
     json["specularStrength"] = specularStrength;
     json["shininess"] = shininess;
+    json["texturePath"] = texturePath;
 }
 
 void LitMaterial::Deserialize(nlohmann::json& json) {
@@ -72,6 +78,7 @@ void LitMaterial::Deserialize(nlohmann::json& json) {
     diffuseStrength = json["diffuseStrength"]; 
     specularStrength = json["specularStrength"]; 
     shininess = json["shininess"]; 
+    texturePath = json["texturePath"];
 }
 
 void LitMaterial::applyToShader(Shader* shader) {

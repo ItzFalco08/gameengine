@@ -8,7 +8,7 @@ class GameObject; // forward declaration to avoid circular include
 
 class Component {
 public:
-    virtual ~Component() noexcept = default;
+    virtual ~Component()  = default;
     GameObject* owner = nullptr;
     virtual std::string GetType() = 0;
     virtual void Serialize(nlohmann::json& json) {};

@@ -4,6 +4,7 @@
 #include "glm/glm.hpp"
 #include "../core/components/Mesh.hpp"
 #include "../core/components/Material.hpp"
+#include <cstdio>
 extern GameObject* selectedGameObject;
 extern Scene* editorScene;
 
@@ -82,28 +83,61 @@ void InspectorPanel::Render() {
                 } else if (key == "Material") {
                     Material* mat = static_cast<Material*>(component.get());
                     MaterialType matType = static_cast<MaterialType>(mat->matprops->GetMatType());
+                    shaderTypeIdx = static_cast<int>(matType);
 
                     // S H A D E R _ T Y P E
                     std::array<const char*, 2> items = { "Lit", "Unlit" };
 
                     if(ImGui::Combo("Shader Type", &shaderTypeIdx, items.data(), items.size())) {
                         mat->SetMaterialType(static_cast<MaterialType>(shaderTypeIdx));
+                        matType = static_cast<MaterialType>(mat->matprops->GetMatType());
                         editorScene->MakeDirty();
                     }
 
                     // M A T E R I A L _ P R O P E R T I E S
+
+
                     switch (matType)
                     {
                     case MaterialType::LIT: {
-                        LitMaterial* matProps = static_cast<LitMaterial*>(mat->matprops.get());
+                        LitMaterial* litMaterial = static_cast<LitMaterial*>(mat->matprops.get());
 
                         bool change = false;
-                        change |= ImGui::ColorEdit3("Ambient Color", &matProps->ambientColor.x);
-                        change |= ImGui::DragFloat("ambientStrength", &matProps->ambientStrength, 0.01f, 0.0f, 1.0f);
-                        change |= ImGui::DragFloat("diffuseStrength", &matProps->diffuseStrength, 0.01f, 0.0f, 1.0f);
-                        change |= ImGui::DragFloat("specularStrength", &matProps->specularStrength, 0.01f, 0.0f, 1.0f);
-                        change |= ImGui::DragFloat("shininess", &matProps->shininess, 0.1f, 0.0f, 64.0f);
+                        
+                        change |= ImGui::ColorEdit3("Ambient Color", &litMaterial->ambientColor.x);
+                        change |= ImGui::DragFloat("ambientStrength", &litMaterial->ambientStrength, 0.005f, 0.0f, 1.0f);
+                        change |= ImGui::DragFloat("diffuseStrength", &litMaterial->diffuseStrength, 0.005f, 0.0f, 1.0f);
+                        change |= ImGui::DragFloat("specularStrength", &litMaterial->specularStrength, 0.005f, 0.0f, 1.0f);
+                        change |= ImGui::DragFloat("shininess", &litMaterial->shininess, 0.1f, 0.0f, 64.0f);
                         if(change) editorScene->MakeDirty();
+
+                        // T E X T U R E
+
+                        ImGui::SeparatorText("Texture");
+
+                        Texture* texture = resourceManager.LoadAndGetTexture(litMaterial->texturePath); // cur tex
+                        std::string tPathTxt = texture ? texture->texturePath.c_str() : "Drop texture (png/jpg/jpeg)";
+
+                        ImGui::InputText("Texture Path", tPathTxt.data(), tPathTxt.size(), ImGuiInputTextFlags_ReadOnly);
+
+                        if(ImGui::BeginDragDropTarget()) {
+                            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+                                const wchar_t* path = (const wchar_t*)payload->Data;
+                                std::filesystem::path p(path);
+                                
+                                if ((p.extension() == ".png" || p.extension() == ".jpg" || p.extension() == ".jpeg") && litMaterial->texturePath != p.string().c_str()) {
+                                    resourceManager.DeleteTexture(litMaterial->texturePath);
+                                    litMaterial->texturePath = p.string().c_str();
+                                    editorScene->MakeDirty();
+                                }
+                            }
+                            ImGui::EndDragDropTarget();
+                        }
+
+                        if (texture && texture->TexId != GL_NONE) {
+                            ImGui::Text("Preview");
+                            ImGui::Image((ImTextureID)(intptr_t)texture->TexId, ImVec2(96, 96));
+                        }
 
                         break;
                     }
@@ -120,7 +154,7 @@ void InspectorPanel::Render() {
                     default:
                         break;
                     }
-                    
+
                 } else if (key == "Light") {
                     ImGui::Text("Mesh");
 

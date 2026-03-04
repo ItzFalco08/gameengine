@@ -7,11 +7,19 @@ class ResourceManager {
 public:
     std::unordered_map<std::string, std::unique_ptr<Texture>> textures;
 
-    void AddTexture(const char* path) {
-        if (!textures[path]) {
-            textures[path] = std::make_unique<Texture>();
+    Texture* LoadAndGetTexture(const std::string& texturePath) {
+        if (texturePath == "") return nullptr;
+        if (textures.find(texturePath) == textures.end()) {
+            textures[texturePath] = std::make_unique<Texture>(texturePath.c_str());
+        }
+
+        return textures[texturePath].get();
+    }
+
+    void DeleteTexture(const std::string& texturePath) {
+        if (textures.find(texturePath) != textures.end()) {
+            textures.erase(texturePath);
         }
     }
 
-    
 };

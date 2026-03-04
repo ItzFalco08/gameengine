@@ -4,10 +4,17 @@
 #include "STB/stb_image.h"
 
 Texture::Texture(const char* path, TexDets texDets) {
+    Initialize(path, texDets);
+}
+
+bool Texture::Initialize(const char* path, TexDets texDets) {
+    if (texturePath == path) { LOG::Warning("Texture already bound with path: ", path ); return false; };
+    
     int width = 0, height = 0, nrChannels = 0;
     unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
+    texturePath = std::string(path);
 
-    unsigned int format = GL_RGB;
+    unsigned int format;
     bool wantsMips = (
         texDets.minFilter == GL_LINEAR_MIPMAP_LINEAR ||
         texDets.minFilter == GL_LINEAR_MIPMAP_NEAREST ||
@@ -33,9 +40,8 @@ Texture::Texture(const char* path, TexDets texDets) {
         glBindTexture(GL_TEXTURE_2D, TexId);
         applyParams(texDets);
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, fallback);
-        if (wantsMips) glGenerateMipmap(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, 0);
-        return;
+        return true;
     }
 
     glGenTextures(1, &TexId);
@@ -44,6 +50,35 @@ Texture::Texture(const char* path, TexDets texDets) {
     glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
     if (wantsMips) glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(data);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    return true;
+}
+
+// Move Symantics
+Texture::Texture(Texture&& other) {
+    TexId = other.TexId;
+    texturePath = other.texturePath;
+    other.texturePath = "";
+    other.TexId = GL_NONE;
+};
+
+void Texture::operator=(Texture&& other) {
+    if (TexId != GL_NONE) glDeleteTextures(1, &TexId);
+    texturePath = other.texturePath;
+    TexId = other.TexId;
+    other.TexId = GL_NONE;
+    other.texturePath = "";
+}
+
+Texture::~Texture() {
+    if (TexId != GL_NONE) {
+        glDeleteTextures(1, &TexId);
+    }
+}
+
+void Texture::setTexParam(unsigned int Param, unsigned int Value) {
+    glBindTexture(GL_TEXTURE_2D, TexId);
+    glTexParameteri(GL_TEXTURE_2D, Param, Value);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 

@@ -2,6 +2,6 @@
 #include "../../utils/Logger.hpp"
 #include <typeinfo>
 
-Light::~Light() noexcept {
+Light::~Light() {
     LOG::Info("Light Destroyed");
 }

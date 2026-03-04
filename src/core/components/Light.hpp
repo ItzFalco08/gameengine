@@ -19,5 +19,5 @@ public:
     float quadratic = 0.017f;
 
     std::string GetType() override { return "Light"; }    
-    ~Light() noexcept override;
+    ~Light() override;
 };

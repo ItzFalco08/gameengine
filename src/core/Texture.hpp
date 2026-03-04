@@ -1,5 +1,6 @@
 #pragma once
 #include "GLAD/gl.h"
+#include "string"
 
 struct TexDets {
     unsigned int wrapS = GL_CLAMP_TO_EDGE;
@@ -10,10 +11,18 @@ struct TexDets {
 
 class Texture {
 public:
-    unsigned int TexId;
+    unsigned int TexId = GL_NONE;
+    std::string texturePath = "";
 
     Texture() = default;
-    Texture(const char* path, TexDets texDetails);
+    Texture(const char* path, TexDets texDetails = TexDets());
+    // move symantics
+    Texture(Texture&& other);
+    void operator=(Texture&& other);
+    ~Texture();
+
+    void setTexParam(unsigned int Param, unsigned int Value);
+    bool Initialize(const char* path, TexDets texDetails = TexDets());
 
 private:
     void applyParams(TexDets dets);
