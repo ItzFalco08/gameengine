@@ -22,10 +22,8 @@ struct DirLight {
 struct PointLight {
     vec3 color;
     vec3 position;
-
-    float constant;
-    float linear;
-    float quadratic;
+    float intensity;
+    float range;
 };
 
 uniform sampler2D uTexture;
@@ -42,10 +40,11 @@ out vec4 FragColor;
 
 vec3 getPointLightOutput(PointLight pointLight, vec3 camDir) {
     // pre requrities
+    float dist = length(pointLight.position - FragPos);
+     
     vec3 lightDir = normalize(pointLight.position - FragPos);
     vec3 reflectedLight = reflect(-lightDir, Normal);
-    float dist = length(pointLight.position - FragPos);
-    float attenuation = 1.0 / (pointLight.constant + pointLight.linear * dist + pointLight.quadratic * (dist * dist));
+    float attenuation = pow(clamp(1.0 - (dist / pointLight.range), 0.0, 1.0), 2.0) * pointLight.intensity;
 
     // 0 - 1 dots
     float diffuse = max(dot(lightDir, normalize(Normal)), 0.0);

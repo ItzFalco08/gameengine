@@ -8,8 +8,8 @@ enum LightType {
 };
 
 struct LightProps {
-    virtual void Serialize(nlohmann::json& json);
-    virtual void Deserialize(nlohmann::json& json);
+    virtual void Serialize(nlohmann::json& json) = 0;
+    virtual void Deserialize(nlohmann::json& json) = 0;
 };
 
 struct DirLight : public LightProps {
@@ -19,39 +19,38 @@ struct DirLight : public LightProps {
     DirLight(nlohmann::json& json) { Deserialize(json); }
 
     void Serialize(nlohmann::json& json) override {
-
+        json["lightColor"] = {lightColor.x, lightColor.y, lightColor.z};
     };
     void Deserialize(nlohmann::json& json) override {
-
+        lightColor = {json["lightColor"][0], json["lightColor"][1], json["lightColor"][2]};
     };
 };
 
 struct PointLight : public LightProps{
     glm::vec3 lightColor = {1, 1, 1};
-    int range = 30;
-
-    // attenution
-    float constant = 1.0f;
-    float linear =  0.07f;
-    float quadratic = 0.017f;
-    
+    float range = 30.0f;
+    float intensity = 10.0f;
 
     void Serialize(nlohmann::json& json) override {
-
+        json["lightColor"] = {lightColor.x, lightColor.y, lightColor.z};
+        json["range"] = range;
+        json["intensity"] = intensity;
     };
     void Deserialize(nlohmann::json& json) override {
-        
+        lightColor = {json["lightColor"][0], json["lightColor"][1], json["lightColor"][2]};
+        range = json["range"];
+        intensity = json["intensity"];
     };
 };
 
 class Light : public Component {
 public:
     LightType lightType = POINT;
-    LightProps lightProps = PointLight();
+    std::unique_ptr<LightProps> lightProps = std::make_unique<PointLight>();
 
     void Serialize(nlohmann::json& json) {
         json["lightType"] = lightType;
-        lightProps.Serialize(json);
+        lightProps->Serialize(json);
     };
 
     void Deserialize(nlohmann::json& json) {
@@ -59,13 +58,13 @@ public:
         switch (type)
         {
         case LightType::DIRECTIONAL:
-            lightProps = DirLight();
-            lightProps.Deserialize(json);
+            lightProps = std::make_unique<DirLight>();
+            lightProps->Deserialize(json);
             break;
         
         case LightType::POINT:
-            lightProps = PointLight();
-            lightProps.Deserialize(json);
+            lightProps = std::make_unique<PointLight>();
+            lightProps->Deserialize(json);
             break;
 
         default:
