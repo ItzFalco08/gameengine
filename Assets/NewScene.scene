@@ -4,12 +4,23 @@
       "childs": [],
       "components": [
         {
+          "intensity": 10.0,
+          "lightColor": [
+            1.0,
+            0.5137255191802979,
+            0.4431372582912445
+          ],
+          "lightType": 1,
+          "range": -22.0,
+          "type": "Light"
+        },
+        {
           "ambientColor": [
             1.0,
-            1.0,
+            0.7882353067398071,
             1.0
           ],
-          "ambientStrength": 0.20000000298023224,
+          "ambientStrength": 0.3449999988079071,
           "diffuseStrength": 0.4000000059604645,
           "materialType": 0,
           "shininess": 32.0,
@@ -19,7 +30,7 @@
         },
         {
           "cullDir": 0,
-          "filePath": "",
+          "filePath": "../Assets\\Cube.obj",
           "type": "Mesh"
         }
       ],

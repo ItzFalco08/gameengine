@@ -9,7 +9,7 @@ extern GameObject* selectedGameObject;
 extern Scene* editorScene;
 
 
-extern std::unordered_map<std::string, std::function<std::unique_ptr<Component>()>> componentRegistry;
+extern std::map<std::string, std::function<std::unique_ptr<Component>()>> componentRegistry;
 
 void InspectorPanel::Render() {
     ImGui::Begin("Inspector");
@@ -96,7 +96,6 @@ void InspectorPanel::Render() {
 
                     // M A T E R I A L _ P R O P E R T I E S
 
-
                     switch (matType)
                     {
                     case MaterialType::LIT: {
@@ -156,8 +155,32 @@ void InspectorPanel::Render() {
                     }
 
                 } else if (key == "Light") {
-                    ImGui::Text("Mesh");
+                    Light* lightComp = static_cast<Light*>(component.get());
 
+                    switch (lightComp->lightType)
+                    {
+                    case LightType::POINT: {
+                        PointLight* l = static_cast<PointLight*>(lightComp->lightProps.get());
+
+                        bool change = false;
+
+                        change |= ImGui::ColorEdit3("lightColor", &l->lightColor[0]);
+                        change |= ImGui::DragFloat("range", &l->range, 0.1f, 0.0f, 500.0f);
+                        change |= ImGui::DragFloat("intensity", &l->intensity, 0.1f, 0.0f, 500.0f);
+                        
+                        if(change) editorScene->MakeDirty();
+                        break;
+                    }
+
+                    case LightType::DIRECTIONAL: {
+                        DirLight* l = static_cast<DirLight*>(lightComp->lightProps.get());
+                        bool change = ImGui::ColorEdit3("lightColor", &l->lightColor[0]);
+                        if(change) editorScene->MakeDirty();
+                    }
+
+                    default:
+                        break;
+                    }
                 } else if (key == "Script") {
                     ImGui::Text("Mesh");
 

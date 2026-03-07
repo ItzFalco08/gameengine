@@ -1,12 +1,14 @@
 #pragma once
 #include "GameObject.hpp"
+#include "./components/Light.hpp"
 #include "json/json.hpp"
 #include <fstream>
 
 class Scene { // used single instance of Scene for the GameEngine Editor
 public:
     std::vector<std::unique_ptr<GameObject>> gameObjects;
-    std::vector<GameObject*> roots; 
+    std::vector<GameObject*> roots;
+    std::vector<Light*> lights;
     std::string sceneName;
     std::string sceneFilePath;
     bool dirty = false; // Used for Editor (keeps track for changes)

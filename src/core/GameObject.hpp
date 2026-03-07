@@ -20,13 +20,13 @@ struct ComponentRegistryEntry {
 };
 
 // Factory map defined in a .cpp to avoid include cycles
-extern std::unordered_map<std::string, std::function<std::unique_ptr<Component>()>> componentRegistry;
+extern std::map<std::string, std::function<std::unique_ptr<Component>()>> componentRegistry;
 
 class GameObject {
 public:
     std::string name;
     std::unique_ptr<Transform> transform;
-    std::unordered_map<std::string, std::unique_ptr<Component>> components;
+    std::map<std::string, std::unique_ptr<Component>> components;
     Scene* parentScene;
     std::vector<GameObject*> childs;
 
@@ -35,7 +35,6 @@ public:
     , parentScene(parentScene)
     , name(goName)
     {
-        components.reserve(4);
     }
 
     ~GameObject() {
@@ -51,8 +50,8 @@ public:
             LOG::Error("AddComponent Failed! Component Already Exists.");
             return;
         }
-
         components[compTypeStr] = std::make_unique<T>(std::forward<Args>(args)...);
+        components[compTypeStr]->parent = this;
     }
 
     template<typename T>
@@ -109,6 +108,7 @@ public:
         for(nlohmann::json& componentJson : json["components"]) {
             std::unique_ptr<Component> c = componentRegistry[componentJson["type"]]();
             c->Deserialize(componentJson);
+            c->parent = this;
             components[componentJson.at("type")] = std::move(c);
         }
     }

@@ -30,7 +30,7 @@ uniform sampler2D uTexture;
 
 uniform Material uMaterial;
 
-#define NR_POINT_LIGHTS 6
+#define NR_POINT_LIGHTS 50
 #define NR_DIR_LIGHTS 6
 
 uniform DirLight uDirLights[NR_DIR_LIGHTS];
