@@ -58,16 +58,17 @@ public:
         dirty = false;
     }
 
-    void recursion(std::vector<GameObject*>& nodes, nlohmann::json& goArr) {
+    void recursion(std::vector<GameObject*>& nodes, nlohmann::json& goArr, GameObject* parent) {
         if(goArr.empty()) return;
 
         for (auto& go : goArr ) {
             // extract go;
             std::unique_ptr<GameObject> gameObjInstance = std::make_unique<GameObject>(this, go["name"]);
             gameObjInstance->Deserialize(go);
+            gameObjInstance->parent = parent;
 
             nodes.push_back(gameObjInstance.get());
-            recursion(gameObjInstance->childs, go["childs"]);
+            recursion(gameObjInstance->childs, go["childs"], gameObjInstance.get());
             gameObjects.push_back(std::move(gameObjInstance));
         }
     };
@@ -98,18 +99,19 @@ public:
         auto& gameObjectsArray = sceneJson.at("gameObjects");
 
         // recursively add all gameObjects from json into scene
-        recursion(roots, gameObjectsArray);
+        recursion(roots, gameObjectsArray, nullptr);
     }
 
-    GameObject* AddGameObject(const std::string& goName) {
+    GameObject* AddGameObject(const std::string& goName, GameObject* parent) {
         auto newGo = std::make_unique<GameObject>(this, goName);
-        GameObject* ptr = newGo.get();                          
+        newGo->parent = parent;
+        GameObject* ptr = newGo.get();                        
         
         gameObjects.push_back(std::move(newGo));                 // Move ownership to vector
         
         dirty = true;
         return ptr;
-    }; 
+    };
 
     void RemoveGameObject() {
         dirty = true;

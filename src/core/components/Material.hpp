@@ -18,7 +18,7 @@ struct MaterialProps {
 
 struct LitMaterial : public MaterialProps {
 
-    glm::vec3 ambientColor = glm::vec3(1.0f,1.0f,1.0f);
+    glm::vec3 ambientColor = glm::vec3(1.0f, 1.0f, 1.0f);
     float ambientStrength = 0.2f;
     float diffuseStrength = 0.4f;
     float specularStrength = 0.4f;
@@ -35,8 +35,8 @@ struct LitMaterial : public MaterialProps {
 };
 
 struct UnlitMaterial : public MaterialProps {
-    glm::vec3 ambientColor = glm::vec3(1.0f,1.0f,1.0f);
-    
+    glm::vec3 ambientColor = glm::vec3(1.0f, 1.0f, 1.0f);
+
     void Serialize(nlohmann::json& json) override;
     void Deserialize(nlohmann::json& json) override;
 
@@ -54,6 +54,8 @@ public:
     void Serialize(nlohmann::json& json) override;
     void Deserialize(nlohmann::json& json) override;
     void SetMaterialType(MaterialType matType);
+    MaterialType getMaterialType() ;
 
-    std::string GetType() override;
+    static const char* StaticType() { return "Material"; }
+    std::string GetType() override { return StaticType(); }
 };

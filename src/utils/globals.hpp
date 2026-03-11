@@ -4,24 +4,16 @@
 #include "../core/AssetsManager.hpp"
 #include "../core/ResourceManager.hpp"
 #include "../core/Scene.hpp"
+#include "../core/Camera.hpp"
 #include "InputManager.hpp"
-#include "../gui/ScenePanel.hpp"
-#include "../gui/AssetsBrowserPanel.hpp"
 #include "../gui/HeriarchyPanel.hpp"
 #include "../gui/InspectorPanel.hpp"
 
 // Forward declarations to avoid circular includes
 class ScenePanel;
 class AssetsBrowser;
+class Renderer;
 
-struct SceneView {
-    int SCENEVIEW_WIDTH;
-    int SCENEVIEW_HEIGHT;
-
-    unsigned int textureObj, framebuffObj, depthbuffObj;
-};
-
-extern SceneView sceneView;
 
 extern Shader litShader;
 extern Shader unlitShader;
@@ -30,7 +22,10 @@ extern InputManager inputManager;
 extern ResourceManager resourceManager;
 
 extern Scene* editorScene;
+extern Camera* editorCamera;
 extern GameObject* selectedGameObject; 
+
+extern Renderer renderer;
 
 namespace panels {
     extern ScenePanel scenePanel;
@@ -38,3 +33,4 @@ namespace panels {
 	extern HeriarchyPanel heriarchyPanel;
     extern InspectorPanel inspectorPanel;
 };
+

@@ -72,10 +72,8 @@ void HeriarchyPanel::RenderHeriarchy(std::vector<GameObject*>& roots) {
                 showRenamePanel = true;
             }
             if(ImGui::MenuItem("Delete")) {
-                PrintGameObjects();
                 DeleteSelected(roots);
-                PrintGameObjects();
-            } 
+            }
 
             ImGui::EndPopup();
         }
@@ -155,10 +153,10 @@ void HeriarchyPanel::CreateGameObjectPanel() {
         std::cout << "Game Object Created!: " << goName << std::endl;
         
         if(selectedGameObject) {
-            GameObject* go = editorScene->AddGameObject(goName);
+            GameObject* go = editorScene->AddGameObject(goName, selectedGameObject);
             selectedGameObject->childs.push_back(go);
         } else {
-            GameObject* go = editorScene->AddGameObject(goName);
+            GameObject* go = editorScene->AddGameObject(goName, selectedGameObject);
             editorScene->roots.push_back(go);
         }
     });

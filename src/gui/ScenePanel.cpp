@@ -22,16 +22,19 @@ void ScenePanel::Render() {
         changed = true;
     }
 
-    if (changed)
+    if (changed) {
         lastchange = glfwGetTime();
+        editorCamera->projDirty = true; // aspect ratio changed, recalculate projection
+    }
 
     if (glfwGetTime() - lastchange > 0.15) { // 150ms debounce
         Utils::updateFBODimensions();
     }
 
+    // NOTE: UV flipped vertically — OpenGL FBO is bottom-left origin, ImGui is top-left
     ImGui::Image((ImTextureID)(uintptr_t)sceneView.textureObj,
                  ImVec2((float)sceneView.SCENEVIEW_WIDTH, (float)sceneView.SCENEVIEW_HEIGHT),
-                 ImVec2(0, 0), ImVec2(1, 1));
+                 ImVec2(0, 1), ImVec2(1, 0));
 
     ImGui::End();
 }

@@ -15,8 +15,10 @@ public:
     unsigned int VAO, VBO; // used while rendering
     std::optional<std::string> objFilePath;
     CullDir cullDir = FRONT; // read and set by renderer
+    int vertexCount;
 
-    std::string GetType() override { return "Mesh"; }
+    static const char* StaticType() { return "Mesh"; }
+    std::string GetType() override { return StaticType(); }
     Mesh();
     Mesh(const char* objPath);
     bool Initialize(const char* objPath);

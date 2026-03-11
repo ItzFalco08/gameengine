@@ -1,5 +1,6 @@
 #include "AssetsBrowserPanel.hpp"
 #include "../utils/globals.hpp"
+#include "../utils/Utils.hpp"
 #include <vector>
 #include <functional>
 #include "../utils/Logger.hpp"
@@ -11,9 +12,9 @@
 void AssetsBrowser::InitIcons() {
     TexDets texDets;
     texDets.minFilter = GL_NEAREST;
-    fileTex = Texture("../src/textures/File.png", texDets);
-    folderTex = Texture("../src/textures/Folder.png", texDets);
-    folderEmptyTex = Texture("../src/textures/FolderEmpty.png", texDets);
+    fileTex = Texture(PROJECT_ROOT "/src/textures/File.png", texDets);
+    folderTex = Texture(PROJECT_ROOT "/src/textures/Folder.png", texDets);
+    folderEmptyTex = Texture(PROJECT_ROOT "/src/textures/FolderEmpty.png", texDets);
 }
 
 void AssetsBrowser::Render() {
@@ -126,7 +127,7 @@ void AssetsBrowser::Render() {
                 ImGui::SameLine();
             }
             
-            DrawAssetItem(icon, item.itemPath.filename().string().c_str(), {(float)iconSize, (float)iconSize}, item.itemPath);
+            DrawAssetItem(icon, item.itemPath.filename().string().c_str(), {iconSize, iconSize}, item.itemPath);
 
             cursorW += itemWidthWithSpacing;
         }

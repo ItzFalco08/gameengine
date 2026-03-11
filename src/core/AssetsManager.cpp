@@ -4,7 +4,6 @@
 #include "json/json.hpp"
 #include <fstream>
 
-
 std::vector<AssetItem> AssetsManager::List(const fs::path& directory) {
     if (!fs::exists(directory) || !fs::is_directory(directory))
     {

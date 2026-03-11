@@ -1,4 +1,5 @@
 #include "Transform.hpp"
+#include "../GameObject.hpp"
 
 void Transform::MakeDirty() {
     if (!dirty) {
@@ -48,6 +49,16 @@ glm::mat4 Transform::getModel() {
     return model;
 }
 
+glm::mat4 Transform::getNormalMat()
+{
+    if (dirty) { // recalculate only when model changes
+        normalMat = glm::transpose(glm::inverse(glm::mat3(getModel())));
+        dirty = false;
+    }
+
+    return normalMat;
+}
+
 Transform::~Transform() noexcept {
     LOG::Info("Transform Destroyed");
 }
@@ -75,4 +86,10 @@ void Transform::Deserialize(nlohmann::json& json) {
     position = glm::vec3(json.at("position")[0], json.at("position")[1], json.at("position")[2]);
     rotation = glm::quat(json.at("rotation")[0], json.at("rotation")[1], json.at("rotation")[2], json.at("rotation")[3]);
     scale = glm::vec3(json.at("scale")[0], json.at("scale")[1], json.at("scale")[2]);
+
+    MakeDirty();
+}
+
+glm::vec3 Transform::getAbsolutePosition() {
+    return parent->transform->getAbsolutePosition() + position;
 }

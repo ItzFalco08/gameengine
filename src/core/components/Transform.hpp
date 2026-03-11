@@ -10,15 +10,17 @@ struct Transform : public Component  {
 private:
     void recalculateMatrix();
     glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 normalMat = glm::mat4(1.0f);
 
-    bool dirty = false; // so that matrix is calculated only once each frame by renderer.
+    bool dirty = false;
 
 public:
     glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f); // Identity quaternion (w, x, y, z)
     glm::vec3 position = glm::vec3(0.0f);
     glm::vec3 scale = glm::vec3(1.0f);
 
-    std::string GetType() override { return "Transform"; }
+    static const char* StaticType() { return "Transform"; };
+    std::string GetType() override { return StaticType(); }
     void MakeDirty();
     void Rotate(const glm::vec3& deltaGlobalEulars);
     void SetRotation(const glm::vec3& globalEulars);
@@ -26,6 +28,8 @@ public:
     void Translate(const glm::vec3& offset);
     void Scale(const glm::vec3& factor);
     glm::mat4 getModel();
+    glm::mat4 getNormalMat();
+    glm::vec3 getAbsolutePosition();
     ~Transform() noexcept override;
     Transform();
 

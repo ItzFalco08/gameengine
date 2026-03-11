@@ -6,7 +6,7 @@ Mesh::Mesh(const char* objPath) {
     Initialize(objPath);
 }
 
-Mesh::Mesh() {};
+Mesh::Mesh() : VAO(GL_NONE), VBO(GL_NONE) {};
 
 Mesh::Mesh(const std::vector<Vertex>&& vertices) {
     uploadVertices(vertices);
@@ -44,6 +44,7 @@ bool Mesh::Initialize(const char* objPath) {
     std::vector<Vertex> vertices;
     if(!Utils::loadObj(vertices, objPath)) return false;
     uploadVertices(vertices);
+    vertexCount = vertices.size();
     LOG::Info("Mesh Created");
     objFilePath = objPath;
     return true;

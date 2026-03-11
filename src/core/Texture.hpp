@@ -17,11 +17,11 @@ public:
     Texture() = default;
     Texture(const char* path, TexDets texDetails = TexDets());
     // move symantics
-    Texture(Texture&& other);
-    void operator=(Texture&& other);
+    Texture(Texture&& other) noexcept;
+    void operator=(Texture&& other) noexcept;
     ~Texture();
 
-    void setTexParam(unsigned int Param, unsigned int Value);
+    void setTexParam(unsigned int Param, unsigned int Value) const;
     bool Initialize(const char* path, TexDets texDetails = TexDets());
 
 private:

@@ -1,6 +1,5 @@
 #pragma once
 #define GLM_ENABLE_EXPERIMENTAL
-#define TypeToStr(x) #x
 #include "glm/glm.hpp"
 #include "../utils/Logger.hpp"
 #include "memory"
@@ -28,6 +27,7 @@ public:
     std::unique_ptr<Transform> transform;
     std::map<std::string, std::unique_ptr<Component>> components;
     Scene* parentScene;
+    GameObject* parent;
     std::vector<GameObject*> childs;
 
     GameObject(Scene* parentScene, const std::string& goName) 
@@ -44,7 +44,7 @@ public:
     template<typename T, typename... Args>
     void AddComponent(Args&&... args) {
         static_assert(std::is_base_of_v<Component, T>, "T must derive from Component");
-        char* compTypeStr = TypeToStr(T);
+        const char* compTypeStr = T::StaticType();
 
         if (components.find(compTypeStr) != components.end()) {
             LOG::Error("AddComponent Failed! Component Already Exists.");
@@ -58,7 +58,7 @@ public:
     void RemoveComponent() {
         static_assert(std::is_base_of_v<Component, T>, "T must derive from Component");
 
-        const char* typeStr = TypeToStr(T);
+        const char* typeStr = T::StaticType();
         if(components.find(typeStr) != components.end()) {
             components.erase(typeStr);
             return;
@@ -71,14 +71,22 @@ public:
     T* GetComponent() {
         static_assert(std::is_base_of_v<Component, T>, "T must derive from Component");
 
-        char* key = TypeToStr(T);
+        const char* key = T::StaticType();
 
-        auto& comp = components.find(key);
+        auto comp = components.find(key);
         if (comp != components.end()) {
-            return static_cast<T*>((*comp).second.get());
+            return static_cast<T*>(comp->second.get());
         }
 
         return nullptr;
+    }
+
+    template<typename T>
+    bool hasComponent() {
+        static_assert(std::is_base_of_v<Component, T>, "T must derive from 'Component'");
+
+        const char* key = T::StaticType();
+        return components.find(key) != components.end();
     }
     
     // Game Object -> JSON 

@@ -55,14 +55,14 @@ bool Texture::Initialize(const char* path, TexDets texDets) {
 }
 
 // Move Symantics
-Texture::Texture(Texture&& other) {
+Texture::Texture(Texture&& other) noexcept {
     TexId = other.TexId;
     texturePath = other.texturePath;
     other.texturePath = "";
     other.TexId = GL_NONE;
 };
 
-void Texture::operator=(Texture&& other) {
+void Texture::operator=(Texture&& other) noexcept {
     if (TexId != GL_NONE) glDeleteTextures(1, &TexId);
     texturePath = other.texturePath;
     TexId = other.TexId;
@@ -76,7 +76,7 @@ Texture::~Texture() {
     }
 }
 
-void Texture::setTexParam(unsigned int Param, unsigned int Value) {
+void Texture::setTexParam(unsigned int Param, unsigned int Value) const {
     glBindTexture(GL_TEXTURE_2D, TexId);
     glTexParameteri(GL_TEXTURE_2D, Param, Value);
     glBindTexture(GL_TEXTURE_2D, 0);

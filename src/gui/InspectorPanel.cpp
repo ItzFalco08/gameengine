@@ -177,9 +177,6 @@ void InspectorPanel::Render() {
                         bool change = ImGui::ColorEdit3("lightColor", &l->lightColor[0]);
                         if(change) editorScene->MakeDirty();
                     }
-
-                    default:
-                        break;
                     }
                 } else if (key == "Script") {
                     ImGui::Text("Mesh");

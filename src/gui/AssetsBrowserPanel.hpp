@@ -21,7 +21,7 @@ private:
     void onRename(std::string input);
     void onCreateScene(fs::path dir, std::string input);
     void onOpenScene(fs::path& path);
-    fs::path currentPath = "../Assets";
+    fs::path currentPath = PROJECT_ROOT "/Assets";
     Texture fileTex;
     Texture folderTex;
     Texture folderEmptyTex;

@@ -1,4 +1,3 @@
-#define _DEBUG
 #include <iostream>
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
@@ -11,6 +10,7 @@
 #include "imgui/imgui_impl_opengl3.h"
 #include "utils/Utils.hpp"
 #include "utils/globals.hpp"
+#include "core/Renderer.hpp"
 #include "gui/ScenePanel.hpp"
 #include "gui/AssetsBrowserPanel.hpp"
 #include "windows.h"
@@ -50,8 +50,8 @@ int main() {
 
     Utils::GUI::initImGui(window);
     Utils::genSceneFramebuffers();
-    litShader = Shader("../src/shaders/lit/shader.frag", "../src/shaders/lit/shader.vert");
-    unlitShader = Shader("../src/shaders/unlit/shader.frag", "../src/shaders/unlit/shader.vert");
+    litShader = Shader(PROJECT_ROOT "/src/shaders/lit/shader.frag", PROJECT_ROOT "/src/shaders/lit/shader.vert");
+    unlitShader = Shader(PROJECT_ROOT "/src/shaders/unlit/shader.frag", PROJECT_ROOT "/src/shaders/unlit/shader.vert");
 
     // Initialize panel icons after GL is ready
     panels::assetsBrowserPanel.InitIcons();
@@ -62,6 +62,8 @@ int main() {
         inputManager.inputCallback(window, key, scancode, action, mods);
     });
 
+    glEnable(GL_DEPTH_TEST);
+
     while(!glfwWindowShouldClose(window)) {
         InputManager::clearFrameStates(); // clear previous frame's released key cache;
         glfwPollEvents();
@@ -69,8 +71,8 @@ int main() {
         // NOTE: if fbo bounded, opengl draws into it. else backbuffer.
         glBindFramebuffer(GL_FRAMEBUFFER, sceneView.framebuffObj);
         glViewport(0, 0, sceneView.SCENEVIEW_WIDTH, sceneView.SCENEVIEW_HEIGHT);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         Update();
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -90,21 +92,16 @@ int main() {
 }
 
 void Start() {
-  
+    // position the camera so the cube is visible
+    editorCamera->position = glm::vec3(0.0f, 0.0f, -3.0f);
+    editorCamera->front = glm::vec3(0.0f, 0.0f, 1.0f);
+    editorCamera->viewDirty = true;
 }
 
 static double lastLogTime = 0.0;
 
 void Update() {
-    if (InputManager::isKeyPressed(GLFW_KEY_W)) {
-        LOG::Info("W Pressed");
-    }
-    if (InputManager::isKeyHold(GLFW_KEY_W)) {
-        LOG::Info("W Hold");
-    }
-    if (InputManager::isKeyReleased(GLFW_KEY_W)) {
-        LOG::Info("W Released");
-    }
+    renderer.OpenGLRenderer(editorScene);
 }
 
 void drawImgui()

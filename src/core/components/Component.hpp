@@ -4,13 +4,13 @@
 #include "../../utils/Logger.hpp"
 #include "json/json.hpp"
 
-class GameObject; // forward declaration to avoid circular include
+class GameObject;
 
 class Component {
 public:
     virtual ~Component()  = default;
     GameObject* parent = nullptr;
-    virtual std::string GetType()=0;
+    virtual std::string GetType() = 0;
     virtual void Serialize(nlohmann::json& json)=0;
     virtual void Deserialize(nlohmann::json& json)=0;
 };

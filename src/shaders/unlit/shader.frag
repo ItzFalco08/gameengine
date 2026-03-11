@@ -3,11 +3,11 @@
 out vec4 FragColor;
 
 struct Material {
-    vec3 ambient;
+    vec3 color;
 };
 
-uniform Material material;
+uniform Material uMaterial;
 
 void main() {
-    FragColor = vec4(material.ambient, 1.0);
+    FragColor = vec4(uMaterial.color, 1.0);
 }

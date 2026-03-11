@@ -23,7 +23,7 @@ void Material::Deserialize(nlohmann::json& json) {
     case MaterialType::UNLIT:
         matprops = std::make_unique<UnlitMaterial>();
         break;
-    
+
     default:
         LOG::Error("Material Type Not Found");
         break;
@@ -52,19 +52,20 @@ void Material::SetMaterialType(MaterialType matType) {
         matprops = std::make_unique<UnlitMaterial>();
         break;
     }
-    
+
     default:
         break;
     }
 };
 
-std::string Material::GetType() {
-    return "Material";
+MaterialType Material::getMaterialType() {
+    return matprops->GetMatType();
 }
+
 
 // L I T _ M A T E R I A L
 void LitMaterial::Serialize(nlohmann::json& json) {
-    json["ambientColor"] = {ambientColor.x, ambientColor.y, ambientColor.z};
+    json["ambientColor"] = { ambientColor.x, ambientColor.y, ambientColor.z };
     json["ambientStrength"] = ambientStrength;
     json["diffuseStrength"] = diffuseStrength;
     json["specularStrength"] = specularStrength;
@@ -73,11 +74,11 @@ void LitMaterial::Serialize(nlohmann::json& json) {
 }
 
 void LitMaterial::Deserialize(nlohmann::json& json) {
-    ambientColor = {json["ambientColor"][0], json["ambientColor"][1], json["ambientColor"][2]};
-    ambientStrength = json["ambientStrength"]; 
-    diffuseStrength = json["diffuseStrength"]; 
-    specularStrength = json["specularStrength"]; 
-    shininess = json["shininess"]; 
+    ambientColor = { json["ambientColor"][0], json["ambientColor"][1], json["ambientColor"][2] };
+    ambientStrength = json["ambientStrength"];
+    diffuseStrength = json["diffuseStrength"];
+    specularStrength = json["specularStrength"];
+    shininess = json["shininess"];
     texturePath = json["texturePath"];
 }
 
@@ -89,11 +90,11 @@ MaterialType LitMaterial::GetMatType() { return MaterialType::LIT; }
 
 // U N L I T _ M A T E R I A L
 void UnlitMaterial::Serialize(nlohmann::json& json) {
-    json["ambientColor"] = {ambientColor.x, ambientColor.y, ambientColor.z};
+    json["ambientColor"] = { ambientColor.x, ambientColor.y, ambientColor.z };
 }
 
 void UnlitMaterial::Deserialize(nlohmann::json& json) {
-    ambientColor = {json["ambientColor"][0], json["ambientColor"][1], json["ambientColor"][2]};
+    ambientColor = { json["ambientColor"][0], json["ambientColor"][1], json["ambientColor"][2] };
 }
 
 void UnlitMaterial::applyToShader(Shader* shader) {
@@ -101,4 +102,3 @@ void UnlitMaterial::applyToShader(Shader* shader) {
 }
 
 MaterialType UnlitMaterial::GetMatType() { return MaterialType::UNLIT; }
-

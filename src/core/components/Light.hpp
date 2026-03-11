@@ -46,5 +46,6 @@ public:
     void Deserialize(nlohmann::json& json);
 
     Light() = default;
-    std::string GetType() override { return "Light"; };
+    static const char* StaticType() { return "Light"; }
+    std::string GetType() override { return StaticType(); }
 };
