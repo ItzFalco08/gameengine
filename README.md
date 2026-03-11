@@ -22,3 +22,8 @@ cmake --build build
 cd build
 ./engine.exe
 ```
+
+## Screenshots
+
+![img1](screenshots/img1.png)
+
