@@ -221,7 +221,6 @@ bool Utils::loadObj(std::vector<Vertex>& vertices, const char* objPath) {
     return true;
 }
 
-
 void modernDark()
 {
     ImGuiStyle& style = ImGui::GetStyle();
@@ -302,7 +301,7 @@ void Utils::GUI::ShowTextInputDialoge(const char* title, const char* defaultValu
     // Persist what the user types; only seed the buffer the first time (or after manual clear)
     static char inputBuffer[256] = {0};
     if (inputBuffer[0] == '\0') {
-        strncpy(inputBuffer, defaultValue, sizeof(inputBuffer) - 1);
+        strncpy_s(inputBuffer, defaultValue, sizeof(inputBuffer) - 1);
         inputBuffer[sizeof(inputBuffer) - 1] = '\0';
     }
     

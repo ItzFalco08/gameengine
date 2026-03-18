@@ -9,7 +9,7 @@ SceneView sceneView = { 800, 600, 0, 0, 0 }; // Initialize with default dimensio
 Shader litShader;
 Shader unlitShader;
 
-Scene* editorScene = new Scene();
+SceneManager sceneManager;
 Camera* editorCamera = new Camera();
 GameObject* selectedGameObject;
 

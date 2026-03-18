@@ -27,6 +27,7 @@ struct PointLight {
 };
 
 uniform sampler2D uTexture;
+uniform bool isTexture;
 
 uniform Material uMaterial;
 
@@ -38,7 +39,7 @@ uniform PointLight uPointLights[NR_POINT_LIGHTS];
 
 out vec4 FragColor;
 
-vec3 getPointLightOutput(PointLight pointLight, vec3 camDir) {
+vec3 getPointLightOutput(PointLight pointLight, vec3 camDir, vec3 fragColor) {
     // pre requrities
     float dist = length(pointLight.position - FragPos);
      
@@ -50,10 +51,6 @@ vec3 getPointLightOutput(PointLight pointLight, vec3 camDir) {
     float diffuse = max(dot(lightDir, normalize(Normal)), 0.0);
     float specular = pow(max(dot(camDir, reflectedLight), 0.0), uMaterial.shininess);
 
-    // Color or Texture?
-    vec3 TexFrag = texture(uTexture, TexCoords).rgb;
-    vec3 fragColor = uMaterial.color * TexFrag; 
-    
     // phong colors
     vec3 diffusedColor = diffuse * uMaterial.diffuseStrength * fragColor;
     vec3 specularColor = specular * uMaterial.specularStrength * fragColor;
@@ -61,7 +58,7 @@ vec3 getPointLightOutput(PointLight pointLight, vec3 camDir) {
     return (diffusedColor + specularColor) * pointLight.color * attenuation;
 }
 
-vec3 getDirLightOutput(DirLight dirLight, vec3 camDir) {
+vec3 getDirLightOutput(DirLight dirLight, vec3 camDir, vec3 fragColor) {
     // pre requrities
     vec3 lightDir = normalize(dirLight.direction);
     vec3 reflectedLight = reflect(-lightDir, Normal);
@@ -70,10 +67,6 @@ vec3 getDirLightOutput(DirLight dirLight, vec3 camDir) {
     float diffuse = max(dot(lightDir, Normal), 0.0);
     float specular = pow(max(dot(camDir, reflectedLight), 0.0), uMaterial.shininess);
 
-    // final output color of frag (nonlit)
-    vec3 TexFrag = texture(uTexture, TexCoords).rgb;
-    vec3 fragColor = uMaterial.color * TexFrag; 
-    
     // phong colors
     vec3 diffusedColor = diffuse * uMaterial.diffuseStrength * fragColor;
     vec3 specularColor = specular * uMaterial.specularStrength * fragColor;
@@ -84,20 +77,19 @@ vec3 getDirLightOutput(DirLight dirLight, vec3 camDir) {
 void main() {
     vec3 Output = vec3(0.0, 0.0, 0.0);
     
-    vec3 TexFrag = texture(uTexture, TexCoords).rgb;
-    vec3 fragColor = uMaterial.color * TexFrag; 
+    vec3 TexFrag = isTexture ? texture(uTexture, TexCoords).rgb : vec3(1.0);
+    vec3 fragColor = uMaterial.color * TexFrag;
     Output += uMaterial.ambientStrength * fragColor;
 
     // pre calculation 
     vec3 camDir = normalize(uCamPos - FragPos);
 
-    // for pointlight in pointlights:
     for (int i = 0; i < NR_POINT_LIGHTS; i++) {
-        Output += getPointLightOutput(uPointLights[i], camDir);
+        Output += getPointLightOutput(uPointLights[i], camDir, fragColor);
     }
 
     for (int i = 0; i < NR_DIR_LIGHTS; i++) {
-        Output += getDirLightOutput(uDirLights[i], camDir);
+        Output += getDirLightOutput(uDirLights[i], camDir, fragColor);
     }
 
     FragColor = vec4(Output, 1.0);

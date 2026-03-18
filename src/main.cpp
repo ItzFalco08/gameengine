@@ -63,9 +63,10 @@ int main() {
     });
 
     glEnable(GL_DEPTH_TEST);
-
+    glEnable(GL_CULL_FACE);
+    
     while(!glfwWindowShouldClose(window)) {
-        InputManager::clearFrameStates(); // clear previous frame's released key cache;
+        InputManager::clearFrameStates();
         glfwPollEvents();
         
         // NOTE: if fbo bounded, opengl draws into it. else backbuffer.
@@ -79,8 +80,6 @@ int main() {
         drawImgui();
         glfwSwapBuffers(window);
         
-        // Clear single-frame input states (PRESSED/RELEASED) at end of frame
-        InputManager::clearFrameStates();
     }
 
     ImGui_ImplOpenGL3_Shutdown();
@@ -93,15 +92,15 @@ int main() {
 
 void Start() {
     // position the camera so the cube is visible
-    editorCamera->position = glm::vec3(0.0f, 0.0f, -3.0f);
-    editorCamera->front = glm::vec3(0.0f, 0.0f, 1.0f);
+    editorCamera->position = glm::vec3(0.0f, 0.0f, 3.0f);
+    editorCamera->front = glm::vec3(0.0f, 0.0f, -1.0f);
     editorCamera->viewDirty = true;
 }
 
 static double lastLogTime = 0.0;
 
 void Update() {
-    renderer.OpenGLRenderer(editorScene);
+    renderer.OpenGLRenderer(sceneManager.activeScene.get());
 }
 
 void drawImgui()

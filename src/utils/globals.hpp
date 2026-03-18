@@ -3,7 +3,7 @@
 #include "Shader.hpp"
 #include "../core/AssetsManager.hpp"
 #include "../core/ResourceManager.hpp"
-#include "../core/Scene.hpp"
+#include "../core/SceneManager.hpp"
 #include "../core/Camera.hpp"
 #include "InputManager.hpp"
 #include "../gui/HeriarchyPanel.hpp"
@@ -21,7 +21,7 @@ extern AssetsManager assetsManager;
 extern InputManager inputManager;
 extern ResourceManager resourceManager;
 
-extern Scene* editorScene;
+extern SceneManager sceneManager;
 extern Camera* editorCamera;
 extern GameObject* selectedGameObject; 
 

@@ -68,10 +68,8 @@ void AssetsManager::CreateScene(fs::path dir, std::string sceneName) {
     std::ofstream sceneFile(scenePath);
 
     nlohmann::json defaultSceneJson;
-    defaultSceneJson["sceneName"] = sceneName;
     defaultSceneJson["gameObjects"] = nlohmann::json::array();
     sceneFile << defaultSceneJson;
-    
 };
 
 void AssetsManager::CreateMesh(MeshType meshType, const fs::path& dir) {

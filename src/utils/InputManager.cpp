@@ -1,16 +1,20 @@
 #include "InputManager.hpp"
 #include "Logger.hpp"
+#include <imgui/imgui_impl_glfw.h> // Add this include for ImGui_ImplGlfw_KeyCallback
 // Define the static member variable
 std::unordered_map<int, bool[3]> InputManager::keyMap;
 int InputManager::mods;
 
 void InputManager::inputCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    // imguiCallback
+    ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
+
     InputManager::mods = mods;
 
     switch(action) {
         case GLFW_PRESS:
             keyMap[key][PRESSED] = true;
-            keyMap[key][HOLD] = true;
+            keyMap[key][HOLD] = false;
             keyMap[key][RELEASED] = false;
             break;
 
@@ -26,6 +30,7 @@ void InputManager::inputCallback(GLFWwindow* window, int key, int scancode, int 
             keyMap[key][HOLD] = false;
             keyMap[key][RELEASED] = true;
             break;
+
     }
 }
 
@@ -49,6 +54,6 @@ void InputManager::clearFrameStates() {
     }
 }
 
-bool InputManager::isSpecialPressed(int specialKeyId) {
+bool InputManager::isSpecialHold(int specialKeyId) {
     return (mods & specialKeyId);
 }

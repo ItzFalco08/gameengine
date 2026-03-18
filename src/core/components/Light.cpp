@@ -1,7 +1,9 @@
 #include "Light.hpp"
-#include "../Scene.hpp"
+#include "../SceneManager.hpp"
 #include "../../utils/Logger.hpp"
 #include <typeinfo>
+
+extern SceneManager sceneManager;
 
 // DirLight
 
@@ -36,15 +38,20 @@ LightType Light::getLightType() {
 }
 
 void Light::setLight(LightType type) {
-    if (lightType == type) return;
+    if (lightType == type) {
+        LOG::Warning("Change of light to the same type | (Light::setLight)");
+        return;
+    };
 
     switch (type)
     {
     case LightType::POINT:
         lightProps = std::make_unique<PointLight>();
+        lightType = LightType::POINT;
         break;
     case LightType::DIRECTIONAL:
         lightProps = std::make_unique<DirLight>();
+        lightType = LightType::DIRECTIONAL;
         break;
     default:
         break;
@@ -74,6 +81,26 @@ void Light::Deserialize(nlohmann::json& json) {
         break;
     }
 
-    editorScene->lights.push_back(this);
+    sceneManager.activeScene->lights.push_back(this);
 }
 
+Light::Light(){
+    Light* ptr = this;
+
+    if (sceneManager.activeScene) {
+        sceneManager.activeScene->lights.push_back(ptr);
+
+    } else {
+        LOG::Warning("trying to add a Light component when active Scene is null");
+    }
+}
+
+Light::~Light() {
+    Light* ptr = this;
+    auto itr = std::find(sceneManager.activeScene->lights.begin(), sceneManager.activeScene->lights.end(), ptr);
+    if (itr != sceneManager.activeScene->lights.end()) {
+        sceneManager.activeScene->lights.erase(itr);
+    } else {
+        LOG::Warning("destructuring a light that doesn't exists");
+    }
+}

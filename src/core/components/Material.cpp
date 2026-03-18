@@ -62,6 +62,11 @@ MaterialType Material::getMaterialType() {
     return matprops->GetMatType();
 }
 
+Material::~Material() {
+    if (auto* litMat = dynamic_cast<LitMaterial*>(matprops.get())) {
+        resourceManager.DeleteTexture(litMat->texturePath);
+    }
+}
 
 // L I T _ M A T E R I A L
 void LitMaterial::Serialize(nlohmann::json& json) {
@@ -71,6 +76,8 @@ void LitMaterial::Serialize(nlohmann::json& json) {
     json["specularStrength"] = specularStrength;
     json["shininess"] = shininess;
     json["texturePath"] = texturePath;
+
+    json["textureDets"] = {texProps.wrapS, texProps.wrapT, texProps.minFilter, texProps.magFilter};
 }
 
 void LitMaterial::Deserialize(nlohmann::json& json) {
@@ -80,6 +87,11 @@ void LitMaterial::Deserialize(nlohmann::json& json) {
     specularStrength = json["specularStrength"];
     shininess = json["shininess"];
     texturePath = json["texturePath"];
+
+    texProps.wrapS = json["textureDets"][0];
+    texProps.wrapT = json["textureDets"][1];
+    texProps.minFilter = json["textureDets"][2];
+    texProps.magFilter = json["textureDets"][3];
 }
 
 void LitMaterial::applyToShader(Shader* shader) {

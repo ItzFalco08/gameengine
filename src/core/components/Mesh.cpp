@@ -44,7 +44,7 @@ bool Mesh::Initialize(const char* objPath) {
     std::vector<Vertex> vertices;
     if(!Utils::loadObj(vertices, objPath)) return false;
     uploadVertices(vertices);
-    vertexCount = vertices.size();
+    vertexCount = (int)vertices.size();
     LOG::Info("Mesh Created");
     objFilePath = objPath;
     return true;

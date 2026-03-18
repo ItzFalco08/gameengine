@@ -24,18 +24,15 @@ extern std::map<std::string, std::function<std::unique_ptr<Component>()>> compon
 class GameObject {
 public:
     std::string name;
-    std::unique_ptr<Transform> transform;
+    std::unique_ptr<Transform> transform = std::make_unique<Transform>();
     std::map<std::string, std::unique_ptr<Component>> components;
     Scene* parentScene;
     GameObject* parent;
     std::vector<GameObject*> childs;
 
     GameObject(Scene* parentScene, const std::string& goName) 
-    : transform(std::make_unique<Transform>())
-    , parentScene(parentScene)
-    , name(goName)
-    {
-    }
+    : parentScene(parentScene)
+    , name(goName) { };
 
     ~GameObject() {
         LOG::Debug("GameObject Deleted: ", name);

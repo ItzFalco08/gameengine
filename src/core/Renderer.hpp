@@ -112,7 +112,9 @@ private:
         
         // texture
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, resourceManager.LoadAndGetTexture(litMat->texturePath)->TexId);
+        unsigned int texId = resourceManager.LoadAndGetTexture(litMat->texturePath, litMat->texProps)->TexId;
+        glBindTexture(GL_TEXTURE_2D, texId);
+        (texId == GL_NONE) ? litShader.setInt("isTexture", 0) : litShader.setInt("isTexture", 1); 
 
     }
 
@@ -132,9 +134,12 @@ private:
   
     void renderMesh() {
         if (auto* meshPtr = curGo->GetComponent<Mesh>()) {
+            // face culling
+            glCullFace(meshPtr->cullDir);
+            // LOG::Info("Culling set to: " , meshPtr->cullDir);
             // renders the mesh
             glBindVertexArray(meshPtr->VAO);
-            glDrawArrays(GL_TRIANGLES, 0, meshPtr->vertexCount);
+            glDrawArrays(GL_TRIANGLES, 0, (int)meshPtr->vertexCount);
             glBindVertexArray(0);
         }
     }

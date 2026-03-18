@@ -32,7 +32,7 @@ void AssetsBrowser::Render() {
         ImGui::BeginChild("##toolbar", ImVec2(0, toolbarHeight), true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
         
         
-        if(currentPath.string() != "../Assets") {
+        if(currentPath.string() != PROJECT_ROOT "/Assets") {
             if(ImGui::Button("<-", ImVec2(20, 20))) {
                 
                 currentPath = currentPath.parent_path();
@@ -101,8 +101,8 @@ void AssetsBrowser::Render() {
 
         std::vector<AssetItem> items = assetsManager.List(currentPath);
 
-        int cursorW = 0;
-        int itemWidthWithSpacing = iconSize + ImGui::GetStyle().ItemSpacing.x;
+        float cursorW = 0;
+        float itemWidthWithSpacing = iconSize + ImGui::GetStyle().ItemSpacing.x;
         
         // assets
         for (auto& item : items) {
@@ -132,7 +132,7 @@ void AssetsBrowser::Render() {
             cursorW += itemWidthWithSpacing;
         }
 
-        // rename panel
+        // P A N E L S
         if(isRenamePanelActive) {
             Utils::GUI::ShowTextInputDialoge(
                 "Rename File",
@@ -182,7 +182,7 @@ void AssetsBrowser::onCreateScene(fs::path dir, std::string input) {
 
 void AssetsBrowser::onOpenScene(fs::path& path) {
     LOG::Info("Opening Scene: ", path.filename().string());
-    editorScene->Deserialize(path.string());
+    sceneManager.SetScene(path);
 }
 
 void AssetsBrowser::onRename(std::string input) {
@@ -202,7 +202,6 @@ void AssetsBrowser::DrawAssetItem(
     fs::path itemPath
 )
 {
-    bool openDirectory = false;
     ImGui::BeginGroup(); // makes image + text behave as one item
 
     bool isActive = (selectedItem == itemPath);
@@ -222,7 +221,7 @@ void AssetsBrowser::DrawAssetItem(
     bool clicked = ImGui::ImageButton(
         label,          // unique ID
         icon,
-        iconSize, {0,0}, {1,1}, ImVec4(0, 0, 0, 0)
+        iconSize, {0,1}, {1,0}, ImVec4(0, 0, 0, 0)
     );
 
     if (ImGui::BeginDragDropSource()) {
@@ -234,21 +233,13 @@ void AssetsBrowser::DrawAssetItem(
 
     ImGui::PopStyleColor(3);
 
-    if (clicked)
-    {
-        if (isActive) {
-            if (fs::is_directory(selectedItem)) {
-                openDirectory = true;
-            }
-            std::string extention = selectedItem.extension().string();
-            
-            if (extention == ".scene") {
-                onOpenScene(selectedItem);
-            } else if (extention == ".mat") {
-                // future implmentation
-            }
-        } else {
+    if (clicked) {
+        if (!isActive) {
             selectedItem = itemPath;
+        } else if (fs::is_directory(selectedItem)) {
+            currentPath = selectedItem;
+        } else if (selectedItem.extension() == ".scene") {
+            onOpenScene(selectedItem);
         }
     }
 
@@ -285,10 +276,6 @@ void AssetsBrowser::DrawAssetItem(
     ImGui::TextUnformatted(label);
 
     ImGui::EndGroup();
-
-    if (openDirectory) {
-        currentPath = selectedItem;
-    }
 
 }
 

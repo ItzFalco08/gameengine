@@ -3,12 +3,12 @@
 #include "glm/glm.hpp"
 #include "json/json.hpp"
 
-class Scene;
-extern Scene* editorScene;
+class SceneManager;
+extern SceneManager sceneManager;
 
 enum class LightType {
+    POINT,
     DIRECTIONAL,
-    POINT
 };
 
 struct LightProps {
@@ -45,7 +45,8 @@ public:
     void Serialize(nlohmann::json& json);
     void Deserialize(nlohmann::json& json);
 
-    Light() = default;
+    Light();
+    ~Light();
     static const char* StaticType() { return "Light"; }
     std::string GetType() override { return StaticType(); }
 };

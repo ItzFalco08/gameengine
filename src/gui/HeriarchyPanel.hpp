@@ -2,7 +2,6 @@
 #include <iostream>
 #include <string>
 #include "../core/Scene.hpp"
-extern Scene* editorScene;
 
 class HeriarchyPanel {
 public:
@@ -13,8 +12,9 @@ private:
     void CreateGameObjectPanel();
     bool showCreateGameObjPanel = false;
     bool showRenamePanel = false;
+    int uiIdCounter = 0;
 
     void RenderHeriarchy(std::vector<GameObject*>& roots);
+    void handleKeyEvents();
     void RenameSelected(const char* newName);
-    void DeleteSelected(std::vector<GameObject*>& roots);
 };

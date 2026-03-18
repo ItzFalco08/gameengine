@@ -11,7 +11,9 @@ bool Texture::Initialize(const char* path, TexDets texDets) {
     if (texturePath == path) { LOG::Warning("Texture already bound with path: ", path ); return false; };
     
     int width = 0, height = 0, nrChannels = 0;
+    stbi_set_flip_vertically_on_load(true);
     unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
+    
     texturePath = std::string(path);
 
     unsigned int format;
@@ -23,6 +25,7 @@ bool Texture::Initialize(const char* path, TexDets texDets) {
     );
 
     if (data) {
+        LOG::Info("Texture Data found", std::string(path));
         switch (nrChannels) {
             case 1: format = GL_RED;  break;
             case 2: format = GL_RG;   break;
@@ -83,8 +86,13 @@ void Texture::setTexParam(unsigned int Param, unsigned int Value) const {
 }
 
 void Texture::applyParams(TexDets dets) {
+
+    bool isTex = TexId != GL_NONE;
+    if(isTex) glBindTexture(GL_TEXTURE_2D, TexId);
+
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, dets.wrapS);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, dets.wrapT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, dets.minFilter);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, dets.magFilter);   
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, dets.magFilter);
+    
 }

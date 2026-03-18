@@ -19,5 +19,5 @@ void main() {
     // O U T S (Normal and Pos of fragment)
     FragPos = vec3(model * vec4(aPos, 1.0));
     TexCoords = aTexCoords;
-    Normal = normalMatrix * aNormal; // apply correct rotation, scaling to normal
+    Normal = normalize(normalMatrix * aNormal); // apply correct rotation, scaling to normal
 }

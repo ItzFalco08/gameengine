@@ -1,29 +1,16 @@
-#include "vector"
+#pragma once
 #include "Scene.hpp"
-#include "sstream"
-#include "fstream"
+#include <filesystem>
+#include "../utils/Logger.hpp"
 
-class SceneManager { // switching between scenes made easy. (USEFUL DURING RUNTIME)
-    std::unordered_map<std::string, std::unique_ptr<Scene>> loadedScenes;
-    Scene* activeScene; // passed to renderer
+namespace fs = std::filesystem;
 
-    void setActiveScene(std::string scenePath) {
-        activeScene = loadedScenes[scenePath].get();
-    }
+class SceneManager {
+public:
+    std::unique_ptr<Scene> activeScene;
 
-    void loadScene(const char* path) {
-        auto scene = std::make_unique<Scene>();
-        
-        scene->Serialize(path);
-        loadedScenes[path] = std::move(scene);
-    }
+    SceneManager() : activeScene(std::make_unique<Scene>()) {}
 
-    void SaveScene(const char* path) {
-        loadedScenes[path]->Deserialize(path);
-    }
-
-    ~SceneManager() {
-        delete activeScene;
-        // loaded scenes deleted automatically
-    }
+    // api
+    void SetScene(const fs::path& path);
 };

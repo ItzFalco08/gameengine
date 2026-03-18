@@ -21,5 +21,5 @@ public:
     static bool isKeyPressed(int keyId);
     static bool isKeyHold(int keyId);
     static bool isKeyReleased(int keyId);
-    static bool isSpecialPressed(int specialKeyId);
+    static bool isSpecialHold(int specialKeyId);
 };

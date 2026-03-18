@@ -4,17 +4,11 @@
 #include "../../utils/Utils.hpp"
 #include "json/json.hpp"
 
-enum CullDir {
-    FRONT,
-    BACK,
-    BOTH
-};
-
 class Mesh : public Component {
 public:
-    unsigned int VAO, VBO; // used while rendering
+    unsigned int VAO, VBO; 
     std::optional<std::string> objFilePath;
-    CullDir cullDir = FRONT; // read and set by renderer
+    GLenum cullDir = GL_BACK; 
     int vertexCount;
 
     static const char* StaticType() { return "Mesh"; }
@@ -26,10 +20,11 @@ public:
 
     void Serialize(nlohmann::json& json) {
         json["filePath"] = objFilePath.has_value() ? objFilePath.value() : "";
-        json["cullDir"] = cullDir;
+        json["cullDir"] = (unsigned int)cullDir;
     }
 
     void Deserialize(nlohmann::json& json) {
+        cullDir = json.at("cullDir");
         Initialize(json.at("filePath").get<std::string>().c_str());
     }
 

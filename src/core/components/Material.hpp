@@ -16,6 +16,8 @@ struct MaterialProps {
     virtual MaterialType GetMatType() = 0;
 };
 
+
+
 struct LitMaterial : public MaterialProps {
 
     glm::vec3 ambientColor = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -25,6 +27,7 @@ struct LitMaterial : public MaterialProps {
     float shininess = 32.0f;
 
     std::string texturePath = "";
+    TexDets texProps = TexDets();
 
     void Serialize(nlohmann::json& json) override;
     void Deserialize(nlohmann::json& json) override;
@@ -50,6 +53,7 @@ public:
     std::unique_ptr<MaterialProps> matprops;
 
     Material();
+    ~Material();
 
     void Serialize(nlohmann::json& json) override;
     void Deserialize(nlohmann::json& json) override;
@@ -58,4 +62,5 @@ public:
 
     static const char* StaticType() { return "Material"; }
     std::string GetType() override { return StaticType(); }
+
 };

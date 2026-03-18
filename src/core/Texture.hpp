@@ -21,9 +21,8 @@ public:
     void operator=(Texture&& other) noexcept;
     ~Texture();
 
-    void setTexParam(unsigned int Param, unsigned int Value) const;
     bool Initialize(const char* path, TexDets texDetails = TexDets());
-
-private:
+    void setTexParam(unsigned int Param, unsigned int Value) const;
     void applyParams(TexDets dets);
+
 };
