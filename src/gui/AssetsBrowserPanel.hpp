@@ -5,7 +5,7 @@
 #include <string>
 #include "../core/Texture.hpp"
 namespace fs = std::filesystem;
-
+extern std::string rootDir;
 
 class AssetsBrowser {
 public:
@@ -21,7 +21,7 @@ private:
     void onRename(std::string input);
     void onCreateScene(fs::path dir, std::string input);
     void onOpenScene(fs::path& path);
-    fs::path currentPath = PROJECT_ROOT "/Assets";
+    fs::path currentPath;
     Texture fileTex;
     Texture folderTex;
     Texture folderEmptyTex;

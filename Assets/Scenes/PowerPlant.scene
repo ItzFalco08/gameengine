@@ -1,0 +1,96 @@
+{
+  "gameObjects": [
+    {
+      "childs": [],
+      "components": [
+        {
+          "ambientColor": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "ambientStrength": 0.20000000298023224,
+          "diffuseStrength": 0.4000000059604645,
+          "materialType": 0,
+          "shininess": 32.0,
+          "specularStrength": 0.4000000059604645,
+          "textureDets": [
+            33071,
+            33071,
+            9987,
+            9728
+          ],
+          "texturePath": "",
+          "type": "Material"
+        },
+        {
+          "cullDir": 1029,
+          "filePath": "C:\\Users\\pc\\Desktop\\gameengine/Assets\\powerplant.obj",
+          "type": "Mesh"
+        }
+      ],
+      "name": "GameObject",
+      "transform": {
+        "gEulars": [
+          17.0,
+          -9.0,
+          17.0
+        ],
+        "position": [
+          57.29999923706055,
+          -59.5,
+          -259.8999938964844
+        ],
+        "rotation": [
+          0.9859670400619507,
+          0.14735375344753265,
+          -0.07759729772806168,
+          0.01159699261188507
+        ],
+        "scale": [
+          0.0010000000474974513,
+          0.0010000000474974513,
+          0.0010000000474974513
+        ]
+      }
+    },
+    {
+      "childs": [],
+      "components": [
+        {
+          "lightColor": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "lightType": 1,
+          "type": "Light"
+        }
+      ],
+      "name": "Sun",
+      "transform": {
+        "gEulars": [
+          2.0,
+          -605.0,
+          2.0
+        ],
+        "position": [
+          0.0,
+          15.899999618530273,
+          0.0
+        ],
+        "rotation": [
+          0.5176993608474731,
+          0.21310240030288696,
+          0.8159458637237549,
+          -0.14424677193164825
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    }
+  ]
+}

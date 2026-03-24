@@ -17,6 +17,8 @@ AssetsManager assetsManager;
 ResourceManager resourceManager;
 Renderer renderer;
 
+std::string rootDir;
+
 namespace panels {
 	ScenePanel scenePanel;
 	AssetsBrowser assetsBrowserPanel;

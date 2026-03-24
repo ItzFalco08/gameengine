@@ -8,8 +8,8 @@ struct Camera {
     glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
     glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);
     float fov = 80.0f;
-    float _near = 0.5f;
-    float _far = 100.0f;
+    float _near = 0.1f;
+    float _far = 500.0f;
 
     glm::mat4 projectionMat;
     glm::mat4 viewMat;

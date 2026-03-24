@@ -23,7 +23,27 @@ void Start();
 // Global handle to the main window for cross-function access
 static GLFWwindow* gMainWindow = nullptr;
 
+void setRootDir() {
+    char path[MAX_PATH];
+    GetModuleFileNameA(NULL, path, MAX_PATH);
+    std::string fullPath(path);
+    size_t slash = fullPath.find_last_of("\\/");
+    std::string exeDir = fullPath.substr(0, slash);
+
+    // Go up two directories to get the root
+    slash = exeDir.find_last_of("\\/");
+    if (slash == std::string::npos) return;
+    exeDir = exeDir.substr(0, slash);
+    slash = exeDir.find_last_of("\\/");
+    if (slash == std::string::npos) return;
+    exeDir = exeDir.substr(0, slash);
+
+    // Copy result to rootDir (char*)
+    rootDir = exeDir;
+}
+
 int main() {
+    setRootDir();
     glfwSetErrorCallback(Utils::GLFWErrorCallback);
     if(!glfwInit()) return 1;
         
@@ -50,8 +70,8 @@ int main() {
 
     Utils::GUI::initImGui(window);
     Utils::genSceneFramebuffers();
-    litShader = Shader(PROJECT_ROOT "/src/shaders/lit/shader.frag", PROJECT_ROOT "/src/shaders/lit/shader.vert");
-    unlitShader = Shader(PROJECT_ROOT "/src/shaders/unlit/shader.frag", PROJECT_ROOT "/src/shaders/unlit/shader.vert");
+    litShader = Shader(rootDir + "/src/shaders/lit/shader.frag", rootDir + "/src/shaders/lit/shader.vert");
+    unlitShader = Shader(rootDir + "/src/shaders/unlit/shader.frag", rootDir + "/src/shaders/unlit/shader.vert");
 
     // Initialize panel icons after GL is ready
     panels::assetsBrowserPanel.InitIcons();

@@ -7,17 +7,11 @@
 #include "glm/glm.hpp"
 #include "array"
 
-struct Vertex {
-    glm::vec3 position;
-    glm::vec3 normal;
-    glm::vec2 uv;
-};
 
 namespace Utils {
     void GLFWErrorCallback(int errorCode, const char* message);
     void genSceneFramebuffers();
     void updateFBODimensions();
-    bool loadObj(std::vector<Vertex>& vertices, const char* objPath);
 
     namespace GUI {
         void initImGui(GLFWwindow* window);

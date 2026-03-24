@@ -8,6 +8,7 @@ public:
 
     Shader() = default;
     Shader(const char* fragPath, const char* vertPath);
+    Shader(const std::string& fragPath, const std::string& vertPath);
         
     void use();
     void setFloat(const char* name, const float& val);
@@ -31,4 +32,5 @@ private:
     void checkCompileErrors(unsigned int shaderId, const char* shaderType);
     void checkLinkErrors(unsigned int programId);
     void getShaderTexts(std::string& fragTxt, std::string& vertTxt, const char* fragPath, const char* vertPath);
+    void initShader(const char* fragPath, const char* vertPath);
 };

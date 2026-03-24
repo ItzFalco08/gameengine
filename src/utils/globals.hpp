@@ -24,7 +24,7 @@ extern ResourceManager resourceManager;
 extern SceneManager sceneManager;
 extern Camera* editorCamera;
 extern GameObject* selectedGameObject; 
-
+extern std::string rootDir;
 extern Renderer renderer;
 
 namespace panels {

@@ -1,22 +1,25 @@
+
 #pragma once
 #include <optional>
+#include <vector>
 #include "Component.hpp"
 #include "../../utils/Utils.hpp"
 #include "json/json.hpp"
+#include "objloader/simpleobjloader.hpp" // For Vertex
 
 class Mesh : public Component {
 public:
-    unsigned int VAO, VBO; 
+    GLuint VAO, VBO, EBO; 
     std::optional<std::string> objFilePath;
     GLenum cullDir = GL_BACK; 
-    int vertexCount;
+    int indexCount;
 
     static const char* StaticType() { return "Mesh"; }
     std::string GetType() override { return StaticType(); }
     Mesh();
     Mesh(const char* objPath);
     bool Initialize(const char* objPath);
-    Mesh(const std::vector<Vertex>&& vertices); // sensable for scripts [no need of serialization in that case :) ]
+    Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices);
 
     void Serialize(nlohmann::json& json) {
         json["filePath"] = objFilePath.has_value() ? objFilePath.value() : "";
@@ -32,5 +35,5 @@ public:
 
 
 private:
-    void uploadVertices(const std::vector<Vertex>& vertices);
+    void uploadVertices(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices);
 };

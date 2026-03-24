@@ -8,6 +8,14 @@
 #include <glm/gtc/type_ptr.hpp>
 
 Shader::Shader(const char* fragPath, const char* vertPath) {
+    initShader(fragPath, vertPath);
+}
+
+Shader::Shader(const std::string& fragPath, const std::string& vertPath) {
+    initShader(fragPath.c_str(), vertPath.c_str());
+};
+
+void Shader::initShader(const char* fragPath, const char* vertPath) {
     std::string fragTxt;
     std::string vertTxt;
 

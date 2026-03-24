@@ -139,7 +139,7 @@ private:
             // LOG::Info("Culling set to: " , meshPtr->cullDir);
             // renders the mesh
             glBindVertexArray(meshPtr->VAO);
-            glDrawArrays(GL_TRIANGLES, 0, (int)meshPtr->vertexCount);
+            glDrawElements(GL_TRIANGLES, meshPtr->indexCount, GL_UNSIGNED_INT, 0);
             glBindVertexArray(0);
         }
     }
