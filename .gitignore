@@ -2,3 +2,5 @@ todo.md
 build/
 .vscode/
 test/
+Assets/powerplant.obj
+Assets/Scenes/PowerPlant.scene
