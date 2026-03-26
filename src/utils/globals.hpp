@@ -1,7 +1,7 @@
 #pragma once
 #include "GLAD/gl.h"
 #include "Shader.hpp"
-#include "../core/AssetsManager.hpp"
+#include "AssetsUtils.hpp"
 #include "../core/ResourceManager.hpp"
 #include "../core/SceneManager.hpp"
 #include "../core/Camera.hpp"

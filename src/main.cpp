@@ -15,6 +15,7 @@
 #include "gui/AssetsBrowserPanel.hpp"
 #include "windows.h"
 #include "core/GameObject.hpp"
+#include "ImGuizmo/ImGuizmo.h"
 
 void drawImgui();
 void Update();
@@ -75,6 +76,7 @@ int main() {
 
     // Initialize panel icons after GL is ready
     panels::assetsBrowserPanel.InitIcons();
+    panels::scenePanel.initTextures();
 
     Start();
 
@@ -128,6 +130,7 @@ void drawImgui()
     ImGui_ImplGlfw_NewFrame();
     ImGui_ImplOpenGL3_NewFrame();
     ImGui::NewFrame();
+    ImGuizmo::BeginFrame();
 
     // Fullscreen DockSpace window -------------------------
     ImGuiWindowFlags host_window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |

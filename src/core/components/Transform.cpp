@@ -1,5 +1,7 @@
 #include "Transform.hpp"
 #include "../GameObject.hpp"
+#include "ImGuizmo/imGuizmo.h"
+#include <glm/gtc/type_ptr.hpp>
 
 void Transform::recalculateMatrix() {
     // POSSIBLE OPTIMIZATION
@@ -37,7 +39,25 @@ void Transform::Scale(const glm::vec3& factor) {
     normalDirty = true;
 }
 
-glm::mat4 Transform::getModel() {
+void Transform::DecomposeModel() {
+    glm::vec3 extractedEuler;
+    
+    // Decompose into temp variables
+    ImGuizmo::DecomposeMatrixToComponents(
+        glm::value_ptr(model), 
+        glm::value_ptr(position), 
+        glm::value_ptr(extractedEuler), // DO NOT pass &rotation[0]
+        glm::value_ptr(scale)
+    );
+
+    // Sync our internal state
+    gEulars = extractedEuler; 
+    rotation = glm::normalize(glm::quat(glm::radians(gEulars)));
+    
+    normalDirty = true;
+}
+
+glm::mat4& Transform::getModel() {
     if(modelDirty) {
         recalculateMatrix();
         modelDirty = false;

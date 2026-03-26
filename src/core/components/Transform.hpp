@@ -28,7 +28,8 @@ public:
     void RotateLocal(const glm::vec3& localEulars);
     void Translate(const glm::vec3& offset);
     void Scale(const glm::vec3& factor);
-    glm::mat4 getModel();
+    void DecomposeModel();
+    glm::mat4& getModel();
     glm::mat4 getNormalMat();
     glm::vec3 getAbsolutePosition();
     ~Transform() = default;

@@ -16,6 +16,7 @@ void AssetsBrowser::InitIcons() {
     fileTex = Texture((rootDir + "/src/textures/File.png").c_str(), texDets);
     folderTex = Texture((rootDir + "/src/textures/Folder.png").c_str(), texDets);
     folderEmptyTex = Texture((rootDir + "/src/textures/FolderEmpty.png").c_str(), texDets);
+
 }
 
 void AssetsBrowser::Render() {
