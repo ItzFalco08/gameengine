@@ -28,4 +28,4 @@ add_library(imgui STATIC ${IMGUI})
 target_link_directories(engine PRIVATE ${PROJECT_SOURCE_DIR}/libs) # check this for the file while linking
 find_package(OpenGL REQUIRED)
 
-target_link_libraries(engine PRIVATE glfw3.lib OpenGL::GL imgui)
+target_link_libraries(engine PRIVATE glfw3 OpenGL::GL imgui)

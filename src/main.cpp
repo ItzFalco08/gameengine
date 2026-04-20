@@ -157,7 +157,7 @@ void drawImgui()
     if (ImGui::BeginMenuBar()) {
         if (ImGui::BeginMenu("File")) {
             if (ImGui::MenuItem("Save Changes (Ctrl + S)")) {
-                WinMsg::Info("Success", "Changes Saved!");
+                sceneManager.activeScene->MakeDirty();
             } else if(ImGui::MenuItem("Exit Editor")) {
                 if (gMainWindow) glfwSetWindowShouldClose(gMainWindow, GLFW_TRUE);
             }
@@ -178,7 +178,7 @@ void drawImgui()
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     // When viewports are enabled, render additional platform windows
-    if (ImGuiConfigFlags_ViewportsEnable) {
+    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
         GLFWwindow* backup_context = glfwGetCurrentContext();
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();

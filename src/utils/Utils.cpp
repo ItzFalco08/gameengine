@@ -111,8 +111,7 @@ void Utils::updateFBODimensions()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-
-void modernDark()
+void defaultDark()
 {
     ImGuiStyle& style = ImGui::GetStyle();
     ImVec4* c = style.Colors;
@@ -169,11 +168,114 @@ void modernDark()
     style.ScrollbarRounding = 5.0f;
     style.GrabRounding   = 3.0f;
     style.TabRounding       = 0.0f;
+}namespace Pal
+{
+    static constexpr ImVec4 BG          = { 0.082f, 0.082f, 0.082f, 1.f }; // #151515
+    static constexpr ImVec4 BG_WIDGET   = { 0.110f, 0.110f, 0.110f, 1.f }; // #1c1c1c
+    static constexpr ImVec4 BG_GROUP    = { 0.125f, 0.125f, 0.125f, 1.f }; // #202020
+    static constexpr ImVec4 BORDER      = { 0.2f, 0.2f, 0.2f, 1.f }; // #383838
+    static constexpr ImVec4 BORDER_DIM  = { 0.150f, 0.150f, 0.150f, 1.f }; // #262626
+    static constexpr ImVec4 TEXT        = { 0.780f, 0.780f, 0.780f, 1.f }; // #c7c7c7
+    static constexpr ImVec4 TEXT_DIM    = { 0.450f, 0.450f, 0.450f, 1.f }; // #737373
+    static constexpr ImVec4 ACCENT      = { 0.220f, 0.480f, 0.780f, 1.f }; // #387ac7 blue
+    static constexpr ImVec4 ACCENT_DIM  = { 0.120f, 0.280f, 0.500f, 1.f }; // #1f4780 darker blue
+    static constexpr ImVec4 ACCENT_URL  = { 0.400f, 0.680f, 1.000f, 1.f }; // #66adff bright blue
+    static constexpr ImVec4 TRANSPARENT = { 0.f, 0.f, 0.f, 0.f };
+
+    static ImU32 U(ImVec4 v) { return ImGui::ColorConvertFloat4ToU32(v); }
+}
+ 
+void MortyDark()
+{
+    ImGuiStyle& s = ImGui::GetStyle();
+ 
+    // ── Geometry ──────────────────────────────
+    s.WindowPadding        = { 8, 8 };
+    s.FramePadding         = { 4, 2 };
+    s.CellPadding          = { 4, 2 };
+    s.ItemSpacing          = { 6, 4 };
+    s.ItemInnerSpacing     = { 4, 4 };
+    s.IndentSpacing        = 12.f;
+    s.ScrollbarSize        = 8.f;
+    s.GrabMinSize          = 6.f;
+ 
+    s.WindowBorderSize     = 1.f;
+    s.ChildBorderSize      = 1.f;
+    s.PopupBorderSize      = 1.f;
+    s.FrameBorderSize      = 1.f;
+    s.TabBorderSize        = 0.f;
+ 
+    s.WindowRounding       = 0.f;
+    s.ChildRounding        = 0.f;
+    s.FrameRounding        = 0.f;
+    s.PopupRounding        = 0.f;
+    s.ScrollbarRounding    = 0.f;
+    s.GrabRounding         = 0.f;
+    s.TabRounding          = 0.f;
+ 
+    s.WindowTitleAlign     = { 0.f, 0.5f };
+    s.WindowMenuButtonPosition = ImGuiDir_None;
+ 
+    // ── Colours ───────────────────────────────
+    ImVec4* c = s.Colors;
+    c[ImGuiCol_Text]                  = Pal::TEXT;
+    c[ImGuiCol_TextDisabled]          = Pal::TEXT_DIM;
+    c[ImGuiCol_WindowBg]              = Pal::BG;
+    c[ImGuiCol_ChildBg]               = Pal::BG_GROUP;
+    c[ImGuiCol_PopupBg]               = Pal::BG_WIDGET;
+    c[ImGuiCol_Border]                = Pal::BORDER;
+    c[ImGuiCol_BorderShadow]          = Pal::TRANSPARENT;
+    c[ImGuiCol_FrameBg]               = Pal::BG_WIDGET;
+    c[ImGuiCol_FrameBgHovered]        = { 0.15f,0.15f,0.15f,1.f };
+    c[ImGuiCol_FrameBgActive]         = { 0.18f,0.18f,0.18f,1.f };
+    c[ImGuiCol_TitleBg]               = Pal::BG;
+    c[ImGuiCol_TitleBgActive]         = Pal::BG;
+    c[ImGuiCol_TitleBgCollapsed]      = Pal::BG;
+    c[ImGuiCol_MenuBarBg]             = Pal::BG;
+    c[ImGuiCol_ScrollbarBg]           = Pal::BG;
+    c[ImGuiCol_ScrollbarGrab]         = Pal::BORDER;
+    c[ImGuiCol_ScrollbarGrabHovered]  = Pal::ACCENT_DIM;
+    c[ImGuiCol_ScrollbarGrabActive]   = Pal::ACCENT;
+    c[ImGuiCol_CheckMark]             = Pal::ACCENT;
+    c[ImGuiCol_SliderGrab]            = Pal::ACCENT;
+    c[ImGuiCol_SliderGrabActive]      = Pal::ACCENT_URL;
+    c[ImGuiCol_Button]                = Pal::BG_WIDGET;
+    c[ImGuiCol_ButtonHovered]         = { 0.16f,0.16f,0.16f,1.f };
+    c[ImGuiCol_ButtonActive]          = Pal::ACCENT_DIM;
+    c[ImGuiCol_Header]        = { 0.18f, 0.18f, 0.18f, 1.f }; // dark gray resting
+    c[ImGuiCol_HeaderHovered] = { 0.22f, 0.22f, 0.22f, 1.f }; // slightly lighter on hover
+    c[ImGuiCol_HeaderActive]  = { 0.26f, 0.26f, 0.26f, 1.f }; // a bit lighter on click
+    c[ImGuiCol_Separator]             = Pal::BORDER_DIM;
+    c[ImGuiCol_SeparatorHovered]      = Pal::ACCENT_DIM;
+    c[ImGuiCol_SeparatorActive]       = Pal::ACCENT;
+    c[ImGuiCol_ResizeGrip]            = Pal::TRANSPARENT;
+    c[ImGuiCol_ResizeGripHovered]     = Pal::ACCENT_DIM;
+    c[ImGuiCol_ResizeGripActive]      = Pal::ACCENT;
+    c[ImGuiCol_Tab]                   = Pal::BG;
+    c[ImGuiCol_TabHovered]            = { 0.14f,0.14f,0.14f,1.f };
+    c[ImGuiCol_TabActive]             = Pal::BG_GROUP;
+    c[ImGuiCol_TabUnfocused]          = Pal::BG;
+    c[ImGuiCol_TabUnfocusedActive]    = Pal::BG;
+    c[ImGuiCol_PlotLines]             = Pal::ACCENT;
+    c[ImGuiCol_PlotLinesHovered]      = Pal::ACCENT_URL;
+    c[ImGuiCol_PlotHistogram]         = Pal::ACCENT;
+    c[ImGuiCol_PlotHistogramHovered]  = Pal::ACCENT_URL;
+    c[ImGuiCol_TableHeaderBg]         = Pal::BG_WIDGET;
+    c[ImGuiCol_TableBorderStrong]     = Pal::BORDER;
+    c[ImGuiCol_TableBorderLight]      = Pal::BORDER_DIM;
+    c[ImGuiCol_TableRowBg]            = Pal::TRANSPARENT;
+    c[ImGuiCol_TableRowBgAlt]         = { 1,1,1,0.03f };
+    c[ImGuiCol_TextSelectedBg] = { 0.22f, 0.48f, 0.78f, 0.35f }; // #387ac7 blue selection tint
+    c[ImGuiCol_DragDropTarget]        = Pal::ACCENT;
+    c[ImGuiCol_NavHighlight]          = Pal::ACCENT;
+    c[ImGuiCol_NavWindowingHighlight] = { 1,1,1,0.7f };
+    c[ImGuiCol_NavWindowingDimBg]     = { 0,0,0,0.2f };
+    c[ImGuiCol_ModalWindowDimBg]      = { 0,0,0,0.4f };
 }
 
 void SetEditorStyle()
 {
-    modernDark();
+    MortyDark();
 }
 
 // G U I 

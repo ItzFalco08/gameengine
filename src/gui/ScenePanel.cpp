@@ -130,6 +130,7 @@ void ScenePanel::Render() {
 
         if (ImGuizmo::IsUsing()) {
             selectedGameObject->transform->DecomposeModel();
+            sceneManager.activeScene->MakeDirty();
         }
     }
     ImGui::End();

@@ -9,23 +9,12 @@
             1.0,
             1.0
           ],
-          "ambientStrength": 0.20000000298023224,
-          "diffuseStrength": 0.1599999964237213,
-          "materialType": 0,
-          "shininess": 32.0,
-          "specularStrength": 1.0,
-          "textureDets": [
-            33071,
-            33071,
-            9728,
-            9728
-          ],
-          "texturePath": "C:\\Users\\pc\\Desktop\\gameengine/Assets\\models\\goku\\Image_0.jpg",
+          "materialType": 1,
           "type": "Material"
         },
         {
           "cullDir": 1029,
-          "filePath": "C:\\Users\\pc\\Desktop\\gameengine/Assets\\models\\goku\\model.obj",
+          "filePath": "C:\\Users\\pc\\Desktop\\gameengine/Assets\\models\\cube\\Cube.obj",
           "type": "Mesh"
         }
       ],
@@ -37,9 +26,9 @@
           0.0
         ],
         "position": [
-          -0.13709688186645508,
-          -0.4000000059604645,
-          1.600000023841858
+          -0.15978965163230896,
+          -0.551544189453125,
+          -3.0517883715219796e-05
         ],
         "rotation": [
           1.0,
@@ -48,126 +37,9 @@
           0.0
         ],
         "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      }
-    },
-    {
-      "childs": [],
-      "components": [
-        {
-          "intensity": 1.7000000476837158,
-          "lightColor": [
-            1.0,
-            1.0,
-            1.0
-          ],
-          "lightType": 0,
-          "range": 7.0,
-          "type": "Light"
-        },
-        {
-          "ambientColor": [
-            1.0,
-            1.0,
-            1.0
-          ],
-          "materialType": 1,
-          "type": "Material"
-        },
-        {
-          "cullDir": 1029,
-          "filePath": "C:\\Users\\pc\\Desktop\\gameengine/Assets\\models\\cube\\Cube.obj",
-          "type": "Mesh"
-        }
-      ],
-      "name": "pointLight",
-      "transform": {
-        "gEulars": [
-          30.07258415222168,
-          26.759143829345703,
-          30.07258415222168
-        ],
-        "position": [
-          0.20000000298023224,
-          0.0,
-          2.200000047683716
-        ],
-        "rotation": [
-          0.903978705406189,
-          0.16136117279529572,
-          0.29598239064216614,
-          0.26302027702331543
-        ],
-        "scale": [
-          0.049999915063381195,
-          0.04999994859099388,
-          0.050000037997961044
-        ]
-      }
-    },
-    {
-      "childs": [],
-      "components": [
-        {
-          "lightColor": [
-            1.0,
-            1.0,
-            1.0
-          ],
-          "lightType": 1,
-          "type": "Light"
-        },
-        {
-          "ambientColor": [
-            1.0,
-            0.11764705181121826,
-            0.11764705181121826
-          ],
-          "ambientStrength": 0.20000000298023224,
-          "diffuseStrength": 0.4000000059604645,
-          "materialType": 0,
-          "shininess": 32.0,
-          "specularStrength": 0.4000000059604645,
-          "textureDets": [
-            33071,
-            33071,
-            9987,
-            9728
-          ],
-          "texturePath": "",
-          "type": "Material"
-        },
-        {
-          "cullDir": 1029,
-          "filePath": "C:\\Users\\pc\\Desktop\\gameengine/Assets\\models\\cube\\Cube.obj",
-          "type": "Mesh"
-        }
-      ],
-      "name": "Sun",
-      "transform": {
-        "gEulars": [
-          70.36212921142578,
-          -17.856443405151367,
-          70.36212921142578
-        ],
-        "position": [
-          2.4130001068115234,
-          0.0,
-          0.0
-        ],
-        "rotation": [
-          0.7588761448860168,
-          0.44807639718055725,
-          -0.3732093274593353,
-          -0.2899128198623657
-        ],
-        "scale": [
-          0.39999324083328247,
-          0.400547057390213,
-          0.40001991391181946
+          0.30000001192092896,
+          0.30000001192092896,
+          0.30000001192092896
         ]
       }
     }

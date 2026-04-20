@@ -28,9 +28,12 @@ public:
 
     ~Shader();
 
+    std::unordered_map<std::string, int> uLocCache;  
+
 private:
     void checkCompileErrors(unsigned int shaderId, const char* shaderType);
     void checkLinkErrors(unsigned int programId);
     void getShaderTexts(std::string& fragTxt, std::string& vertTxt, const char* fragPath, const char* vertPath);
     void initShader(const char* fragPath, const char* vertPath);
+    int getULoc(const char* name);
 };
