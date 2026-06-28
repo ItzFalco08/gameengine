@@ -25,5 +25,6 @@ cd build
 
 ## Screenshots
 
-![img1](screenshots/img1.png)
+<img width="1919" height="1039" alt="image" src="https://github.com/user-attachments/assets/204bbd9d-e4b9-4959-a556-98c7b8de7d35" />
+
 
