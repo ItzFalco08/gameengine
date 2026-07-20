@@ -1,11 +1,11 @@
 #pragma once
-#include "glad/gl.h"
-#include "GLFW/glfw3.h"
-#include "vector"
-#include "sstream"
-#include "fstream"
-#include "glm/glm.hpp"
-#include "array"
+#include <glad/gl.h>
+#include <GLFW/glfw3.h>
+#include <vector>
+#include <sstream>
+#include <fstream>
+#include <glm/glm.hpp>
+#include <array>
 
 
 namespace Utils {

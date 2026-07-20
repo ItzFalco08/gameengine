@@ -1,8 +1,8 @@
 #include "Utils.hpp"
 
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_glfw.h"
-#include "imgui/imgui_impl_opengl3.h"
+#include "imgui.h"
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
 #include "Logger.hpp"
 #include "globals.hpp"
 
@@ -168,7 +168,9 @@ void defaultDark()
     style.ScrollbarRounding = 5.0f;
     style.GrabRounding   = 3.0f;
     style.TabRounding       = 0.0f;
-}namespace Pal
+}
+
+namespace Pal
 {
     static constexpr ImVec4 BG          = { 0.082f, 0.082f, 0.082f, 1.f }; // #151515
     static constexpr ImVec4 BG_WIDGET   = { 0.110f, 0.110f, 0.110f, 1.f }; // #1c1c1c

@@ -1,9 +1,9 @@
 #pragma once
+#include <filesystem>
 #include "GameObject.hpp"
 #include "./components/Light.hpp"
 #include "json/json.hpp"
 #include <fstream>
-#include <filesystem>
 
 class Scene {
 public:

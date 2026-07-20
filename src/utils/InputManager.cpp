@@ -1,6 +1,6 @@
 #include "InputManager.hpp"
 #include "Logger.hpp"
-#include <imgui/imgui_impl_glfw.h> // Add this include for ImGui_ImplGlfw_KeyCallback
+#include "backends/imgui_impl_glfw.h" // Add this include for ImGui_ImplGlfw_KeyCallback
 // Define the static member variable
 std::unordered_map<int, bool[3]> InputManager::keyMap;
 int InputManager::mods;
@@ -14,20 +14,20 @@ void InputManager::inputCallback(GLFWwindow* window, int key, int scancode, int 
     switch(action) {
         case GLFW_PRESS:
             keyMap[key][PRESSED] = true;
-            keyMap[key][HOLD] = false;
+            keyMap[key][DOWN] = false;
             keyMap[key][RELEASED] = false;
             break;
 
         case GLFW_REPEAT:
-            // Key is still held - HOLD remains true
+            // Key is still held - DOWN remains true
             keyMap[key][PRESSED] = false;
-            keyMap[key][HOLD] = true;
+            keyMap[key][DOWN] = true;
             keyMap[key][RELEASED] = false;
             break;
 
         case GLFW_RELEASE:
             keyMap[key][PRESSED] = false;
-            keyMap[key][HOLD] = false;
+            keyMap[key][DOWN] = false;
             keyMap[key][RELEASED] = true;
             break;
 
@@ -38,8 +38,8 @@ bool InputManager::isKeyPressed(int keyId) {
     return keyMap[keyId] ? keyMap[keyId][PRESSED] : false;
 }
 
-bool InputManager::isKeyHold(int keyId) {
-    return keyMap[keyId] ? keyMap[keyId][HOLD] : false;
+bool InputManager::isKeyDown(int keyId) {
+    return keyMap[keyId] ? keyMap[keyId][DOWN] : false;
 }
 
 bool InputManager::isKeyReleased(int keyId) {
@@ -54,6 +54,6 @@ void InputManager::clearFrameStates() {
     }
 }
 
-bool InputManager::isSpecialHold(int specialKeyId) {
+bool InputManager::isSpecialDown(int specialKeyId) {
     return (mods & specialKeyId);
 }

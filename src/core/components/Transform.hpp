@@ -1,7 +1,7 @@
 #pragma once
-#include "glm/glm.hpp"
+#include <glm/glm.hpp>
 #include "Component.hpp"
-#include "glm/gtc/matrix_transform.hpp"
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include "json/json.hpp"

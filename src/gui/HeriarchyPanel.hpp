@@ -1,4 +1,4 @@
-#include "imgui/imgui.h"
+#include "imgui.h"
 #include <iostream>
 #include <string>
 #include "../core/Scene.hpp"

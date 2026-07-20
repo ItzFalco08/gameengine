@@ -9,12 +9,23 @@
             1.0,
             1.0
           ],
-          "materialType": 1,
+          "ambientStrength": 0.20000000298023224,
+          "diffuseStrength": 0.4000000059604645,
+          "materialType": 0,
+          "shininess": 32.0,
+          "specularStrength": 0.4000000059604645,
+          "textureDets": [
+            33071,
+            33071,
+            9987,
+            9728
+          ],
+          "texturePath": "C:\\Users\\pc\\Desktop\\gameengine/Assets\\models\\goku\\Image_0.jpg",
           "type": "Material"
         },
         {
           "cullDir": 1029,
-          "filePath": "C:\\Users\\pc\\Desktop\\gameengine/Assets\\models\\cube\\Cube.obj",
+          "filePath": "C:\\Users\\pc\\Desktop\\gameengine/Assets\\models\\goku\\model.obj",
           "type": "Mesh"
         }
       ],
@@ -26,9 +37,9 @@
           0.0
         ],
         "position": [
-          -0.15978965163230896,
-          -0.551544189453125,
-          -3.0517883715219796e-05
+          -0.02654147520661354,
+          -0.09548681229352951,
+          2.6244583129882813
         ],
         "rotation": [
           1.0,
@@ -40,6 +51,46 @@
           0.30000001192092896,
           0.30000001192092896,
           0.30000001192092896
+        ]
+      }
+    },
+    {
+      "childs": [],
+      "components": [
+        {
+          "intensity": 1.899999976158142,
+          "lightColor": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "lightType": 0,
+          "range": 4.300000190734863,
+          "type": "Light"
+        }
+      ],
+      "name": "Light",
+      "transform": {
+        "gEulars": [
+          0.0,
+          -0.0,
+          0.0
+        ],
+        "position": [
+          -0.09002876281738281,
+          -0.1323360800743103,
+          2.7302629947662354
+        ],
+        "rotation": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
         ]
       }
     }

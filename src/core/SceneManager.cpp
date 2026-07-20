@@ -1,4 +1,5 @@
 #include "SceneManager.hpp"
+#include <filesystem>
 
 void SceneManager::SetScene(const fs::path& path) {
     LOG::Info("Switching Scene");

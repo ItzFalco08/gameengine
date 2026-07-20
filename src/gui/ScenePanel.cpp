@@ -1,20 +1,35 @@
 #include "ScenePanel.hpp"
-#include "ImGuizmo/imGuizmo.h"
+#include "ImGuizmo/ImGuizmo.h"
 #include <glm/gtc/type_ptr.hpp>
+
+extern GLFWwindow* gMainWindow;
 
 void ScenePanel::Render() {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0,0));
     ImGui::Begin("Scene");
     ImGui::PopStyleVar();
 
-    // U P D A T E _ S C E N E _ D I M E N S I O N S
-    int p_w = sceneView.SCENEVIEW_WIDTH;
+    // variables
+    ImVec2 dimensions = ImGui::GetContentRegionAvail();
+    ImVec2 windowPos = ImGui::GetWindowPos();
+
+    updateDimentions(dimensions);
+    renderFrameBuffer();
+    gizmoSelectorGui(windowPos);
+    statsGui(windowPos, dimensions);
+    renderGuizmos();
+    handleCameraMovement();
+
+    ImGui::End();
+}
+
+void ScenePanel::updateDimentions(ImVec2& dimensions) {
+ int p_w = sceneView.SCENEVIEW_WIDTH;
     int p_h = sceneView.SCENEVIEW_HEIGHT;
     static double lastchange = 0;
-    ImVec2 dimensions = ImGui::GetContentRegionAvail();
 
     bool changed = false;
-
+    //[02614] [imgui - error] In window 'Scene': Incorrect parameter.Did you swap 'thickness' and 'flags' ?
     if (dimensions.x != p_w) {
         sceneView.SCENEVIEW_WIDTH = static_cast<int>(dimensions.x);
         changed = true;
@@ -32,26 +47,18 @@ void ScenePanel::Render() {
     if (glfwGetTime() - lastchange > 0.15) { // 150ms debounce
         Utils::updateFBODimensions();
     }
+}
 
-    // NOTE: UV flipped vertically, OpenGL FBO is bottom-left origin, ImGui is top-left
-    ImGui::Image((ImTextureID)(uintptr_t)sceneView.textureObj,
-                 ImVec2((float)sceneView.SCENEVIEW_WIDTH, (float)sceneView.SCENEVIEW_HEIGHT),
-                 ImVec2(0, 1), ImVec2(1, 0));
-    
-    
-    //  G I Z M O _ S E L E C T O R
-    ImVec2 windowPos = ImGui::GetWindowPos();
+void ScenePanel::renderFrameBuffer() {
+        ImGui::Image((ImTextureID)(uintptr_t)sceneView.textureObj,
+            ImVec2((float)sceneView.SCENEVIEW_WIDTH, (float)sceneView.SCENEVIEW_HEIGHT),
+            ImVec2(0, 1), ImVec2(1, 0));
+}
+
+void ScenePanel::gizmoSelectorGui(ImVec2& windowPos) {
     ImVec2 overlayPos = ImVec2(windowPos.x + 10, windowPos.y + 30); 
     ImGui::SetNextWindowPos(overlayPos, ImGuiCond_Always);
     ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.08f, 0.08f, 0.08f, 1.00f));
-
-    unsigned int gizmo_window_flags = ImGuiWindowFlags_NoDecoration | 
-                                    ImGuiWindowFlags_NoDocking | 
-                                    ImGuiWindowFlags_AlwaysAutoResize | 
-                                    ImGuiWindowFlags_NoSavedSettings | 
-                                    ImGuiWindowFlags_NoFocusOnAppearing | 
-                                    ImGuiWindowFlags_NoNav |
-                                    ImGuiWindowFlags_NoMove;
 
     ImVec4 activeColor  = ImVec4(0.16f, 0.16f, 0.16f, 1.0f); // highlight tint
     ImVec4 defaultColor = ImVec4(0.0f, 0.0f, 0.0f, 0.00f); // transparent (normal)
@@ -63,7 +70,7 @@ void ScenePanel::Render() {
         ImGui::PushStyleColor(ImGuiCol_ButtonActive,  activeColor);
     };
 
-    ImGui::Begin("##Toolbar", nullptr, gizmo_window_flags);
+    ImGui::Begin("##Toolbar", nullptr, ImGuiWindowFlags_NoDecoration |  ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize);
 
         PushButtonState(gizmoState == ImGuizmo::TRANSLATE);
         if (ImGui::ImageButton("##T", (ImTextureID)moveTex.TexId, ImVec2(20,20), ImVec2(0,1), ImVec2(1,0))) gizmoState = ImGuizmo::TRANSLATE;
@@ -87,24 +94,29 @@ void ScenePanel::Render() {
 
     ImGui::PopStyleColor(); // WindowBg
     ImGui::End();
+}
 
+void ScenePanel::statsGui(ImVec2& windowPos, ImVec2& dimensions) {
     // S T A T S
     ImVec2 pos = ImVec2(windowPos.x + dimensions.x - 60, windowPos.y + 20);
     ImGui::SetNextWindowPos(pos);
-    ImGui::Begin("##Stats", nullptr, gizmo_window_flags | ImGuiWindowFlags_NoBackground );
+    ImGui::Begin("##Stats", nullptr, ImGuiWindowFlags_NoDecoration |  ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground );
     if(ImGui::Button("Stats")) {
         ImGui::OpenPopup("StatsPanel");
     }
 
     ImGui::SetNextWindowPos(ImVec2(pos.x, pos.y + 30.0f));
-    if(ImGui::BeginPopup("StatsPanel", gizmo_window_flags)) {
+    if(ImGui::BeginPopup("StatsPanel", ImGuiWindowFlags_NoDecoration |  ImGuiWindowFlags_NoMove)) {
         ImGui::Text("FPS: %f", ImGui::GetIO().Framerate);
-        ImGui::Text("frame time: %fms", ImGui::GetIO().Framerate / 1000.0f);
-        ImGui::EndChild();
+        ImGui::Text("frame time: %fms", 1000.0f / ImGui::GetIO().Framerate);
+        ImGui::EndPopup();
     };
 
     ImGui::End();
+}
 
+void ScenePanel::renderGuizmos() {
+    
     ImGuizmo::SetDrawlist();
     // get image rect (IMPORTANT)
     ImVec2 imagePos = ImGui::GetItemRectMin();
@@ -133,9 +145,23 @@ void ScenePanel::Render() {
             sceneManager.activeScene->MakeDirty();
         }
     }
-    ImGui::End();
-}
+};
 
+void ScenePanel::handleCameraMovement() {
+    double xpos, ypos = 0;
+    glfwGetCursorPos(gMainWindow, &xpos, &ypos); // new pos
+    
+    if(ImGui::IsWindowHovered() && ImGui::IsMouseDown(1)) {
+        double dx = xpos - cursorX; // rotation around y (local/camera)
+        double dy = ypos - cursorY; // rotation around x (local/camera)
+
+        std::cout << dx << ", " << dy << std::endl;
+    };
+
+    // update cursor position
+    cursorX = xpos;
+    cursorY = ypos;
+}
 
 void ScenePanel::initTextures() {
     TexDets texDets;

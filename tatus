@@ -1,0 +1,44 @@
+* [33m1c4f1f5[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m modified theme
+* [33mfc903c0[m[33m ([m[1;33mtag: [m[1;33mV0.2.2-Beta[m[33m)[m V0.2.2 - Added Gizmos
+* [33mb4ed7e3[m fix3
+* [33mf64df74[m fix2
+* [33mb7db5e2[m fix2
+* [33m4fd7a77[m fix
+* [33mec3788e[m V0.2.01 - fast obj loader
+* [33mfd15fb4[m V0.2.01 - faster obj loading
+* [33m5207c01[m fastObjLoading
+[31m|[m * [33m5badc72[m V0.2.01 - fast obj loader
+[31m|[m * [33mc48336a[m V0.2.01 - faster obj loading
+[31m|[m * [33m67fd205[m fastObjLoading
+[31m|[m[31m/[m  
+* [33mc25f8c9[m[33m ([m[1;33mtag: [m[1;33mV0.2-Beta[m[33m)[m V0.2 - Beta
+* [33ma4350a1[m screenshot added
+* [33m3af5b58[m V0.1 Beta
+* [33m97d60e5[m Add light component and enhance scene management
+* [33me3f8783[m shader and light adjustments
+* [33m96751fd[m Light Componet
+* [33m747c8de[m added Texture
+* [33mdd540ee[m material gui - bugfix
+* [33ma446c77[m added material component
+* [33mb7e0d78[m integrated mesh component in inspector
+* [33m8bda627[m bugfix - inspector panel
+* [33m98d3715[m  inspector panel - add Component functionality
+* [33mde7ff77[m added README
+* [33m14b45a6[m git config
+* [33m9e3bde7[m git config
+* [33m2c6bdc4[m project configurations
+* [33m45605d8[m project configurations
+* [33m77c6278[m scene tree encoding
+* [33mdc07f31[m final touches
+* [33m221e563[m added Inputmanager
+* [33mc0853d9[m Wrote Heriarchy Panel
+* [33mb1ef78e[m heriarchy checkpoint 1
+* [33ma608ece[m added windows error message
+* [33md6e8b34[m added create scene gui
+* [33m11ae2d3[m organized assets gui code, wrote serialization for Scene
+* [33m65cbc83[m temp
+* [33maa872b9[m added asset manager
+* [33mcbe3d7a[m wrote all core components
+* [33m48821d0[m added Shader class and Mesh component
+* [33m31dbbea[m updated GameObject
+* [33m79222ea[m initial commit

@@ -106,7 +106,7 @@ void HeriarchyPanel::Render() {
     ImGui::PopStyleColor();
 
     // Save Scene
-    if(InputManager::isSpecialHold(GLFW_MOD_CONTROL) && InputManager::isKeyPressed(GLFW_KEY_S)) {
+    if(InputManager::isSpecialDown(GLFW_MOD_CONTROL) && InputManager::isKeyPressed(GLFW_KEY_S)) {
         sceneManager.activeScene->SaveScene();
     };
 

@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.14)
+project(ImGuizmo)
+add_library(ImGuizmo ${CMAKE_CURRENT_SOURCE_DIR}/ImGuizmo.cpp)
+target_include_directories(ImGuizmo PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(ImGuizmo PUBLIC imgui)

@@ -11,7 +11,7 @@ public:
     static int mods;
     enum KeyState {
         PRESSED = 0,
-        HOLD = 1,
+        DOWN = 1,
         RELEASED = 2
     };
     
@@ -19,7 +19,7 @@ public:
     static void clearFrameStates(); // Call this at the end of each frame
 
     static bool isKeyPressed(int keyId);
-    static bool isKeyHold(int keyId);
+    static bool isKeyDown(int keyId);
     static bool isKeyReleased(int keyId);
-    static bool isSpecialHold(int specialKeyId);
+    static bool isSpecialDown(int specialKeyId);
 };

@@ -9,14 +9,24 @@ Texture::Texture(const char* path, TexDets texDets) {
 
 bool Texture::Initialize(const char* path, TexDets texDets) {
     if (texturePath == path) { LOG::Warning("Texture already bound with path: ", path ); return false; };
+    texturePath = std::string(path);
     
+    // load texture
     int width = 0, height = 0, nrChannels = 0;
     stbi_set_flip_vertically_on_load(true);
     unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
     
-    texturePath = std::string(path);
-
+    // fill fallback data
+    bool usingFallback = false;
     unsigned int format;
+    if(!data) {
+        width = 1; height = 1; nrChannels = 4; format = GL_RGBA;
+        static const unsigned char fallback[4] = {255, 0, 255, 255};
+        data = (unsigned char*)&fallback;
+        usingFallback = true;
+    }
+
+    // GL texture info
     bool wantsMips = (
         texDets.minFilter == GL_LINEAR_MIPMAP_LINEAR ||
         texDets.minFilter == GL_LINEAR_MIPMAP_NEAREST ||
@@ -24,35 +34,21 @@ bool Texture::Initialize(const char* path, TexDets texDets) {
         texDets.minFilter == GL_NEAREST_MIPMAP_LINEAR
     );
 
-    if (data) {
-        LOG::Info("Texture Data found", std::string(path));
-        switch (nrChannels) {
-            case 1: format = GL_RED;  break;
-            case 2: format = GL_RG;   break;
-            case 3: format = GL_RGB;  break;
-            case 4: format = GL_RGBA; break;
-            default: format = GL_RGB; break;
-        }
-    } else {
-        LOG::Error("Failed to load texture: ", path);
-        // Fallback 1x1 magenta pixel
-        static const unsigned char fallback[4] = {255, 0, 255, 255};
-        width = 1; height = 1; nrChannels = 4; format = GL_RGBA;
-
-        glGenTextures(1, &TexId);
-        glBindTexture(GL_TEXTURE_2D, TexId);
-        applyParams(texDets);
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, fallback);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        return true;
+    switch (nrChannels) {
+        case 1: format = GL_RED;  break;
+        case 2: format = GL_RG;   break;
+        case 3: format = GL_RGB;  break;
+        case 4: format = GL_RGBA; break;
+        default: format = GL_RGB; break;
     }
 
+    // generate texture
     glGenTextures(1, &TexId);
     glBindTexture(GL_TEXTURE_2D, TexId);
     applyParams(texDets);
     glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-    if (wantsMips) glGenerateMipmap(GL_TEXTURE_2D);
-    stbi_image_free(data);
+    if (wantsMips && !usingFallback) glGenerateMipmap(GL_TEXTURE_2D);
+    if(!usingFallback) stbi_image_free(data);
     glBindTexture(GL_TEXTURE_2D, 0);
     return true;
 }

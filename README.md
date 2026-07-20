@@ -1,27 +1,15 @@
+# GameEngine
+a simple and minimal gameengine or a renderer made with OpenGL.
+
+# Features 
+- ECS sysem
+- Assets
+- Serialized Scenes
+- Obj Loader
+
 # How to Run
-
-## Prerequisites
-- `Ninja` build system
-- `CMake`
-- `MSVC` 2022 C++ Compiler
-
-## Build Protocol
-
-**1. Generate Ninja build files**
-```bash
-cmake -G Ninja -B build
-```
-
-**2. Compile/Build**
-```bash
-cmake --build build
-```
-
-**3. Run**
-```bash
-cd build
-./engine.exe
-```
+- Built the main "engine" target of the CMakeLists.txt.
+- you may edit the compiler and shi specified in CMakePresets.json
 
 ## Screenshots
 

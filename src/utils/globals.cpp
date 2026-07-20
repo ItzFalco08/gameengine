@@ -1,4 +1,5 @@
 #include "globals.hpp"
+#include <GLFW/glfw3.h>
 #include "../core/Renderer.hpp"
 #include "../gui/ScenePanel.hpp"
 #include "../gui/AssetsBrowserPanel.hpp"
@@ -16,6 +17,8 @@ GameObject* selectedGameObject;
 AssetsManager assetsManager;
 ResourceManager resourceManager;
 Renderer renderer;
+
+GLFWwindow* gMainWindow = nullptr;
 
 std::string rootDir;
 

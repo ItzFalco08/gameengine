@@ -5,9 +5,9 @@
 #include <GLFW/glfw3native.h>
 #include "utils/Logger.hpp"
 #include "utils/WinMsg.hpp"
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_glfw.h"
-#include "imgui/imgui_impl_opengl3.h"
+#include "imgui.h"
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
 #include "utils/Utils.hpp"
 #include "utils/globals.hpp"
 #include "core/Renderer.hpp"
@@ -15,14 +15,10 @@
 #include "gui/AssetsBrowserPanel.hpp"
 #include "windows.h"
 #include "core/GameObject.hpp"
-#include "ImGuizmo/ImGuizmo.h"
 
 void drawImgui();
 void Update();
 void Start();
-
-// Global handle to the main window for cross-function access
-static GLFWwindow* gMainWindow = nullptr;
 
 void setRootDir() {
     char path[MAX_PATH];
@@ -81,7 +77,7 @@ int main() {
     Start();
 
     glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
-        inputManager.inputCallback(window, key, scancode, action, mods);
+        InputManager::inputCallback(window, key, scancode, action, mods);
     });
 
     glEnable(GL_DEPTH_TEST);

@@ -1,5 +1,5 @@
 #pragma once
-#include "GLAD/gl.h"
+#include "glad/gl.h"
 #include "string"
 
 struct TexDets {
