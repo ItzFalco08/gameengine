@@ -19,6 +19,7 @@
 void drawImgui();
 void Update();
 void Start();
+void calcDeltaTime();
 
 void setRootDir() {
     char path[MAX_PATH];
@@ -39,6 +40,8 @@ void setRootDir() {
     rootDir = exeDir;
 }
 
+GLFWwindow* window = nullptr;
+
 int main() {
     setRootDir();
     glfwSetErrorCallback(Utils::GLFWErrorCallback);
@@ -58,7 +61,7 @@ int main() {
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
     
-    GLFWwindow* window = glfwCreateWindow(1200, 700, "Game Engine", nullptr, nullptr);
+    window = glfwCreateWindow(1200, 700, "Game Engine", nullptr, nullptr);
     if (!window) {glfwTerminate(); return 1; };
     gMainWindow = window;
 
@@ -109,16 +112,22 @@ int main() {
 }
 
 void Start() {
-    // position the camera so the cube is visible
-    editorCamera->position = glm::vec3(0.0f, 0.0f, 3.0f);
-    editorCamera->front = glm::vec3(0.0f, 0.0f, -1.0f);
-    editorCamera->viewDirty = true;
+
 }
 
-static double lastLogTime = 0.0;
+double lastLogTime = 0.0;
+
+double deltaTime = 0.0;
 
 void Update() {
+    calcDeltaTime();
     renderer.OpenGLRenderer(sceneManager.activeScene.get());
+}
+
+static void calcDeltaTime() {
+    float curTime = glfwGetTime();
+    deltaTime = curTime - lastLogTime;
+    lastLogTime = curTime;
 }
 
 void drawImgui()

@@ -17,17 +17,23 @@ struct Camera {
     float _far = 500.0f;
 
     // api
-    void rotateY(double yaw) { // assumption: radians
-        _yaw += yaw;
+    void rotate(double dx, double dy) {
+        _yaw += dx;
+        _pitch += dy;
 
-        front.x = glm::cos(_pitch) * glm::cos(_yaw);
-        front.z = glm::cos(_pitch) * glm::sin(_yaw);
-    }
+        if (_pitch > 89.0f) _pitch = 89.0f;
+        if (_pitch < -89.0f) _pitch = -89.0f;
 
-    void rotateX(double pitch) {
-        _pitch += pitch;
+        front.x = glm::cos(glm::radians(_pitch)) * glm::cos(glm::radians(_yaw));
+        front.y = glm::sin(glm::radians(_pitch));
+        front.z = glm::cos(glm::radians(_pitch)) * glm::sin(glm::radians(_yaw));
 
-        
+        viewDirty = true;
+    };
+
+    void move(glm::vec3 deltaPos) {
+        position += deltaPos;
+        viewDirty = true;
     }
 
     // matrix calculations

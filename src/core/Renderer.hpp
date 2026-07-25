@@ -97,9 +97,9 @@ private:
 
         litShader.setMat4("model", curGo->transform->getModel());
         litShader.setMat3("normalMatrix", glm::mat3(curGo->transform->getNormalMat()));
-        litShader.setMat4("view", editorCamera->getViewMat());
-        litShader.setMat4("projection", editorCamera->getProjMat());
-        litShader.setVec3("uCamPos", editorCamera->position);
+        litShader.setMat4("view", editorCamera.getViewMat());
+        litShader.setMat4("projection", editorCamera.getProjMat());
+        litShader.setVec3("uCamPos", editorCamera.position);
 
 
         // set material
@@ -122,8 +122,8 @@ private:
         unlitShader.use();
         unlitShader.setMat4("model", curGo->transform->getModel());
         unlitShader.setMat4("normalMatrix", curGo->transform->getNormalMat());
-        unlitShader.setMat4("view", editorCamera->getViewMat());
-        unlitShader.setMat4("projection", editorCamera->getProjMat());
+        unlitShader.setMat4("view", editorCamera.getViewMat());
+        unlitShader.setMat4("projection", editorCamera.getProjMat());
 
         // set material
         UnlitMaterial* unlitMat = static_cast<UnlitMaterial*>(mat->matprops.get());

@@ -14,13 +14,6 @@ void InputManager::inputCallback(GLFWwindow* window, int key, int scancode, int 
     switch(action) {
         case GLFW_PRESS:
             keyMap[key][PRESSED] = true;
-            keyMap[key][DOWN] = false;
-            keyMap[key][RELEASED] = false;
-            break;
-
-        case GLFW_REPEAT:
-            // Key is still held - DOWN remains true
-            keyMap[key][PRESSED] = false;
             keyMap[key][DOWN] = true;
             keyMap[key][RELEASED] = false;
             break;

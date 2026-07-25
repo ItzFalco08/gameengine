@@ -4,6 +4,8 @@
 
 extern GLFWwindow* gMainWindow;
 
+extern double deltaTime;
+
 void ScenePanel::Render() {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0,0));
     ImGui::Begin("Scene");
@@ -41,7 +43,7 @@ void ScenePanel::updateDimentions(ImVec2& dimensions) {
 
     if (changed) {
         lastchange = glfwGetTime();
-        editorCamera->projDirty = true; // aspect ratio changed, recalculate projection
+        editorCamera.projDirty = true; // aspect ratio changed, recalculate projection
     }
 
     if (glfwGetTime() - lastchange > 0.15) { // 150ms debounce
@@ -133,8 +135,8 @@ void ScenePanel::renderGuizmos() {
     ImGuizmo::Enable(true);
     if (selectedGameObject) {
         ImGuizmo::Manipulate(
-            glm::value_ptr(editorCamera->viewMat),
-            glm::value_ptr(editorCamera->projectionMat),
+            glm::value_ptr(editorCamera.viewMat),
+            glm::value_ptr(editorCamera.projectionMat),
             gizmoState,   // later: switch modes
             ImGuizmo::LOCAL,
             const_cast<float*>(glm::value_ptr(selectedGameObject->transform->getModel()))
@@ -147,15 +149,54 @@ void ScenePanel::renderGuizmos() {
     }
 };
 
+extern GLFWwindow* window;
+
 void ScenePanel::handleCameraMovement() {
     double xpos, ypos = 0;
     glfwGetCursorPos(gMainWindow, &xpos, &ypos); // new pos
     
-    if(ImGui::IsWindowHovered() && ImGui::IsMouseDown(1)) {
-        double dx = xpos - cursorX; // rotation around y (local/camera)
-        double dy = ypos - cursorY; // rotation around x (local/camera)
+    if (ImGui::IsWindowFocused() && InputManager::isKeyDown(GLFW_KEY_ESCAPE)) {
+        isFocused = !isFocused;
+        if (isFocused) {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        } else {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        }
+    }
 
-        std::cout << dx << ", " << dy << std::endl;
+    if ((ImGui::IsWindowHovered() && ImGui::IsMouseDown(1)) || isFocused) {
+        // camera rotation
+        double dx = xpos - cursorX; // rotation around y (local/camera)
+        double dy = cursorY - ypos; // rotation around x (local/camera)
+
+        editorCamera.rotate(dx * camera_sensitivity * deltaTime, dy * camera_sensitivity * deltaTime);
+
+        // movement
+        glm::vec3 movement(0.0f);
+        glm::vec3 right = glm::cross(editorCamera.front, editorCamera.up);
+
+        if (InputManager::isKeyDown(GLFW_KEY_W)) {
+            movement += editorCamera.front;
+        }
+        if (InputManager::isKeyDown(GLFW_KEY_S)) {
+            movement -= editorCamera.front;
+        }
+        if (InputManager::isKeyDown(GLFW_KEY_A)) {
+            movement -= right;
+        }
+        if (InputManager::isKeyDown(GLFW_KEY_D)) {
+            movement += right;
+        }
+        if (InputManager::isKeyDown(GLFW_KEY_SPACE)) {
+            movement += editorCamera.up;
+        }
+        if (InputManager::isKeyDown(GLFW_KEY_LEFT_SHIFT)) {
+            movement += editorCamera.up;
+        }
+
+        if (movement != glm::vec3(0.0f)) {
+            editorCamera.move(glm::normalize(movement) * camera_speed * (float)deltaTime);
+        }
     };
 
     // update cursor position

@@ -11,7 +11,7 @@ Shader litShader;
 Shader unlitShader;
 
 SceneManager sceneManager;
-Camera* editorCamera = new Camera();
+Camera editorCamera;
 GameObject* selectedGameObject;
 
 AssetsManager assetsManager;
