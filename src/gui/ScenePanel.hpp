@@ -25,8 +25,9 @@ private:
     double cursorX = 0, cursorY = 0;
 
     // variables for scene panel class
-    float camera_sensitivity = 200.0f;
+    float camera_sensitivity = 1.0f;
     float camera_speed = 10.0f;
     bool isFocused = false;
+    bool isVSync = false;
     ImGuizmo::OPERATION gizmoState = ImGuizmo::TRANSLATE;
 };

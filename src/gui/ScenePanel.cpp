@@ -1,10 +1,12 @@
 #include "ScenePanel.hpp"
 #include "ImGuizmo/ImGuizmo.h"
 #include <glm/gtc/type_ptr.hpp>
+#include "../core/SceneView.hpp"
 
 extern GLFWwindow* gMainWindow;
 
 extern double deltaTime;
+extern SceneView sceneView;
 
 void ScenePanel::Render() {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0,0));
@@ -109,8 +111,12 @@ void ScenePanel::statsGui(ImVec2& windowPos, ImVec2& dimensions) {
 
     ImGui::SetNextWindowPos(ImVec2(pos.x, pos.y + 30.0f));
     if(ImGui::BeginPopup("StatsPanel", ImGuiWindowFlags_NoDecoration |  ImGuiWindowFlags_NoMove)) {
-        ImGui::Text("FPS: %f", ImGui::GetIO().Framerate);
-        ImGui::Text("frame time: %fms", 1000.0f / ImGui::GetIO().Framerate);
+        ImGui::Text("FPS: %f", 1.0f / deltaTime);
+        ImGui::Text("frame time: %fms", deltaTime * 1000.0f);
+        ImGui::Dummy(ImVec2(0, 10));
+        if (ImGui::Checkbox("V-Sync", &isVSync)) {
+            glfwSwapInterval(isVSync);
+        }
         ImGui::EndPopup();
     };
 
@@ -155,10 +161,11 @@ void ScenePanel::handleCameraMovement() {
     double xpos, ypos = 0;
     glfwGetCursorPos(gMainWindow, &xpos, &ypos); // new pos
     
-    if (ImGui::IsWindowFocused() && InputManager::isKeyDown(GLFW_KEY_ESCAPE)) {
+    if (ImGui::IsWindowFocused() && InputManager::isKeyPressed(GLFW_KEY_ESCAPE)) {
         isFocused = !isFocused;
         if (isFocused) {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            glfwGetCursorPos(window, &cursorX, &cursorY);
         } else {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }
@@ -169,11 +176,11 @@ void ScenePanel::handleCameraMovement() {
         double dx = xpos - cursorX; // rotation around y (local/camera)
         double dy = cursorY - ypos; // rotation around x (local/camera)
 
-        editorCamera.rotate(dx * camera_sensitivity * deltaTime, dy * camera_sensitivity * deltaTime);
+        editorCamera.rotate(dx * camera_sensitivity, dy * camera_sensitivity);
 
         // movement
         glm::vec3 movement(0.0f);
-        glm::vec3 right = glm::cross(editorCamera.front, editorCamera.up);
+        glm::vec3 right = glm::normalize(glm::cross(editorCamera.front, editorCamera.up));
 
         if (InputManager::isKeyDown(GLFW_KEY_W)) {
             movement += editorCamera.front;
@@ -191,7 +198,7 @@ void ScenePanel::handleCameraMovement() {
             movement += editorCamera.up;
         }
         if (InputManager::isKeyDown(GLFW_KEY_LEFT_SHIFT)) {
-            movement += editorCamera.up;
+            movement -= editorCamera.up;
         }
 
         if (movement != glm::vec3(0.0f)) {

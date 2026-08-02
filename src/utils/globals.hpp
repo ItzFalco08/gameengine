@@ -8,6 +8,7 @@
 #include "InputManager.hpp"
 #include "../gui/HeriarchyPanel.hpp"
 #include "../gui/InspectorPanel.hpp"
+#include "../core/SceneView.hpp"
 
 // Forward declarations to avoid circular includes
 class ScenePanel;
@@ -22,6 +23,7 @@ extern AssetsManager assetsManager;
 extern ResourceManager resourceManager;
 
 extern SceneManager sceneManager;
+extern SceneView sceneView;
 extern Camera editorCamera;
 extern GameObject* selectedGameObject; 
 extern std::string rootDir;

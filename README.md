@@ -12,7 +12,7 @@ a simple and minimal gameengine or a renderer made with OpenGL.
 - you may edit the compiler and shi specified in CMakePresets.json
 
 # Contributions
-even if ur a begginer, you may easily contribute to the project. i would love contributions in this project. please do contact me in discord if intrested: melodyy_fr_ (dc username)
+even if ur a begginer, you may easily contribute to the project. i would love contributions in this project. please do contact me in discord if intrested: melodyy_fr (dc username)
 
 ## Screenshots
 

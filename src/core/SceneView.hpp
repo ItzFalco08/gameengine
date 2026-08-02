@@ -12,4 +12,3 @@ struct SceneView {
     }
 };
 
-extern SceneView sceneView;     
