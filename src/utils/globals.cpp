@@ -20,8 +20,6 @@ Renderer renderer;
 
 GLFWwindow* gMainWindow = nullptr;
 
-std::string rootDir;
-
 namespace panels {
 	ScenePanel scenePanel;
 	AssetsBrowser assetsBrowserPanel;

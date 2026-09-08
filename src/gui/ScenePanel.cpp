@@ -214,8 +214,8 @@ void ScenePanel::handleCameraMovement() {
 void ScenePanel::initTextures() {
     TexDets texDets;
     texDets.minFilter = GL_NEAREST;
-    moveTex = Texture((rootDir + "/src/textures/move.png").c_str(), texDets);
-    rotateTex = Texture((rootDir + "/src/textures/rotate.png").c_str(), texDets);
-    scaleTex = Texture((rootDir + "/src/textures/scale.png").c_str(), texDets);
-    gizmoTex = Texture((rootDir + "/src/textures/gizmo.png").c_str(), texDets);
+    moveTex = Texture2D(ROOT_DIR "src/textures/move.png", texDets);
+    rotateTex = Texture2D(ROOT_DIR "src/textures/rotate.png", texDets);
+    scaleTex = Texture2D(ROOT_DIR "src/textures/scale.png", texDets);
+    gizmoTex = Texture2D(ROOT_DIR "src/textures/gizmo.png", texDets);
 }

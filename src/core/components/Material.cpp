@@ -38,23 +38,11 @@ void Material::SetMaterialType(MaterialType matType) {
         return;
     }
 
-    switch (matType)
-    {
-    case MaterialType::LIT:
+    if (matType == MaterialType::LIT) {
         matprops = std::make_unique<LitMaterial>();
-        break;
-
-    case MaterialType::UNLIT: {
-        if (auto* litMat = dynamic_cast<LitMaterial*>(matprops.get())) {
-            resourceManager.DeleteTexture(litMat->texturePath);
-        }
-
-        matprops = std::make_unique<UnlitMaterial>();
-        break;
     }
-
-    default:
-        break;
+    else {
+        matprops = std::make_unique<UnlitMaterial>();
     }
 };
 

@@ -10,40 +10,24 @@
 #include "backends/imgui_impl_opengl3.h"
 #include "utils/Utils.hpp"
 #include "utils/globals.hpp"
+#include "utils/AssetsManager.hpp"
 #include "core/Renderer.hpp"
 #include "gui/ScenePanel.hpp"
 #include "gui/AssetsBrowserPanel.hpp"
 #include "windows.h"
 #include "core/GameObject.hpp"
+#include "SDL3/SDL.h"
 
-void drawImgui();
+void drawScreen();
 void Update();
 void Start();
 void calcDeltaTime();
 
-void setRootDir() {
-    char path[MAX_PATH];
-    GetModuleFileNameA(NULL, path, MAX_PATH);
-    std::string fullPath(path);
-    size_t slash = fullPath.find_last_of("\\/");
-    std::string exeDir = fullPath.substr(0, slash);
-
-    // Go up two directories to get the root
-    slash = exeDir.find_last_of("\\/");
-    if (slash == std::string::npos) return;
-    exeDir = exeDir.substr(0, slash);
-    slash = exeDir.find_last_of("\\/");
-    if (slash == std::string::npos) return;
-    exeDir = exeDir.substr(0, slash);
-
-    // Copy result to rootDir (char*)
-    rootDir = exeDir;
-}
-
 GLFWwindow* window = nullptr;
+double lastLogTime = 0.0;
+double deltaTime = 0.0;
 
 int main() {
-    setRootDir();
     glfwSetErrorCallback(Utils::GLFWErrorCallback);
     if(!glfwInit()) return 1;
         
@@ -60,7 +44,6 @@ int main() {
     glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-    
     window = glfwCreateWindow(1200, 700, "Game Engine", nullptr, nullptr);
     if (!window) {glfwTerminate(); return 1; };
     gMainWindow = window;
@@ -70,8 +53,8 @@ int main() {
 
     Utils::GUI::initImGui(window);
     Utils::genSceneFramebuffers();
-    litShader = Shader(rootDir + "/src/shaders/lit/shader.frag", rootDir + "/src/shaders/lit/shader.vert");
-    unlitShader = Shader(rootDir + "/src/shaders/unlit/shader.frag", rootDir + "/src/shaders/unlit/shader.vert");
+    litShader = Shader(ROOT_DIR "src/shaders/lit/shader.frag", ROOT_DIR "src/shaders/lit/shader.vert");
+    unlitShader = Shader(ROOT_DIR "src/shaders/unlit/shader.frag", ROOT_DIR "src/shaders/unlit/shader.vert");
 
     // Initialize panel icons after GL is ready
     panels::assetsBrowserPanel.InitIcons();
@@ -85,6 +68,14 @@ int main() {
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
+
+    efsw::FileWatcher watcher;
+    AssetsListener listener;
+    if (watcher.addWatch(ASSETS_DIR, &listener, true) <= 0) {
+        LOG::Error("Failed to add Assets watch. path: ", ASSETS_DIR);
+        return 1;
+    }
+    watcher.watch();
     
     while(!glfwWindowShouldClose(window)) {
         InputManager::clearFrameStates();
@@ -95,12 +86,10 @@ int main() {
         glViewport(0, 0, sceneView.SCENEVIEW_WIDTH, sceneView.SCENEVIEW_HEIGHT);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        Update();
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-        drawImgui();
+        Update();
+        drawScreen();
         glfwSwapBuffers(window);
-        
     }
 
     ImGui_ImplOpenGL3_Shutdown();
@@ -115,22 +104,18 @@ void Start() {
 
 }
 
-double lastLogTime = 0.0;
-
-double deltaTime = 0.0;
-
 void Update() {
     calcDeltaTime();
     renderer.OpenGLRenderer(sceneManager.activeScene.get());
 }
 
-static void calcDeltaTime() {
+void calcDeltaTime() {
     float curTime = glfwGetTime();
     deltaTime = curTime - lastLogTime;
     lastLogTime = curTime;
 }
 
-void drawImgui()
+void drawScreen()
 {
     ImGui_ImplGlfw_NewFrame();
     ImGui_ImplOpenGL3_NewFrame();

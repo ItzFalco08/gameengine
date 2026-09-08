@@ -35,6 +35,10 @@ struct LitMaterial : public MaterialProps {
     void applyToShader(Shader* shader);
 
     MaterialType GetMatType() override;
+
+    ~LitMaterial() {
+        resourceManager.DeleteTexture(texturePath);
+    }
 };
 
 struct UnlitMaterial : public MaterialProps {

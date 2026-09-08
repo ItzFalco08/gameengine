@@ -10,12 +10,12 @@
 #include "../utils/WinMsg.hpp"
 
 void AssetsBrowser::InitIcons() {
-    currentPath = rootDir + "/Assets";
+    currentPath = ASSETS_DIR;
     TexDets texDets;
     texDets.minFilter = GL_NEAREST;
-    fileTex = Texture((rootDir + "/src/textures/File.png").c_str(), texDets);
-    folderTex = Texture((rootDir + "/src/textures/Folder.png").c_str(), texDets);
-    folderEmptyTex = Texture((rootDir + "/src/textures/FolderEmpty.png").c_str(), texDets);
+    fileTex = Texture2D(ROOT_DIR "src/textures/File.png", texDets);
+    folderTex = Texture2D(ROOT_DIR "src/textures/Folder.png", texDets);
+    folderEmptyTex = Texture2D(ROOT_DIR "src/textures/FolderEmpty.png", texDets);
 
 }
 
@@ -34,7 +34,7 @@ void AssetsBrowser::Render() {
         ImGui::BeginChild("##toolbar", ImVec2(0, toolbarHeight), true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
         
         
-        if(currentPath.string() != (rootDir + "/Assets")) {
+        if(currentPath.string() != (ROOT_DIR "/Assets")) {
             if(ImGui::Button("<-", ImVec2(20, 20))) {
                 
                 currentPath = currentPath.parent_path();

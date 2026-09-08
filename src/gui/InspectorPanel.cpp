@@ -129,7 +129,8 @@ void InspectorPanel::Render() {
 
                         ImGui::SeparatorText("Texture");
 
-                        Texture* texture = resourceManager.LoadAndGetTexture(litMaterial->texturePath); // cur tex
+                        Texture2D* texture = resourceManager.LoadTexture(litMaterial->texturePath, litMaterial->texProps); // cur tex
+
                         std::string tPathTxt = texture ? texture->texturePath.c_str() : "Drop texture (png/jpg/jpeg)";
 
                         ImGui::InputText("Texture Path", tPathTxt.data(), tPathTxt.size(), ImGuiInputTextFlags_ReadOnly);

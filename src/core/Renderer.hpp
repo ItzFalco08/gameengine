@@ -112,7 +112,7 @@ private:
         
         // texture
         glActiveTexture(GL_TEXTURE0);
-        unsigned int texId = resourceManager.LoadAndGetTexture(litMat->texturePath, litMat->texProps)->TexId;
+        unsigned int texId = resourceManager.LoadTexture(litMat->texturePath, litMat->texProps)->TexId;
         glBindTexture(GL_TEXTURE_2D, texId);
         (texId == GL_NONE) ? litShader.setInt("isTexture", 0) : litShader.setInt("isTexture", 1); 
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "glad/gl.h"
 #include "string"
+#include <vector>
 
 struct TexDets {
     unsigned int wrapS = GL_CLAMP_TO_EDGE;
@@ -13,16 +14,34 @@ class Texture {
 public:
     unsigned int TexId = GL_NONE;
     std::string texturePath = "";
-
     Texture() = default;
-    Texture(const char* path, TexDets texDetails = TexDets());
+
     // move symantics
     Texture(Texture&& other) noexcept;
-    void operator=(Texture&& other) noexcept;
-    ~Texture();
+    Texture& operator=(Texture&& other) noexcept;
+    virtual ~Texture();
+    Texture(const Texture&) = delete;
+    Texture& operator=(const Texture&) = delete;
+};
 
-    bool Initialize(const char* path, TexDets texDetails = TexDets());
-    void setTexParam(unsigned int Param, unsigned int Value) const;
+class Texture2D : public Texture {
+public:
+    Texture2D() = default;
+    Texture2D(const char* path, TexDets texDets);
+    void Initialize(const char* path, TexDets texDetails = TexDets());
     void applyParams(TexDets dets);
 
+private:
+    void setTexParam(unsigned int Param, unsigned int Value) const;
+};
+
+class Cubemap : public Texture {
+public:
+    Cubemap() = default;
+    Cubemap(const std::vector<std::string>& paths, TexDets texDetails = TexDets());
+    void Initialize(const std::vector<std::string>& paths, TexDets texDetails = TexDets());
+    void applyParams(TexDets dets);
+
+private:
+    void setTexParam(unsigned int Param, unsigned int Value) const;
 };

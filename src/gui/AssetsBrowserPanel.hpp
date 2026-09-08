@@ -5,7 +5,6 @@
 #include <string>
 #include "../core/Texture.hpp"
 namespace fs = std::filesystem;
-extern std::string rootDir;
 
 class AssetsBrowser {
 public:
@@ -22,9 +21,9 @@ private:
     void onCreateScene(fs::path dir, std::string input);
     void onOpenScene(fs::path& path);
     fs::path currentPath;
-    Texture fileTex;
-    Texture folderTex;
-    Texture folderEmptyTex;
+    Texture2D fileTex;
+    Texture2D folderTex;
+    Texture2D folderEmptyTex;
     float iconSize = 112.0f;
     fs::path selectedItem;
     bool isRenamePanelActive = false;

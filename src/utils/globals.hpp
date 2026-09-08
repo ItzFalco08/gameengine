@@ -1,7 +1,7 @@
 #pragma once
 #include "glad/gl.h"
 #include "Shader.hpp"
-#include "AssetsUtils.hpp"
+#include "AssetsManager.hpp"
 #include "../core/ResourceManager.hpp"
 #include "../core/SceneManager.hpp"
 #include "../core/Camera.hpp"
@@ -10,12 +10,10 @@
 #include "../gui/InspectorPanel.hpp"
 #include "../core/SceneView.hpp"
 
-// Forward declarations to avoid circular includes
 class ScenePanel;
 class AssetsBrowser;
 class Renderer;
 struct GLFWwindow;
-
 
 extern Shader litShader;
 extern Shader unlitShader;
@@ -26,7 +24,6 @@ extern SceneManager sceneManager;
 extern SceneView sceneView;
 extern Camera editorCamera;
 extern GameObject* selectedGameObject; 
-extern std::string rootDir;
 extern Renderer renderer;
 extern GLFWwindow* gMainWindow;
 
@@ -36,4 +33,3 @@ namespace panels {
 	extern HeriarchyPanel heriarchyPanel;
     extern InspectorPanel inspectorPanel;
 };
-
