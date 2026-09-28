@@ -2,7 +2,10 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-// #define _DEBUG
+#include <vector>
+#include <mutex>
+#include <utility>
+#include <cstdlib>
 
 namespace Color {
     // Reset
@@ -64,9 +67,8 @@ namespace Color {
         inline const char* STRIKETHRU = "\033[9m";
     }
 }
-namespace LOG {
-    // ANSI color codes for terminal output
 
+namespace LOG {
     // Log level prefixes
     enum class Level {
         INFO,
@@ -77,7 +79,40 @@ namespace LOG {
         DEBUG
     };
 
-    // Internal helper for formatting
+    enum class Channel {
+        GAME,
+        EDITOR
+    };
+
+    struct Entry {
+        Level level;
+        std::string message;
+        std::size_t count = 1;
+    };
+
+    inline std::vector<Entry> gameEntries;
+    inline std::vector<Entry> editorEntries;
+    inline std::mutex entriesMutex;
+
+    inline const char* getLevelName(Level level) {
+        switch (level) {
+            case Level::INFO:    return "INFO";
+            case Level::SUCCESS: return "SUCCESS";
+            case Level::WARNING: return "WARNING";
+            case Level::ERR:     return "ERROR";
+            case Level::FATAL:   return "FATAL";
+            case Level::DEBUG:   return "DEBUG";
+            default:             return "LOG";
+        }
+    }
+
+    inline void clear() {
+        std::lock_guard<std::mutex> lock(entriesMutex);
+        gameEntries.clear();
+        editorEntries.clear();
+    }
+
+    // prefix helper
     inline std::string getLevelPrefix(Level level) {
         switch (level) {
             case Level::INFO:    return std::string(Color::Style::BOLD) + Color::FG::CYAN + "[INFO] " + Color::RESET;
@@ -90,45 +125,78 @@ namespace LOG {
         }
     }
 
-    // Variadic template for any number of arguments
+    // log helper
     template<typename... Args>
-    inline void log(Level level, Args&&... args) {
-        std::cout << getLevelPrefix(level);
-        (std::cout << ... << args);
-        std::cout << std::endl;
+    inline void log(Level level, Channel channel, Args&&... args) {
+        std::ostringstream message;
+        (message << ... << args);
+
+        std::string text = message.str();
+        std::cout << getLevelPrefix(level) << text << std::endl;
+
+        std::lock_guard<std::mutex> lock(entriesMutex);
+
+		std::vector<Entry>& entries = (channel == LOG::Channel::GAME) ? gameEntries : editorEntries;
+        
+        // increase count
+        for (Entry& entry : entries) {
+            if (entry.level == level &&
+                entry.message == text) {
+                ++entry.count;
+                return;
+            }
+        }
+
+        // or push new entry
+        entries.push_back({ level, std::move(text), 1 });
     }
 
-    // Convenience functions
+    // log functions
     template<typename... Args>
     inline void Info(Args&&... args) {
-        log(Level::INFO, std::forward<Args>(args)...);
+        log(Level::INFO, Channel::GAME, std::forward<Args>(args)...);
     }
 
     template<typename... Args>
     inline void Success(Args&&... args) {
-        log(Level::SUCCESS, std::forward<Args>(args)...);
+        log(Level::SUCCESS, Channel::GAME, std::forward<Args>(args)...);
     }
 
     template<typename... Args>
     inline void Warning(Args&&... args) {
-        log(Level::WARNING, std::forward<Args>(args)...);
+        log(Level::WARNING, Channel::GAME, std::forward<Args>(args)...);
     }
 
     template<typename... Args>
     inline void Error(Args&&... args) {
-        log(Level::ERR, std::forward<Args>(args)...);
+        log(Level::ERR, Channel::GAME, std::forward<Args>(args)...);
     }
 
     template<typename... Args>
     inline void Fatal(Args&&... args) {
-        log(Level::FATAL, std::forward<Args>(args)...);
+        log(Level::FATAL, Channel::GAME, std::forward<Args>(args)...);
         std::exit(EXIT_FAILURE);
     }
 
     template<typename... Args>
     inline void Debug(Args&&... args) {
         #ifdef _DEBUG
-        log(Level::DEBUG, std::forward<Args>(args)...);
+        log(Level::DEBUG, Channel::GAME, std::forward<Args>(args)...);
         #endif
+    }
+
+    template<typename... Args>
+    inline void EditorInfo(Args&&... args) {
+        log(Level::INFO, Channel::EDITOR, std::forward<Args>(args)...);
+    }
+
+    template<typename... Args>
+    inline void EditorWarning(Args&&... args) {
+        log(Level::WARNING, Channel::EDITOR, std::forward<Args>(args)...);
+    }
+
+    template<typename... Args>
+    inline void EditorError(Args&&... args) {
+        log(Level::ERR, Channel::EDITOR, std::forward<Args>(args)...);
     }
 }

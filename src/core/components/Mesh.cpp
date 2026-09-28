@@ -3,20 +3,20 @@
 #include "../../utils/Logger.hpp"
 #include "objloader/simpleobjloader.hpp"
 
-Mesh::Mesh(const char* objPath) {
+MeshComponent::MeshComponent(const char* objPath) {
     Initialize(objPath);
 }
 
-Mesh::Mesh() : VAO(GL_NONE), VBO(GL_NONE), EBO(GL_NONE) {};
+MeshComponent::MeshComponent() : VAO(GL_NONE), VBO(GL_NONE), EBO(GL_NONE) {};
 
-Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices) {
+MeshComponent::MeshComponent(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices) {
     uploadVertices(vertices, indices);
 }
 
-Mesh::~Mesh() {
+MeshComponent::~MeshComponent() {
 }
 
-void Mesh::uploadVertices(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices) {
+void MeshComponent::uploadVertices(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices) {
     glGenVertexArrays(1, &this->VAO);
     glGenBuffers(1, &this->VBO);
     glGenBuffers(1, &this->EBO);
@@ -44,7 +44,7 @@ void Mesh::uploadVertices(const std::vector<Vertex>& vertices, const std::vector
 }
 
 
-bool Mesh::Initialize(const char* objPath) {
+bool MeshComponent::Initialize(const char* objPath) {
     if (objPath == objFilePath) {LOG::Warning("Mesh with path Already Added: ", objPath); return false;};
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;

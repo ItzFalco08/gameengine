@@ -1,0 +1,249 @@
+#include "../../utils/globals.hpp"
+#include "ImGuizmo/ImGuizmo.h"
+#include "ScenePanel.hpp"
+#include <glad/gl.h>
+#include <glm/gtc/type_ptr.hpp>
+
+extern double deltaTime;
+
+void ScenePanel::Render() {
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0,0));
+    ImGui::Begin("Scene");
+    ImGui::PopStyleVar();
+
+    // variables
+    ImVec2 dimensions = ImGui::GetContentRegionAvail();
+    ImVec2 windowPos = ImGui::GetWindowPos();
+
+    updateDimentions(dimensions);
+    renderFrameBuffer();
+    gizmoSelectorGui(windowPos);
+    statsGui(windowPos, dimensions);
+    renderGuizmos();
+    handleCameraMovement();
+
+    ImGui::End();
+}
+
+void ScenePanel::updateFBODimensions() {
+    glBindFramebuffer(GL_FRAMEBUFFER, editor.sceneView.framebuffObj);
+
+    // Resize COLOR texture
+    glBindTexture(GL_TEXTURE_2D, editor.sceneView.textureObj);
+    glTexImage2D(
+        GL_TEXTURE_2D, 0,
+        GL_RGBA8,
+        editor.sceneView.SCENEVIEW_WIDTH,
+        editor.sceneView.SCENEVIEW_HEIGHT,
+        0,
+        GL_RGBA, GL_UNSIGNED_BYTE,
+        nullptr
+    );
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    // Resize DEPTH-STENCIL
+    glBindRenderbuffer(GL_RENDERBUFFER, editor.sceneView.depthbuffObj);
+    glRenderbufferStorage(
+        GL_RENDERBUFFER,
+        GL_DEPTH24_STENCIL8,
+        editor.sceneView.SCENEVIEW_WIDTH,
+        editor.sceneView.SCENEVIEW_HEIGHT
+    );
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void ScenePanel::updateDimentions(ImVec2& dimensions) {
+    int p_w = editor.sceneView.SCENEVIEW_WIDTH;
+    int p_h = editor.sceneView.SCENEVIEW_HEIGHT;
+    static double lastchange = 0;
+
+    bool changed = false;
+    //[02614] [imgui - error] In window 'Scene': Incorrect parameter.Did you swap 'thickness' and 'flags' ?
+    if (dimensions.x != p_w) {
+        editor.sceneView.SCENEVIEW_WIDTH = static_cast<int>(dimensions.x);
+        changed = true;
+    }
+    if (dimensions.y != p_h) {
+        editor.sceneView.SCENEVIEW_HEIGHT = static_cast<int>(dimensions.y);
+        changed = true;
+    }
+
+    if (changed) {
+        lastchange = static_cast<double>(SDL_GetTicks()) / 1000.0;
+        editor.editorCamera.projDirty = true; // aspect ratio changed, recalculate projection
+    }
+
+    if (static_cast<double>(SDL_GetTicks()) / 1000.0 - lastchange > 0.15) { // 150ms debounce
+        updateFBODimensions();
+    }
+}
+
+void ScenePanel::renderFrameBuffer() {
+        ImGui::Image((ImTextureID)(uintptr_t)editor.sceneView.textureObj,
+            ImVec2((float)editor.sceneView.SCENEVIEW_WIDTH, (float)editor.sceneView.SCENEVIEW_HEIGHT),
+            ImVec2(0, 1), ImVec2(1, 0));
+}
+
+void ScenePanel::gizmoSelectorGui(ImVec2& windowPos) {
+    ImVec2 overlayPos = ImVec2(windowPos.x + 10, windowPos.y + 30); 
+    ImGui::SetNextWindowPos(overlayPos, ImGuiCond_Always);
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.08f, 0.08f, 0.08f, 1.00f));
+
+    ImVec4 activeColor  = ImVec4(0.16f, 0.16f, 0.16f, 1.0f); // highlight tint
+    ImVec4 defaultColor = ImVec4(0.0f, 0.0f, 0.0f, 0.00f); // transparent (normal)
+
+    auto PushButtonState = [&](bool active) {
+        ImVec4 col = active ? activeColor : defaultColor;
+        ImGui::PushStyleColor(ImGuiCol_Button,        col);
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, active ? activeColor : ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive,  activeColor);
+    };
+
+    ImGui::Begin("##Toolbar", nullptr, ImGuiWindowFlags_NoDecoration |  ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize);
+
+        PushButtonState(gizmoState == ImGuizmo::TRANSLATE);
+        if (ImGui::ImageButton("##T", (ImTextureID)moveTex.TexId, ImVec2(20,20), ImVec2(0,1), ImVec2(1,0))) gizmoState = ImGuizmo::TRANSLATE;
+        ImGui::PopStyleColor(3);
+        ImGui::Separator();
+
+        PushButtonState(gizmoState == ImGuizmo::ROTATE);
+        if (ImGui::ImageButton("##R", (ImTextureID)rotateTex.TexId, ImVec2(20,20), ImVec2(0,1), ImVec2(1,0))) gizmoState = ImGuizmo::ROTATE;
+        ImGui::PopStyleColor(3);
+        ImGui::Separator();
+
+        PushButtonState(gizmoState == ImGuizmo::SCALE);
+        if (ImGui::ImageButton("##S", (ImTextureID)scaleTex.TexId, ImVec2(20,20), ImVec2(0,1), ImVec2(1,0))) gizmoState = ImGuizmo::SCALE;
+        ImGui::PopStyleColor(3);
+
+        ImGui::Separator();
+
+        PushButtonState(gizmoState == ImGuizmo::UNIVERSAL);
+        if (ImGui::ImageButton("##G", (ImTextureID)gizmoTex.TexId, ImVec2(20,20), ImVec2(0,1), ImVec2(1,0))) gizmoState = ImGuizmo::UNIVERSAL;
+        ImGui::PopStyleColor(3);
+
+    ImGui::PopStyleColor(); // WindowBg
+    ImGui::End();
+}
+
+void ScenePanel::statsGui(ImVec2& windowPos, ImVec2& dimensions) {
+    // S T A T S
+    ImVec2 pos = ImVec2(windowPos.x + dimensions.x - 60, windowPos.y + 20);
+    ImGui::SetNextWindowPos(pos);
+    ImGui::Begin("##Stats", nullptr, ImGuiWindowFlags_NoDecoration |  ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground );
+    if(ImGui::Button("Stats")) {
+        ImGui::OpenPopup("StatsPanel");
+    }
+
+    ImGui::SetNextWindowPos(ImVec2(pos.x, pos.y + 30.0f));
+    if(ImGui::BeginPopup("StatsPanel", ImGuiWindowFlags_NoDecoration |  ImGuiWindowFlags_NoMove)) {
+        ImGui::Text("FPS: %f", 1.0f / deltaTime);
+        ImGui::Text("frame time: %fms", deltaTime * 1000.0f);
+        ImGui::Dummy(ImVec2(0, 10));
+        if (ImGui::Checkbox("V-Sync", &isVSync)) {
+            SDL_GL_SetSwapInterval(isVSync ? 1 : 0);
+        }
+        ImGui::EndPopup();
+    };
+
+    ImGui::End();
+}
+
+void ScenePanel::renderGuizmos() {
+    
+    ImGuizmo::SetDrawlist();
+    // get image rect (IMPORTANT)
+    ImVec2 imagePos = ImGui::GetItemRectMin();
+    ImVec2 imageSize = ImGui::GetItemRectSize();
+
+    ImGuizmo::SetRect(
+        imagePos.x,
+        imagePos.y,
+        imageSize.x,
+        imageSize.y
+    );
+
+    // render Gizmos;
+    ImGuizmo::Enable(true);
+    if (editor.selectedGameObject) {
+        ImGuizmo::Manipulate(
+            glm::value_ptr(editor.editorCamera.viewMat),
+            glm::value_ptr(editor.editorCamera.projectionMat),
+            gizmoState,   // later: switch modes
+            ImGuizmo::LOCAL,
+            const_cast<float*>(glm::value_ptr(editor.selectedGameObject->transform->getModel()))
+        );
+
+        if (ImGuizmo::IsUsing()) {
+            editor.selectedGameObject->transform->DecomposeModel();
+            sceneManager.activeScene->MakeDirty();
+        }
+    }
+};
+
+void ScenePanel::handleCameraMovement() {
+    float xpos = 0.0f;
+    float ypos = 0.0f;
+    SDL_GetMouseState(&xpos, &ypos);
+    
+    if (ImGui::IsWindowFocused() && InputManager::isKeyPressed(SDL_SCANCODE_ESCAPE)) {
+        isFocused = !isFocused;
+        if (isFocused) {
+            SDL_SetWindowRelativeMouseMode(appState.window, true);
+            SDL_GetMouseState(&xpos, &ypos);
+            cursorX = xpos;
+            cursorY = ypos;
+        } else {
+            SDL_SetWindowRelativeMouseMode(appState.window, false);
+        }
+    }
+
+    if ((ImGui::IsWindowHovered() && ImGui::IsMouseDown(1)) || isFocused) {
+        // camera rotation
+        double dx = xpos - cursorX; // rotation around y (local/camera)
+        double dy = cursorY - ypos; // rotation around x (local/camera)
+
+        editor.editorCamera.rotate(dx * camera_sensitivity, dy * camera_sensitivity);
+
+        // movement
+        glm::vec3 movement(0.0f);
+        glm::vec3 right = glm::normalize(glm::cross(editor.editorCamera.front, editor.editorCamera.up));
+
+        if (InputManager::isKeyDown(SDL_SCANCODE_W)) {
+            movement += editor.editorCamera.front;
+        }
+        if (InputManager::isKeyDown(SDL_SCANCODE_S)) {
+            movement -= editor.editorCamera.front;
+        }
+        if (InputManager::isKeyDown(SDL_SCANCODE_A)) {
+            movement -= right;
+        }
+        if (InputManager::isKeyDown(SDL_SCANCODE_D)) {
+            movement += right;
+        }
+        if (InputManager::isKeyDown(SDL_SCANCODE_SPACE)) {
+            movement += editor.editorCamera.up;
+        }
+        if (InputManager::isKeyDown(SDL_SCANCODE_LSHIFT)) {
+            movement -= editor.editorCamera.up;
+        }
+
+        if (movement != glm::vec3(0.0f)) {
+            editor.editorCamera.move(glm::normalize(movement) * camera_speed * (float)deltaTime);
+        }
+    };
+
+    // update cursor position
+    cursorX = xpos;
+    cursorY = ypos;
+}
+
+void ScenePanel::initTextures() {
+    TexDets texDets;
+    texDets.minFilter = GL_NEAREST;
+    moveTex = Texture2D(ROOT_DIR "src/textures/move.png", texDets);
+    rotateTex = Texture2D(ROOT_DIR "src/textures/rotate.png", texDets);
+    scaleTex = Texture2D(ROOT_DIR "src/textures/scale.png", texDets);
+    gizmoTex = Texture2D(ROOT_DIR "src/textures/gizmo.png", texDets);
+}

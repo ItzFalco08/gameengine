@@ -3,17 +3,17 @@
 #include <typeinfo>
 
 
-Material::Material() {
+MaterialComponent::MaterialComponent() {
     matprops = std::make_unique<LitMaterial>();
     LOG::Info("Material Created");
 }
 
-void Material::Serialize(nlohmann::json& json) {
+void MaterialComponent::Serialize(nlohmann::json& json) {
     json["materialType"] = static_cast<int>(matprops->GetMatType());
     matprops->Serialize(json);
 }
 
-void Material::Deserialize(nlohmann::json& json) {
+void MaterialComponent::Deserialize(nlohmann::json& json) {
     int type = json["materialType"];
     switch (static_cast<MaterialType>(type))
     {
@@ -32,7 +32,7 @@ void Material::Deserialize(nlohmann::json& json) {
     matprops->Deserialize(json);
 }
 
-void Material::SetMaterialType(MaterialType matType) {
+void MaterialComponent::SetMaterialType(MaterialType matType) {
     if (matprops->GetMatType() == matType) {
         LOG::Warning("Failed to set MaterialType (Material Already Exists)");
         return;
@@ -46,11 +46,11 @@ void Material::SetMaterialType(MaterialType matType) {
     }
 };
 
-MaterialType Material::getMaterialType() {
+MaterialType MaterialComponent::getMaterialType() {
     return matprops->GetMatType();
 }
 
-Material::~Material() {
+MaterialComponent::~MaterialComponent() {
     if (auto* litMat = dynamic_cast<LitMaterial*>(matprops.get())) {
         resourceManager.DeleteTexture(litMat->texturePath);
     }

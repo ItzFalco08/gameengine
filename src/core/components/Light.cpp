@@ -33,11 +33,11 @@ void PointLight::Deserialize(nlohmann::json& json) {
 
 // Light
 
-LightType Light::getLightType() {
+LightType LightComponent::getLightType() {
     return lightType;
 }
 
-void Light::setLight(LightType type) {
+void LightComponent::setLight(LightType type) {
     if (lightType == type) {
         LOG::Warning("Change of light to the same type | (Light::setLight)");
         return;
@@ -58,12 +58,12 @@ void Light::setLight(LightType type) {
     }
 }
 
-void Light::Serialize(nlohmann::json& json) {
+void LightComponent::Serialize(nlohmann::json& json) {
     json["lightType"] = lightType;
     lightProps->Serialize(json);
 }
 
-void Light::Deserialize(nlohmann::json& json) {
+void LightComponent::Deserialize(nlohmann::json& json) {
     LightType type = static_cast<LightType>(json["lightType"]);
     switch (type)
     {
@@ -84,8 +84,8 @@ void Light::Deserialize(nlohmann::json& json) {
     sceneManager.activeScene->lights.push_back(this);
 }
 
-Light::Light(){
-    Light* ptr = this;
+LightComponent::LightComponent(){
+    LightComponent* ptr = this;
 
     if (sceneManager.activeScene) {
         sceneManager.activeScene->lights.push_back(ptr);
@@ -95,8 +95,8 @@ Light::Light(){
     }
 }
 
-Light::~Light() {
-    Light* ptr = this;
+LightComponent::~LightComponent() {
+    LightComponent* ptr = this;
     auto itr = std::find(sceneManager.activeScene->lights.begin(), sceneManager.activeScene->lights.end(), ptr);
     if (itr != sceneManager.activeScene->lights.end()) {
         sceneManager.activeScene->lights.erase(itr);

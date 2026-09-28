@@ -1,3 +1,4 @@
+#pragma once
 #include "Scene.hpp"
 #include "Camera.hpp"
 #include "components/Mesh.hpp"

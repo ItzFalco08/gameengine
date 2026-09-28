@@ -35,7 +35,7 @@ struct PointLight : public LightProps{
     void Deserialize(nlohmann::json& json) override;
 };
 
-class Light : public Component {
+class LightComponent : public Component {
 public:
     LightType lightType = LightType::POINT;
     std::unique_ptr<LightProps> lightProps = std::make_unique<PointLight>();
@@ -45,8 +45,8 @@ public:
     void Serialize(nlohmann::json& json);
     void Deserialize(nlohmann::json& json);
 
-    Light();
-    ~Light();
+    LightComponent();
+    ~LightComponent();
     static const char* StaticType() { return "Light"; }
     std::string GetType() override { return StaticType(); }
 };

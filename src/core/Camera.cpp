@@ -1,7 +1,6 @@
 #include "Camera.hpp"
-#include "SceneView.hpp"
 #include <glm/gtc/matrix_transform.hpp>
-extern SceneView sceneView;
+#include "../utils/globals.hpp"
 
 void Camera::rotate(double dx, double dy) {
     _yaw += dx;

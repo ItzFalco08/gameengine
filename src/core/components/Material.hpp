@@ -3,7 +3,8 @@
 #include "../../utils/globals.hpp"
 #include "../Texture.hpp"
 #include <memory>
-
+#include "../Assets/RuntimeAssetsRegistry.hpp"
+extern RuntimeAssetsRegistry runtimeAssetsRegistry;
 enum class MaterialType {
     LIT,
     UNLIT
@@ -16,8 +17,6 @@ struct MaterialProps {
     virtual MaterialType GetMatType() = 0;
 };
 
-
-
 struct LitMaterial : public MaterialProps {
 
     glm::vec3 ambientColor = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -26,8 +25,7 @@ struct LitMaterial : public MaterialProps {
     float specularStrength = 0.4f;
     float shininess = 32.0f;
 
-    std::string texturePath = "";
-    TexDets texProps = TexDets();
+    uint64_t textureAssetUUID = 0;
 
     void Serialize(nlohmann::json& json) override;
     void Deserialize(nlohmann::json& json) override;
@@ -37,7 +35,7 @@ struct LitMaterial : public MaterialProps {
     MaterialType GetMatType() override;
 
     ~LitMaterial() {
-        resourceManager.DeleteTexture(texturePath);
+		runtimeAssetsRegistry.RemoveRuntimeAsset(textureAssetUUID);
     }
 };
 
@@ -52,12 +50,12 @@ struct UnlitMaterial : public MaterialProps {
     MaterialType GetMatType() override;
 };
 
-class Material : public Component {
+class MaterialComponent : public Component {
 public:
     std::unique_ptr<MaterialProps> matprops;
 
-    Material();
-    ~Material();
+    MaterialComponent();
+    ~MaterialComponent();
 
     void Serialize(nlohmann::json& json) override;
     void Deserialize(nlohmann::json& json) override;
@@ -66,5 +64,4 @@ public:
 
     static const char* StaticType() { return "Material"; }
     std::string GetType() override { return StaticType(); }
-
 };

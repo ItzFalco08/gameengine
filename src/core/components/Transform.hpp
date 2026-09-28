@@ -6,7 +6,7 @@
 #include <glm/gtx/quaternion.hpp>
 #include "json/json.hpp"
 
-struct Transform : public Component  {
+struct TransformComponent : public Component  {
 private:
     void recalculateMatrix();
     glm::mat4 model = glm::mat4(1.0f);
@@ -32,8 +32,8 @@ public:
     glm::mat4& getModel();
     glm::mat4 getNormalMat();
     glm::vec3 getAbsolutePosition();
-    ~Transform() = default;
-    Transform() = default;
+    ~TransformComponent() = default;
+    TransformComponent() = default;
 
     void Serialize(nlohmann::json& json) override;
     void Deserialize(nlohmann::json& json) override;

@@ -3,24 +3,24 @@
 #include <ImGuizmo/ImGuizmo.h>
 #include <glm/gtc/type_ptr.hpp>
 
-void Transform::recalculateMatrix() {
+void TransformComponent::recalculateMatrix() {
     // POSSIBLE OPTIMIZATION
     model = glm::translate(glm::mat4(1.0f), position) * glm::toMat4(rotation) * glm::scale(glm::mat4(1.0f), scale);
 }
 
 // Rotation
-void Transform::Rotate(const glm::vec3& deltaGlobalEulars) {
+void TransformComponent::Rotate(const glm::vec3& deltaGlobalEulars) {
     rotation = glm::normalize(glm::quat(glm::radians(deltaGlobalEulars)) * rotation);
     modelDirty = true;
     normalDirty= true;
 }
 
-void Transform::RotateLocal(const glm::vec3& localEulars) {
+void TransformComponent::RotateLocal(const glm::vec3& localEulars) {
     rotation = glm::normalize(rotation * glm::quat(glm::radians(localEulars)));
     modelDirty = true;
     normalDirty = true;}
 
-void Transform::SetRotationGlobal(const glm::vec3& globalEulars) {
+void TransformComponent::SetRotationGlobal(const glm::vec3& globalEulars) {
     gEulars = globalEulars;
     rotation = glm::normalize(glm::quat(glm::radians(gEulars)));
     modelDirty = true;
@@ -28,18 +28,18 @@ void Transform::SetRotationGlobal(const glm::vec3& globalEulars) {
 }
 
 // Translation
-void Transform::Translate(const glm::vec3& offset) {
+void TransformComponent::Translate(const glm::vec3& offset) {
     position += offset;
     modelDirty = true;
 }
 // Scale
-void Transform::Scale(const glm::vec3& factor) {
+void TransformComponent::Scale(const glm::vec3& factor) {
     scale *= factor;
     modelDirty = true;
     normalDirty = true;
 }
 
-void Transform::DecomposeModel() {
+void TransformComponent::DecomposeModel() {
     glm::vec3 extractedEuler;
     
     // Decompose into temp variables
@@ -57,7 +57,7 @@ void Transform::DecomposeModel() {
     normalDirty = true;
 }
 
-glm::mat4& Transform::getModel() {
+glm::mat4& TransformComponent::getModel() {
     if(modelDirty) {
         recalculateMatrix();
         modelDirty = false;
@@ -65,7 +65,7 @@ glm::mat4& Transform::getModel() {
     return model;
 }
 
-glm::mat4 Transform::getNormalMat()
+glm::mat4 TransformComponent::getNormalMat()
 {
     if (normalDirty) { // recalculate only when model changes
         normalMat = glm::transpose(glm::inverse(glm::mat3(getModel())));
@@ -75,7 +75,7 @@ glm::mat4 Transform::getNormalMat()
 }
 
 
-void Transform::reset() {
+void TransformComponent::reset() {
     position = glm::vec3(0.0f);
     rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
     scale = glm::vec3(1.0f);
@@ -84,14 +84,14 @@ void Transform::reset() {
 }
 
 
-void Transform::Serialize(nlohmann::json& json) {
+void TransformComponent::Serialize(nlohmann::json& json) {
     json["position"] = {position.x, position.y, position.z};
     json["rotation"] = {rotation.w, rotation.x, rotation.y, rotation.z};
     json["scale"] = {scale.x, scale.y, scale.z};
     json["gEulars"] = {gEulars.x, gEulars.y, gEulars.x};
 }
 
-void Transform::Deserialize(nlohmann::json& json) {
+void TransformComponent::Deserialize(nlohmann::json& json) {
     position = glm::vec3(json.at("position")[0], json.at("position")[1], json.at("position")[2]);
     rotation = glm::quat(json.at("rotation")[0], json.at("rotation")[1], json.at("rotation")[2], json.at("rotation")[3]);
     scale = glm::vec3(json.at("scale")[0], json.at("scale")[1], json.at("scale")[2]);
@@ -101,6 +101,6 @@ void Transform::Deserialize(nlohmann::json& json) {
     modelDirty = true;
 }
 
-glm::vec3 Transform::getAbsolutePosition() {
+glm::vec3 TransformComponent::getAbsolutePosition() {
     return parent ? (parent->transform->getAbsolutePosition()  + position) : position;
 }

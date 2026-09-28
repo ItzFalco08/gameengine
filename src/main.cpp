@@ -1,123 +1,171 @@
 #include <iostream>
 #include <glad/gl.h>
-#include <GLFW/glfw3.h>
-#define GLFW_EXPOSE_NATIVE_WIN32
-#include <GLFW/glfw3native.h>
-#include "utils/Logger.hpp"
-#include "utils/WinMsg.hpp"
 #include "imgui.h"
-#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_sdl3.h"
 #include "backends/imgui_impl_opengl3.h"
-#include "utils/Utils.hpp"
 #include "utils/globals.hpp"
-#include "utils/AssetsManager.hpp"
 #include "core/Renderer.hpp"
-#include "gui/ScenePanel.hpp"
-#include "gui/AssetsBrowserPanel.hpp"
-#include "windows.h"
-#include "core/GameObject.hpp"
+#include "editor/gui/ScenePanel.hpp"
+#include "editor/gui/AssetsBrowserPanel.hpp"
+#include "editor/themes.hpp"
 #include "SDL3/SDL.h"
 
 void drawScreen();
 void Update();
 void Start();
 void calcDeltaTime();
+void genSceneFramebuffers();
 
-GLFWwindow* window = nullptr;
 double lastLogTime = 0.0;
 double deltaTime = 0.0;
 
 int main() {
-    glfwSetErrorCallback(Utils::GLFWErrorCallback);
-    if(!glfwInit()) return 1;
-        
-    // context hints (you already have these)
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    #ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    #endif
+#pragma region Init SDL
+    if (!SDL_Init(SDL_INIT_VIDEO)) {
+        std::cerr << "SDL_Init failed: " << SDL_GetError() << '\n';
+        return 1;
+    }
 
-    // important for multi-viewport behavior
-    glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
-    glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+#ifdef __APPLE__
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG, SDL_GL_TRUE);
+#endif
 
-    window = glfwCreateWindow(1200, 700, "Game Engine", nullptr, nullptr);
-    if (!window) {glfwTerminate(); return 1; };
-    gMainWindow = window;
+    appState.window = SDL_CreateWindow(
+        "replife",
+        1280,
+        720,
+        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
+    );
 
-    glfwMakeContextCurrent(window);
-    if(!gladLoadGL(glfwGetProcAddress)) return 1;
+    if (!appState.window) {
+        std::cerr << "SDL_CreateWindow failed: " << SDL_GetError() << '\n';
+        SDL_DestroyWindow(appState.window);
+        SDL_Quit();
+        return 1;
+    }
 
-    Utils::GUI::initImGui(window);
-    Utils::genSceneFramebuffers();
-    litShader = Shader(ROOT_DIR "src/shaders/lit/shader.frag", ROOT_DIR "src/shaders/lit/shader.vert");
-    unlitShader = Shader(ROOT_DIR "src/shaders/unlit/shader.frag", ROOT_DIR "src/shaders/unlit/shader.vert");
+    appState.glContext = SDL_GL_CreateContext(appState.window);
+    if (!appState.glContext) {
+        std::cerr << "SDL_GL_CreateContext failed: " << SDL_GetError() << '\n';
+        SDL_DestroyWindow(appState.window);
+        SDL_Quit();
+        return 1;
+    }
+
+    if (!gladLoadGL((GLADloadfunc)SDL_GL_GetProcAddress)) return 1;
+
+	appState.cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_POINTER);
+    appState.loadingCursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_PROGRESS);
+#pragma endregion
+
+#pragma region Init Imgui
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
+    SetEditorStyle();
+
+    // SDL3 backend
+    ImGui_ImplSDL3_InitForOpenGL(
+        appState.window,
+        appState.glContext
+    );
+
+    // OpenGL 3 backend
+    ImGui_ImplOpenGL3_Init("#version 330");
+    // -------------------
+#pragma endregion
+
+#pragma region Init
+    genSceneFramebuffers();
+    engine.litShader = Shader(ROOT_DIR "src/shaders/lit/shader.frag", ROOT_DIR "src/shaders/lit/shader.vert");
+    engine.unlitShader = Shader(ROOT_DIR "src/shaders/unlit/shader.frag", ROOT_DIR "src/shaders/unlit/shader.vert");
 
     // Initialize panel icons after GL is ready
-    panels::assetsBrowserPanel.InitIcons();
-    panels::scenePanel.initTextures();
+    editor.assetsBrowserPanel.InitIcons();
+    editor.scenePanel.initTextures();
 
     Start();
 
-    glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
-        InputManager::inputCallback(window, key, scancode, action, mods);
-    });
-
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
-
-    efsw::FileWatcher watcher;
-    AssetsListener listener;
-    if (watcher.addWatch(ASSETS_DIR, &listener, true) <= 0) {
-        LOG::Error("Failed to add Assets watch. path: ", ASSETS_DIR);
-        return 1;
-    }
-    watcher.watch();
+#pragma endregion
     
-    while(!glfwWindowShouldClose(window)) {
+#pragma region Main Loop
+    SDL_Event event;
+    bool running = true;
+
+    while (running) {
         InputManager::clearFrameStates();
-        glfwPollEvents();
-        
+        while (SDL_PollEvent(&event)) {
+            InputManager::processEvent(event);
+            if (event.type == SDL_EVENT_QUIT) {
+                running = false;
+            }
+            if (event.type == SDL_EVENT_DROP_FILE) {
+                const char* path = event.drop.data;
+                editor.assetsBrowserPanel.handleFileDrop(path);
+            }
+        }
         // NOTE: if fbo bounded, opengl draws into it. else backbuffer.
-        glBindFramebuffer(GL_FRAMEBUFFER, sceneView.framebuffObj);
-        glViewport(0, 0, sceneView.SCENEVIEW_WIDTH, sceneView.SCENEVIEW_HEIGHT);
+        glBindFramebuffer(GL_FRAMEBUFFER, editor.sceneView.framebuffObj);
+        glViewport(0, 0, editor.sceneView.SCENEVIEW_WIDTH, editor.sceneView.SCENEVIEW_HEIGHT);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         Update();
-        drawScreen();
-        glfwSwapBuffers(window);
+        EditorUpdate();
+        SDL_GL_SwapWindow(appState.window);
     }
-
+   
     ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyPlatformWindows();
+    ImGui_ImplSDL3_Shutdown();
     ImGui::DestroyContext();
-    glfwTerminate();
+    SDL_DestroyWindow(appState.window);
+    SDL_DestroyCursor(appState.cursor);
+    SDL_Quit();
     return 0;
-}
+#pragma endregion
 
-void Start() {
-
-}
-
-void Update() {
-    calcDeltaTime();
-    renderer.OpenGLRenderer(sceneManager.activeScene.get());
 }
 
 void calcDeltaTime() {
-    float curTime = glfwGetTime();
+    double curTime = static_cast<double>(SDL_GetTicks()) / 1000.0;
     deltaTime = curTime - lastLogTime;
     lastLogTime = curTime;
 }
 
+// Start
+void Start() {
+
+}
+
+// renderer update
+void Update() {
+    calcDeltaTime();
+    engine.renderer.OpenGLRenderer(sceneManager.activeScene.get());
+}
+
+// engine update (gui/states)
+void EditorUpdate() {
+    if (engine.assetsRegistry.m_syncFuture.valid() &&
+        engine.assetsRegistry.m_syncFuture.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+
+        engine.assetsRegistry.m_syncFuture.get();
+        SDL_SetCursor(appState.cursor);
+    }
+
+    drawScreen();
+}
+
+// draw editor
 void drawScreen()
 {
-    ImGui_ImplGlfw_NewFrame();
+    ImGui_ImplSDL3_NewFrame();
     ImGui_ImplOpenGL3_NewFrame();
     ImGui::NewFrame();
     ImGuizmo::BeginFrame();
@@ -148,9 +196,7 @@ void drawScreen()
         if (ImGui::BeginMenu("File")) {
             if (ImGui::MenuItem("Save Changes (Ctrl + S)")) {
                 sceneManager.activeScene->MakeDirty();
-            } else if(ImGui::MenuItem("Exit Editor")) {
-                if (gMainWindow) glfwSetWindowShouldClose(gMainWindow, GLFW_TRUE);
-            }
+            } 
             ImGui::EndMenu();
         }
         ImGui::EndMenuBar();
@@ -158,10 +204,11 @@ void drawScreen()
 
     ImGui::End(); // end DockSpaceHost
 
-    panels::scenePanel.Render();
-    panels::assetsBrowserPanel.Render();
-    panels::heriarchyPanel.Render();
-    panels::inspectorPanel.Render();
+    editor.scenePanel.Render();
+    editor.assetsBrowserPanel.Render();
+    editor.hierarchyPanel.Render();
+    editor.inspectorPanel.Render();
+    editor.consolePanel.Render();
 
     // Render ImGui
     ImGui::Render();
@@ -169,9 +216,64 @@ void drawScreen()
 
     // When viewports are enabled, render additional platform windows
     if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-        GLFWwindow* backup_context = glfwGetCurrentContext();
+        SDL_GLContext backup_context = SDL_GL_GetCurrentContext();
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
-        glfwMakeContextCurrent(backup_context);
+        SDL_GL_MakeCurrent(appState.window, backup_context);
     }
 }
+
+
+void genSceneFramebuffers() {
+    glGenTextures(1, &editor.sceneView.textureObj);
+    glGenFramebuffers(1, &editor.sceneView.framebuffObj);
+    glGenRenderbuffers(1, &editor.sceneView.depthbuffObj);
+
+    // TEXTURE OBJECT
+    glBindTexture(GL_TEXTURE_2D, editor.sceneView.textureObj);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, editor.sceneView.SCENEVIEW_WIDTH, editor.sceneView.SCENEVIEW_HEIGHT, 0,
+        GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    // DEPTH BUFFER
+    glBindRenderbuffer(GL_RENDERBUFFER, editor.sceneView.depthbuffObj);
+    glRenderbufferStorage(
+        GL_RENDERBUFFER,
+        GL_DEPTH24_STENCIL8,   // depth + stencil format
+        editor.sceneView.SCENEVIEW_WIDTH, editor.sceneView.SCENEVIEW_HEIGHT
+    );
+
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+    // FRAME BUFF
+    glBindFramebuffer(GL_FRAMEBUFFER, editor.sceneView.framebuffObj);
+
+    // Attach color texture
+    glFramebufferTexture2D(
+        GL_FRAMEBUFFER,
+        GL_COLOR_ATTACHMENT0,
+        GL_TEXTURE_2D,
+        editor.sceneView.textureObj,
+        0
+    );
+
+    // Attach depth-stencil RBO
+    glFramebufferRenderbuffer(
+        GL_FRAMEBUFFER,
+        GL_DEPTH_STENCIL_ATTACHMENT,
+        GL_RENDERBUFFER,
+        editor.sceneView.depthbuffObj
+    );
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        std::cout << "FBO failed!" << std::endl;
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+

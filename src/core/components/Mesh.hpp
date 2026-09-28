@@ -5,9 +5,8 @@
 #include "Component.hpp"
 #include "../../utils/Utils.hpp"
 #include "json/json.hpp"
-#include "objloader/simpleobjloader.hpp" // For Vertex
 
-class Mesh : public Component {
+class MeshComponent : public Component {
 public:
     GLuint VAO, VBO, EBO; 
     std::optional<std::string> objFilePath;
@@ -16,10 +15,10 @@ public:
 
     static const char* StaticType() { return "Mesh"; }
     std::string GetType() override { return StaticType(); }
-    Mesh();
-    Mesh(const char* objPath);
+    MeshComponent();
+    MeshComponent(const char* objPath);
     bool Initialize(const char* objPath);
-    Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices);
+    MeshComponent(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices);
 
     void Serialize(nlohmann::json& json) {
         json["filePath"] = objFilePath.has_value() ? objFilePath.value() : "";
@@ -31,7 +30,7 @@ public:
         Initialize(json.at("filePath").get<std::string>().c_str());
     }
 
-    ~Mesh() override;
+    ~MeshComponent() override;
 
 
 private:
