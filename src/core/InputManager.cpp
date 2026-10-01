@@ -1,5 +1,4 @@
 #include "InputManager.hpp"
-#include "../utils/Logger.hpp"
 #include "backends/imgui_impl_sdl3.h"
 // Define the static member variable
 std::unordered_map<int, bool[3]> InputManager::keyMap;

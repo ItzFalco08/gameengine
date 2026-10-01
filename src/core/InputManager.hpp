@@ -1,6 +1,5 @@
 #pragma once
 #include "SDL3/SDL.h"
-#include "../utils/Logger.hpp"
 #include <unordered_map>
 
 // basically a namespace since everything is static

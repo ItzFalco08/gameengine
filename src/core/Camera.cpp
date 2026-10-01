@@ -45,7 +45,7 @@ glm::mat4 Camera::getViewMat() {
 void Camera::calculateProj() {
     projectionMat = glm::perspective(
         glm::radians(fov),
-        sceneView.getAspect(),
+        editor.sceneView.getAspect(),
         _near,
         _far
     );

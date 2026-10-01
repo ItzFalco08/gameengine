@@ -1,9 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
-#include "Component.hpp"
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/quaternion.hpp>
+#include "Component.hpp"
 #include "json/json.hpp"
 
 struct TransformComponent : public Component  {
@@ -21,8 +19,7 @@ public:
     glm::vec3 scale = glm::vec3(1.0f);
     glm::vec3 gEulars = glm::vec3(0.0f); // Store persistent Euler angles for UI
 
-    static const char* StaticType() { return "Transform"; };
-    std::string GetType() override { return StaticType(); }
+    ComponentType GetType() override { return ComponentType::Transform; }
     void Rotate(const glm::vec3& deltaGlobalEulars);
     void SetRotationGlobal(const glm::vec3& globalEulars);
     void RotateLocal(const glm::vec3& localEulars);
@@ -36,7 +33,7 @@ public:
     TransformComponent() = default;
 
     void Serialize(nlohmann::json& json) override;
-    void Deserialize(nlohmann::json& json) override;
+    void Deserialize(const nlohmann::json& json) override;
 
     void reset();
 };

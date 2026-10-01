@@ -47,6 +47,5 @@ public:
 
     LightComponent();
     ~LightComponent();
-    static const char* StaticType() { return "Light"; }
-    std::string GetType() override { return StaticType(); }
+    ComponentType GetType() override { return ComponentType::Light; }
 };

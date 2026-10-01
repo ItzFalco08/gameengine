@@ -2,6 +2,9 @@
 #include "../GameObject.hpp"
 #include <ImGuizmo/ImGuizmo.h>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 void TransformComponent::recalculateMatrix() {
     // POSSIBLE OPTIMIZATION
@@ -91,7 +94,7 @@ void TransformComponent::Serialize(nlohmann::json& json) {
     json["gEulars"] = {gEulars.x, gEulars.y, gEulars.x};
 }
 
-void TransformComponent::Deserialize(nlohmann::json& json) {
+void TransformComponent::Deserialize(const nlohmann::json& json) {
     position = glm::vec3(json.at("position")[0], json.at("position")[1], json.at("position")[2]);
     rotation = glm::quat(json.at("rotation")[0], json.at("rotation")[1], json.at("rotation")[2], json.at("rotation")[3]);
     scale = glm::vec3(json.at("scale")[0], json.at("scale")[1], json.at("scale")[2]);

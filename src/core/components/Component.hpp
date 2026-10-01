@@ -6,11 +6,19 @@
 
 class GameObject;
 
+enum class ComponentType {
+	Transform,
+	MeshRenderer,
+	Camera,
+	Light,
+	Script
+};
+
 class Component {
 public:
     virtual ~Component()  = default;
     GameObject* parent = nullptr;
-    virtual std::string GetType() = 0;
+    virtual ComponentType GetType() = 0;
     virtual void Serialize(nlohmann::json& json)=0;
-    virtual void Deserialize(nlohmann::json& json)=0;
+    virtual void Deserialize(const nlohmann::json& json)=0;
 };

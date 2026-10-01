@@ -297,10 +297,9 @@ void AssetsBrowser::renderPanels() {
                     const aiMesh* mesh = scene->mMeshes[i];
 
                     for (int iv = 0; iv < mesh->mNumVertices; iv++) {
-                        Vertex vertex = { mesh->mVertices[iv].x, mesh->mVertices[iv].y, mesh->mVertices[iv].z, mesh->mTextureCoords[0][iv].x, mesh->mTextureCoords[0][iv].y, mesh->mNormals[iv].x, mesh->mNormals[iv].y, mesh->mNormals[iv].z };
+                        Vertex vertex = { mesh->mVertices[iv].x, mesh->mVertices[iv].y, mesh->mVertices[iv].z, mesh->mNormals[iv].x, mesh->mNormals[iv].y, mesh->mNormals[iv].z, mesh->mTextureCoords[0][iv].x, mesh->mTextureCoords[0][iv].y, };
                         meshFile.write(reinterpret_cast<const char*>(&vertex), sizeof(Vertex));
                     }
-
                 }
 
                 impprogressLock.lock();
@@ -335,6 +334,8 @@ void AssetsBrowser::renderPanels() {
                 impprogressLock.unlock();
 
                 // write submeshes
+				meshFile.write(reinterpret_cast<const char*>(&scene->mNumMeshes), sizeof(uint32_t)); // nrsubmeshes
+
                 for (int i = 0; i < scene->mNumMeshes; i++) {
                     const aiMesh* mesh = scene->mMeshes[i];
 

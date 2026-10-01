@@ -1,7 +1,6 @@
 #include "Light.hpp"
 #include "../SceneManager.hpp"
 #include "../../utils/Logger.hpp"
-#include <typeinfo>
 
 extern SceneManager sceneManager;
 
