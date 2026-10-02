@@ -11,41 +11,14 @@ enum class LightType {
     DIRECTIONAL,
 };
 
-struct LightProps {
-    virtual void Serialize(nlohmann::json& json) = 0;
-    virtual void Deserialize(nlohmann::json& json) = 0;
-};
-
-struct DirLight : public LightProps {
-    glm::vec3 lightColor = {1, 1, 1};
-
-    DirLight() = default;
-    DirLight(nlohmann::json& json);
-
-    void Serialize(nlohmann::json& json) override;
-    void Deserialize(nlohmann::json& json) override;
-};
-
-struct PointLight : public LightProps{
-    glm::vec3 lightColor = {1, 1, 1};
-    float range = 30.0f;
-    float intensity = 10.0f;
-
-    void Serialize(nlohmann::json& json) override;
-    void Deserialize(nlohmann::json& json) override;
-};
-
 class LightComponent : public Component {
 public:
-    LightType lightType = LightType::POINT;
-    std::unique_ptr<LightProps> lightProps = std::make_unique<PointLight>();
+    LightType type = LightType::POINT;
+    glm::vec3 color = { 1, 1, 1 };
+    float intensity = 10.0f;
+    float range = 30.0f;
 
-    LightType getLightType();
-    void setLight(LightType type);
+    ComponentType GetType() override { return ComponentType::Light; }
     void Serialize(nlohmann::json& json);
     void Deserialize(nlohmann::json& json);
-
-    LightComponent();
-    ~LightComponent();
-    ComponentType GetType() override { return ComponentType::Light; }
 };

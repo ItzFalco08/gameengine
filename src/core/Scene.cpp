@@ -1,5 +1,6 @@
 #include "Scene.hpp"
 #include "SceneManager.hpp"
+#include <fstream>
 extern SceneManager sceneManager;
 
 void Scene::recursiveJsonGen(nlohmann::json& gameObjectsArray, std::vector<GameObject*>& nodes) {

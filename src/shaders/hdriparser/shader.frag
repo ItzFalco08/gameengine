@@ -1,4 +1,4 @@
-#version 330
+#version 450 core
 in vec2 FragPos;
 // color attachments for each face of cube.
 layout(location = 0) out vec4 faceColors[6];
