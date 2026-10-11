@@ -7,6 +7,7 @@ struct Vertex {
 	glm::vec3 position;
 	glm::vec3 normal;
 	glm::vec2 uv;
+	glm::vec4 tangent;
 };
 
 struct Submesh {
@@ -22,6 +23,10 @@ struct Mesh : public RuntimeAsset {
 
 	AssetType getType() const override {
 		return AssetType::MESH;
+	}
+
+	void bind() const {
+		glBindVertexArray(VAO);
 	}
 
 	bool Serialize(const AssetMeta& entry) override;

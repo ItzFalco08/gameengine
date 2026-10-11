@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <string>
 #include <vector>
-#include "../../core/Texture.hpp"
+#include "../../core/assets/runtime/Texture.hpp"
 #include <mutex>
 
 namespace fs = std::filesystem;
@@ -50,4 +50,11 @@ private:
 	fs::path importModelPath = "";
     std::mutex impProgressMtx;
     int progress = 0;
+
+    // popup flags
+	bool showCreateFolderPopup = false;
+    bool showCreateScenePopup = false;
+	bool showImportModelPopup = false;
+	bool showRenamePopup = false;
+	bool showImportProgressPopup = false;
 };

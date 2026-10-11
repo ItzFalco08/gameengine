@@ -49,7 +49,6 @@ struct UUID {
         return *this;
     }
 
-
 	bool operator==(const UUID& other) const {
 		return low == other.low && high == other.high;
 	}
@@ -64,7 +63,7 @@ struct UUIDHasher {
 	}
 };
 
-UUID generateUUID() {
+inline UUID generateUUID() {
     static std::random_device rd;
     static std::mt19937_64 gen(rd());
 

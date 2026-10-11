@@ -23,35 +23,28 @@ void AssetsRegistry::syncAssets(const fs::path& dir) {
 void AssetsRegistry::addAsset(const fs::path& path) {
     std::string ext = path.extension().string();
     if (ext == ".mat") {
-        MaterialAsset materialAsset;
-        if(!materialAsset.Serialize(path)) {
+        auto materialAsset = std::make_unique<MaterialAsset>();
+        if(!materialAsset->Serialize(path)) {
             LOG::Error("Failed to serialize material asset: ", path.string());
             return;
         }
-        m_assetsMeta.insert_or_assign(materialAsset.m_uuid, std::move(materialAsset));
+        m_assetsMeta.set(materialAsset->m_uuid, std::move(materialAsset));
     }
     else if (ext == ".tex") {
-        TextureAsset textureAsset;
-        if (!textureAsset.Serialize(path)) {
+        auto textureAsset = std::make_unique<TextureAsset>();
+        if (!textureAsset->Serialize(path)) {
 			LOG::Error("Failed to serialize texture asset: ", path.string());
             return;
         }
-        m_assetsMeta.insert_or_assign(textureAsset.m_uuid, std::move(textureAsset));
+        m_assetsMeta.set(textureAsset->m_uuid, std::move(textureAsset));
     }
     else if (ext == ".mesh") {
-        MeshAsset meshAsset;
-        if (!meshAsset.Serialize(path)) {
+        auto meshAsset = std::make_unique<MeshAsset>();
+        if (!meshAsset->Serialize(path)) {
             LOG::Error("Failed to serialize mesh asset: ", path.string());
             return;
         }
-        m_assetsMeta.insert_or_assign(meshAsset.m_uuid, std::move(meshAsset));
+        m_assetsMeta.set(meshAsset->m_uuid, std::move(meshAsset));
     }
 }
 
-AssetMeta* AssetsRegistry::getAsset(const UUID& uuid) {
-    auto it = m_assetsMeta.find(uuid);
-    if (it != m_assetsMeta.end()) {
-        return &it->second;
-    }
-    return nullptr;
-}

@@ -3,3 +3,4 @@
 AppState appState;
 Editor editor;
 Engine engine;
+SceneManager sceneManager;

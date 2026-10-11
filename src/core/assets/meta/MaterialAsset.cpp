@@ -16,12 +16,6 @@ bool MaterialAsset::Serialize(const fs::path& assetFile) {
 
         m_uuid = UUID::fromString(j.at("uuid").get<std::string>());
 
-        ambientColor = glm::vec3(
-            j.at("ambientColor").at(0),
-            j.at("ambientColor").at(1),
-            j.at("ambientColor").at(2)
-        );
-
         diffuseColor = glm::vec3(
             j.at("diffuseColor").at(0),
             j.at("diffuseColor").at(1),
@@ -36,10 +30,11 @@ bool MaterialAsset::Serialize(const fs::path& assetFile) {
 
         shininess = j.at("shininess").get<float>();
 
-        ambientMapUUID = UUID::fromString(j.at("ambientMap").get<std::string>());
         diffuseMapUUID = UUID::fromString(j.at("diffuseMap").get<std::string>());
         specularMapUUID = UUID::fromString(j.at("specularMap").get<std::string>());
         normalMapUUID = UUID::fromString(j.at("normalMap").get<std::string>());
+
+		shaderType = j.at("shaderType").get<ShaderType>();
 
         return true;
     }

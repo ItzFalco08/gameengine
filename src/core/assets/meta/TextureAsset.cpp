@@ -1,7 +1,7 @@
 #include "TextureAsset.hpp"
 #include <json/json.hpp>
 
-inline bool TextureAsset::Serialize(const fs::path& assetFile) {
+bool TextureAsset::Serialize(const fs::path& assetFile) {
 	try {
 		nlohmann::json j(assetFile);
 		m_texturePath = j.at("texturePath").get<fs::path>();

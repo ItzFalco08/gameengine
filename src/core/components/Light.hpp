@@ -19,6 +19,7 @@ public:
     float range = 30.0f;
 
     ComponentType GetType() override { return ComponentType::Light; }
-    void Serialize(nlohmann::json& json);
-    void Deserialize(nlohmann::json& json);
+    void Serialize(nlohmann::json& json) override;
+    void Deserialize(const nlohmann::json& json) override;
 };
+// no idont

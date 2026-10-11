@@ -1,4 +1,4 @@
-#include "../../core/Scene.hpp"
+#pragma once
 
 class HierarchyPanel {
 public:
@@ -14,4 +14,9 @@ private:
     void handleKeyEvents();
     void RenameSelected(const char* newName);
     void renderPanels();
+
+    // panel flags
+	bool showCreateGameobjectPopup = false;
+	bool showRenameGameobjectPopup = false;
+	bool showDeleteGameobjectPopup = false;
 };

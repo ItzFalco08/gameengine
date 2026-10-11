@@ -13,6 +13,9 @@ set(SDL_SHARED OFF CACHE BOOL "" FORCE)
 set(SDL_STATIC ON CACHE BOOL "" FORCE)
 set(SDL_TESTS OFF CACHE BOOL "" FORCE)
 set(SDL_TEST_LIBRARY OFF CACHE BOOL "" FORCE)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_FRAMEWORK OFF CACHE BOOL "" FORCE)
+
 add_subdirectory(third_party/SDL)
 add_subdirectory(third_party/imgui)
 add_subdirectory(third_party/glm)
@@ -35,4 +38,5 @@ target_compile_definitions(
 	ASSETS_DIR="../../Assets/"
 	SRC_DIR="../../src/"
 	ROOT_DIR="../../"
+	SHADER_DIR="${PROJECT_SOURCE_DIR}/src/shaders/"
 )

@@ -1,3 +1,4 @@
+#pragma once
 #include "AssetMeta.hpp"
 #include "glad/gl.h"
 

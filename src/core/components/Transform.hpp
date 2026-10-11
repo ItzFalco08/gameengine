@@ -27,7 +27,7 @@ public:
     void Scale(const glm::vec3& factor);
     void DecomposeModel();
     glm::mat4& getModel();
-    glm::mat4 getNormalMat();
+    glm::mat4& getNormalMat();
     glm::vec3 getAbsolutePosition();
     ~TransformComponent() = default;
     TransformComponent() = default;

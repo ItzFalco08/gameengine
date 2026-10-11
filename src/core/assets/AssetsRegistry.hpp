@@ -1,23 +1,24 @@
 #pragma once
 
 #include <filesystem>
-#include <unordered_map>
 #include "meta/AssetMeta.hpp"
 #include <future>
+#include "AssetPool.hpp"
 
 namespace fs = std::filesystem;
 
 class AssetsRegistry {
-private:
-    // UUID -> metadata
-    std::unordered_map<UUID, AssetMeta, UUIDHasher> m_assetsMeta;
-
 public:
+    AssetsPool<AssetMeta> m_assetsMeta; // UUID -> runtimeId -> AssetHandle
+
     std::future<void> m_syncFuture;
 
     void syncAssets();
     void syncAssets(const fs::path& dir);
 
     void addAsset(const fs::path& path);
-    AssetMeta* getAsset(const UUID& uuid);
+    template<typename T>
+    T* getAsset(const UUID& uuid) {
+        return dynamic_cast<T*>(m_assetsMeta.get(uuid));
+    }
 };

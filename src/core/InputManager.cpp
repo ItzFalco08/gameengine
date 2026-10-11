@@ -1,11 +1,9 @@
 #include "InputManager.hpp"
-#include "backends/imgui_impl_sdl3.h"
 // Define the static member variable
 std::unordered_map<int, bool[3]> InputManager::keyMap;
 int InputManager::mods;
 
 void InputManager::processEvent(const SDL_Event& event) {
-    ImGui_ImplSDL3_ProcessEvent(&event);
 
     if (event.type == SDL_EVENT_KEY_DOWN) {
         InputManager::mods = event.key.mod;

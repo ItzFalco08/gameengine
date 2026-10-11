@@ -1,15 +1,17 @@
 #include "../../utils/Utils.hpp"
 #include "../../utils/globals.hpp"
 #include "AssetsBrowserPanel.hpp"
+#include "glad/gl.h"
 #include <SDL3/SDL.h>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <assimp/types.h>
 #include <cstring>
+#include <fstream>
 #include <future>
 #include <json/json.hpp>
 #include <vector>
-#include "glad/gl.h"
+#include "../../core/assets/meta/MaterialAsset.hpp"
 
 namespace {
     bool showYesNoDialog(const char* title, const char* message) {
@@ -33,6 +35,12 @@ namespace {
 }
 
 void AssetsBrowser::renderPanels() {
+	if (showCreateFolderPopup) { ImGui::OpenPopup("CreateFolder"); showCreateFolderPopup = false; }
+	if (showCreateScenePopup) { ImGui::OpenPopup("CreateScene"); showCreateScenePopup = false; }
+	if (showImportModelPopup) { ImGui::OpenPopup("ImportModelPopup"); showImportModelPopup = false; }
+	if (showRenamePopup) { ImGui::OpenPopup("Rename"); showRenamePopup = false; }
+	if (showImportProgressPopup) { ImGui::OpenPopup("ImportProgress"); showImportProgressPopup = false; }
+
 	if (ImGui::BeginPopupModal("CreateFolder", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
         static char inputBuffer[256] = { 0 };
         ImGui::InputText("Folder Name", inputBuffer, sizeof(inputBuffer));
@@ -55,7 +63,7 @@ void AssetsBrowser::renderPanels() {
         }
 		ImGui::EndPopup();
 	}
-
+    
     if (ImGui::BeginPopupModal("CreateScene", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
         static char inputBuffer[256] = { 0 };
         ImGui::InputText("Scene Name", inputBuffer, sizeof(inputBuffer));
@@ -65,7 +73,7 @@ void AssetsBrowser::renderPanels() {
         }
 
         if (ImGui::Button("Create")) {
-            createScene(currentPath / inputBuffer / ".scene");
+            createScene(currentPath / (std::string(inputBuffer) + std::string(".scene")));
             ImGui::CloseCurrentPopup();
             inputBuffer[0] = '\0';
         }
@@ -78,16 +86,7 @@ void AssetsBrowser::renderPanels() {
         }
         ImGui::EndPopup();
     }
-
-    if (ImGui::BeginPopupModal("CreateMaterial", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
-
-    }
-
-    if (ImGui::BeginPopupModal("CreateTexture", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
-
-    }
-
-    if (ImGui::BeginPopup("RenamePopup")) {
+    if (ImGui::BeginPopupModal("RenamePopup")) {
         static char inputBuffer[256] = { 0 };
         ImGui::InputText("New Name", inputBuffer, sizeof(inputBuffer));
         if (inputBuffer[0] == '\0') {
@@ -109,9 +108,8 @@ void AssetsBrowser::renderPanels() {
         }
         ImGui::EndPopup();
     }
-
-    if (ImGui::BeginPopup("ImportModelPopup")) {
-        ImGui::Text("Import Model");
+    if (ImGui::BeginPopupModal("ImportModelPopup")) {
+        ImGui::Text((std::string("Import ") + importModelPath.filename().string()).c_str());
 
         unsigned int flags = 0;
 
@@ -124,9 +122,9 @@ void AssetsBrowser::renderPanels() {
 
         static AssimpFlagOption s_assimpFlags[] = {
             { "Triangulate",           aiProcess_Triangulate,          true,  "Convert polygons to triangles" },
-            { "Generate Smooth Normals (smooth shade)", aiProcess_GenSmoothNormals,   true,  "interpolated normals (smooth shade in blender) if normals are missing" },
             { "Calc Tangent Space",    aiProcess_CalcTangentSpace,     true,  "Needed for normal mapping" },
             { "Join Identical Vertices", aiProcess_JoinIdenticalVertices, true, "Dedupe verts for indexed rendering" },
+            { "Generate Smooth Normals (smooth shade)", aiProcess_GenSmoothNormals,   false,  "interpolated normals (smooth shade in blender) if normals are missing" },
             { "Flip UVs",              aiProcess_FlipUVs,               false, "Flip V coordinate (OpenGL vs DirectX)" },
             { "Limit Bone Weights",    aiProcess_LimitBoneWeights,      false, "Cap bone influences per vertex" },
             { "Convert To Left Handed", aiProcess_ConvertToLeftHanded,  false, "Switch coordinate handedness" },
@@ -137,8 +135,17 @@ void AssetsBrowser::renderPanels() {
         };
 
 		for (auto& option : s_assimpFlags) {
-			ImGui::Checkbox(option.label, &option.enabled);
-			if (ImGui::IsItemHovered()) {
+
+			if (option.flag == aiProcess_Triangulate || option.flag == aiProcess_CalcTangentSpace) {
+				ImGui::BeginDisabled();
+                ImGui::Checkbox(option.label, &option.enabled);
+				ImGui::EndDisabled();
+            }
+            else {
+                ImGui::Checkbox(option.label, &option.enabled);
+            }
+			
+            if (ImGui::IsItemHovered()) {
 				ImGui::SetTooltip("%s", option.description);
 			}
         };
@@ -155,6 +162,7 @@ void AssetsBrowser::renderPanels() {
             }
 
             if (!(flags & aiProcess_GenSmoothNormals)) flags |= aiProcess_GenNormals; // Generate normals if smooth normals are not requested
+			flags |= aiProcess_CalcTangentSpace; // Always calculate tangent space for normal mapping
 
             std::future<void> importFuture = std::async(std::launch::async, [&]() {
                 // load model from file
@@ -210,12 +218,11 @@ void AssetsBrowser::renderPanels() {
                     UUID matUUID = generateUUID();
                     nlohmann::json matMetaJson;
                     matMetaJson["uuid"] = UUID::toString(matUUID);
-                    matMetaJson["ambientColor"] = { baseColor.r, baseColor.g, baseColor.b };
                     matMetaJson["diffuseColor"] = { diffuse.r, diffuse.g, diffuse.b };
                     matMetaJson["specularColor"] = { specular.r, specular.g, specular.b };
                     matMetaJson["shininess"] = shininess;
+					matMetaJson["shaderType"] = ShaderType::LIT; // default to LIT shader type
 
-                    matMetaJson["ambientMap"] = "";
                     matMetaJson["diffuseMap"] = "";
                     matMetaJson["specularMap"] = "";
                     matMetaJson["normalMap"] = "";
@@ -246,8 +253,8 @@ void AssetsBrowser::renderPanels() {
                                 textureMetaJson["textureType"] = "Texture2D";
                                 textureMetaJson["wrapU"] = GL_REPEAT;
                                 textureMetaJson["wrapV"] = GL_REPEAT;
-                                textureMetaJson["minFilter"] = GL_LINEAR_MIPMAP_LINEAR;
-                                textureMetaJson["magFilter"] = GL_LINEAR;
+                                textureMetaJson["minFilter"] = GL_NEAREST;
+                                textureMetaJson["magFilter"] = GL_NEAREST;
                                 textureMetaFile << textureMetaJson.dump(4);
                                 textureMetaFile.close();
                             }
@@ -255,7 +262,6 @@ void AssetsBrowser::renderPanels() {
                         }
                     };
 
-                    createTextureAsset(aiTextureType_AMBIENT, "ambientMap");
                     createTextureAsset(aiTextureType_DIFFUSE, "diffuseMap");
                     createTextureAsset(aiTextureType_SPECULAR, "specularMap");
                     createTextureAsset(aiTextureType_NORMALS, "normalMap");
@@ -274,6 +280,7 @@ void AssetsBrowser::renderPanels() {
                     float x, y, z;
                     float u, v;
                     float nx, ny, nz;
+					float tx, ty, tz, tw;
                 };
 
                 // write nV
@@ -297,7 +304,9 @@ void AssetsBrowser::renderPanels() {
                     const aiMesh* mesh = scene->mMeshes[i];
 
                     for (int iv = 0; iv < mesh->mNumVertices; iv++) {
-                        Vertex vertex = { mesh->mVertices[iv].x, mesh->mVertices[iv].y, mesh->mVertices[iv].z, mesh->mNormals[iv].x, mesh->mNormals[iv].y, mesh->mNormals[iv].z, mesh->mTextureCoords[0][iv].x, mesh->mTextureCoords[0][iv].y, };
+						// xyz, normal, uv, tanjent (vec4)
+                        float w = glm::dot(glm::cross(glm::vec3(mesh->mNormals[iv].x, mesh->mNormals[iv].y, mesh->mNormals[iv].z), glm::vec3(mesh->mTangents[iv].x, mesh->mTangents[iv].y, mesh->mTangents[iv].z)), glm::vec3(mesh->mBitangents[iv].x, mesh->mBitangents[iv].y, mesh->mBitangents[iv].z)) < 0.0f ? -1.0f : 1.0f;
+                        Vertex vertex = { mesh->mVertices[iv].x, mesh->mVertices[iv].y, mesh->mVertices[iv].z, mesh->mNormals[iv].x, mesh->mNormals[iv].y, mesh->mNormals[iv].z, mesh->mTextureCoords[0][iv].x, mesh->mTextureCoords[0][iv].y, mesh->mTangents[iv].x, mesh->mTangents[iv].y, mesh->mTangents[iv].z, w };
                         meshFile.write(reinterpret_cast<const char*>(&vertex), sizeof(Vertex));
                     }
                 }
@@ -371,7 +380,6 @@ void AssetsBrowser::renderPanels() {
         }
         ImGui::EndPopup();
     }
-
     if (ImGui::BeginPopup("ImportProgressPopup")) {
         std::unique_lock<std::mutex> lock(impProgressMtx);
 
@@ -422,6 +430,7 @@ void AssetsBrowser::createScene(const fs::path& path) {
 	nlohmann::json sceneJson;
 	sceneJson["gameObjects"] = nlohmann::json::array();
 	std::ofstream(path.string()) << sceneJson.dump(4);
+    std::cout << "creating scene: " << path;
 }
 
 void AssetsBrowser::createFolder(const fs::path& path) {
@@ -463,18 +472,19 @@ void AssetsBrowser::InitIcons() {
     currentPath = ASSETS_DIR;
     TexDets texDets;
     texDets.minFilter = GL_NEAREST;
-    fileTex = Texture2D(ROOT_DIR "src/textures/File.png", texDets);
-    folderTex = Texture2D(ROOT_DIR "src/textures/Folder.png", texDets);
-    folderEmptyTex = Texture2D(ROOT_DIR "src/textures/FolderEmpty.png", texDets);
+    fileTex.Initialize(SRC_DIR "editor/resources/File.png", texDets);
+    folderTex.Initialize(SRC_DIR "editor/resources/Folder.png", texDets);
+    folderEmptyTex.Initialize(SRC_DIR "editor/resources/FolderEmpty.png", texDets);
 }
 
 void AssetsBrowser::handleFileDrop(const char* filePath)
 {
     importModelPath = filePath;
+
     if (importModelPath.extension() == ".fbx" || importModelPath.extension() == ".obj" || importModelPath.extension() == ".dae" ||
         importModelPath.extension() == ".gltf" || importModelPath.extension() == ".glb" || importModelPath.extension() == ".stl") {
 
-        ImGui::BeginPopup("ImportModelPopup");
+        showImportModelPopup = true;
     }
 }
 
@@ -526,10 +536,9 @@ void AssetsBrowser::Render() {
         // right click
         if(ImGui::BeginPopupContextWindow()) {
             if(ImGui::BeginMenu("Create")) {
-                if(ImGui::MenuItem("Folder")) ImGui::OpenPopup("CreateFolder");
-                if(ImGui::MenuItem("Scene")) ImGui::OpenPopup("CreateScene");
-                if(ImGui::MenuItem("Material")) ImGui::OpenPopup("CreateMaterial");
-                if(ImGui::MenuItem("Texture")) ImGui::OpenPopup("CreateTexture");
+                if(ImGui::MenuItem("Folder")) showCreateFolderPopup = true;
+                if(ImGui::MenuItem("Scene")) showCreateScenePopup = true;
+                if(ImGui::MenuItem("Model")) showImportModelPopup = true;
                 ImGui::EndMenu();
             }
             

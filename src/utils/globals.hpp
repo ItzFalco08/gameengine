@@ -1,7 +1,6 @@
 #pragma once
 #include "SDL3/SDL.h"
 #include "Shader.hpp"
-#include "../core/ResourceManager.hpp"
 #include "../core/SceneManager.hpp"
 #include "../core/Camera.hpp"
 #include "../core/Renderer.hpp"

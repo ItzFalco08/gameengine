@@ -1,0 +1,48 @@
+#version 450 core
+
+layout(local_size_x = 64) in; // doesnt matter unless different data is read from two invocations.
+
+#define MAX_LIGHTS_PER_CLUSTER 128
+#define CLUSTER_COUNT 3456
+
+struct GridAABB {
+	vec4 from;
+	vec4 to;
+};
+struct PointLight { 
+	vec4 positionRange;
+	vec4 colorIntensity;
+};
+struct ClusterLights {
+	uint lightsIndices[MAX_LIGHTS_PER_CLUSTER];
+};
+
+uniform uint nPointLight;
+
+layout(std430, binding = 0) buffer readonly LightSSBO { PointLight lights[]; };
+layout(std430, binding = 1) buffer readonly ClusterSSBO { GridAABB clusters[]; };
+layout(std430, binding = 2) buffer IndexSSBO { ClusterLights indices[]; };
+layout(std430, binding = 3) buffer CountSSBO { uint counts[CLUSTER_COUNT]; };
+
+void main() {
+	// cluster we are in
+	uint idx = gl_GlobalInvocationID.x;
+	GridAABB cluster = clusters[idx];
+
+	// iterate lights
+	for (int i = 0; i < nPointLight; i++) {
+		PointLight light = lights[i];
+		
+		// aabb check
+		if (light.positionRange.x - light.positionRange.w < cluster.to.x &&
+			light.positionRange.x + light.positionRange.w > cluster.from.x &&
+			light.positionRange.y - light.positionRange.w < cluster.to.y &&
+			light.positionRange.y + light.positionRange.w > cluster.from.y &&
+			light.positionRange.z - light.positionRange.w < cluster.to.z &&
+			light.positionRange.z + light.positionRange.w > cluster.from.z) {
+			// Light is in the cluster
+			indices[idx].lightsIndices[counts[idx]] = i;
+			counts[idx]++;
+		}
+	}
+}

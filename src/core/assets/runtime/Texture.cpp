@@ -7,6 +7,12 @@
 #define SHADER_DIR ""
 #endif
 
+void Texture::bind(unsigned int unit) const
+{
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, TexId);
+}
+
 // Base Class
 Texture::Texture(Texture&& other) noexcept {
     TexId = other.TexId;
@@ -33,17 +39,20 @@ Texture::~Texture() {
 // Texture2D
 Texture2D::Texture2D(const char* path, TexDets texDets) {
     Initialize(path, texDets);
-};
+}
+Texture2D::Texture2D(const unsigned char* data, int width, int height, int channels, TexDets texDetails) {
+	Initialize(data, width, height, channels, texDetails);
+}
 
 void Texture2D::Initialize(const fs::path& path, TexDets texDets) {
     if (texturePath == path) { LOG::Warning("Texture already bound with path: ", path); return; };
     texturePath = path.string();
-    
+
     // load texture
     int width = 0, height = 0, nrChannels = 0;
     stbi_set_flip_vertically_on_load(true);
     unsigned char* data = stbi_load(path.string().c_str(), &width, &height, &nrChannels, 0);
-    
+
     // fill fallback data
     bool usingFallback = false;
     if(!data) {
@@ -51,10 +60,22 @@ void Texture2D::Initialize(const fs::path& path, TexDets texDets) {
         static const unsigned char fallback[4] = {255, 0, 255, 255};
         data = (unsigned char*)&fallback;
         usingFallback = true;
+		std::cout << "Failed to load texture: " << path << ". Using fallback texture." << std::endl;
     }
 
+    UploadToGL(data, width, height, nrChannels, texDets, !usingFallback);
+    if(!usingFallback) stbi_image_free(data);
+}
+
+void Texture2D::Initialize(const unsigned char* data, int width, int height, int channels, TexDets texDets) {
+    if (!data) { LOG::Warning("Texture Initialize called with null texel data"); return; }
+    texturePath = "";
+    UploadToGL(data, width, height, channels, texDets, true);
+}
+
+void Texture2D::UploadToGL(const unsigned char* data, int width, int height, int channels, TexDets texDets, bool generateMips) {
     // GL texture info
-    bool wantsMips = (
+    bool wantsMips = generateMips && (
         texDets.minFilter == GL_LINEAR_MIPMAP_LINEAR ||
         texDets.minFilter == GL_LINEAR_MIPMAP_NEAREST ||
         texDets.minFilter == GL_NEAREST_MIPMAP_LINEAR ||
@@ -62,7 +83,7 @@ void Texture2D::Initialize(const fs::path& path, TexDets texDets) {
     );
 
     unsigned int format;
-    switch (nrChannels) {
+    switch (channels) {
         case 1: format = GL_RED;  break;
         case 2: format = GL_RG;   break;
         case 3: format = GL_RGB;  break;
@@ -72,12 +93,11 @@ void Texture2D::Initialize(const fs::path& path, TexDets texDets) {
 
     // generate texture
     if (TexId == GL_NONE) glGenTextures(1, &TexId);
-    
+
     glBindTexture(GL_TEXTURE_2D, TexId);
     applyParams(texDets);
     glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-    if (wantsMips && !usingFallback) glGenerateMipmap(GL_TEXTURE_2D);
-    if(!usingFallback) stbi_image_free(data);
+    if (wantsMips) glGenerateMipmap(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
@@ -107,13 +127,14 @@ bool Texture2D::Serialize(const AssetMeta& entry) {
         texAsset.m_wrapV,
         texAsset.m_minFilter,
         texAsset.m_magFilter
-        });
+    });
     return true;
 }
 
 // Cubemap
 GLuint hdriparser_fb = 0;
 
+// a cubemap hdri image -> 6 cubemap faces -> gl cubemap object
 void Cubemap::Initialize(const fs::path& path, TexDets texDets) {
     if (texturePath == path) { LOG::Warning("Texture already bound with path: ", path); return; };
     if (path.extension() != ".hdr") {

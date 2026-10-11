@@ -24,7 +24,7 @@ void Camera::move(glm::vec3 deltaPos) {
     viewDirty = true;
 }
 
-glm::mat4 Camera::getProjMat() {
+glm::mat4& Camera::getProjMat() {
     if (projDirty) {
         calculateProj();
         projDirty = false;
@@ -33,7 +33,7 @@ glm::mat4 Camera::getProjMat() {
     return projectionMat;
 }
 
-glm::mat4 Camera::getViewMat() {
+glm::mat4& Camera::getViewMat() {
     if (viewDirty) {
         calculateView();
         viewDirty = false;

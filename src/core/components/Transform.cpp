@@ -68,7 +68,7 @@ glm::mat4& TransformComponent::getModel() {
     return model;
 }
 
-glm::mat4 TransformComponent::getNormalMat()
+glm::mat4& TransformComponent::getNormalMat()
 {
     if (normalDirty) { // recalculate only when model changes
         normalMat = glm::transpose(glm::inverse(glm::mat3(getModel())));

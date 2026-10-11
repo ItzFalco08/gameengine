@@ -2,7 +2,7 @@
 #include "components/Light.hpp"
 #include "components/Mesh.hpp"
 
-inline void GameObject::Serialize(nlohmann::json& json) {
+void GameObject::Serialize(nlohmann::json& json) {
     json["name"] = name;
 
     nlohmann::json transformJson;
@@ -21,7 +21,7 @@ inline void GameObject::Serialize(nlohmann::json& json) {
     json["components"] = componentsJson;
 }
 
-inline void GameObject::Deserialize(nlohmann::json& json) {
+void GameObject::Deserialize(nlohmann::json& json) {
     transform = std::make_unique<TransformComponent>();
     transform->Deserialize(json["transform"]);
 

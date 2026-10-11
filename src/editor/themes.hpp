@@ -1,3 +1,20 @@
+#pragma once
+namespace Pal
+{
+    static constexpr ImVec4 BG = { 0.082f, 0.082f, 0.082f, 1.f }; // #151515
+    static constexpr ImVec4 BG_WIDGET = { 0.110f, 0.110f, 0.110f, 1.f }; // #1c1c1c
+    static constexpr ImVec4 BG_GROUP = { 0.125f, 0.125f, 0.125f, 1.f }; // #202020
+    static constexpr ImVec4 BORDER = { 0.2f, 0.2f, 0.2f, 1.f }; // #383838
+    static constexpr ImVec4 BORDER_DIM = { 0.150f, 0.150f, 0.150f, 1.f }; // #262626
+    static constexpr ImVec4 TEXT = { 0.780f, 0.780f, 0.780f, 1.f }; // #c7c7c7
+    static constexpr ImVec4 TEXT_DIM = { 0.450f, 0.450f, 0.450f, 1.f }; // #737373
+    static constexpr ImVec4 ACCENT = { 0.220f, 0.480f, 0.780f, 1.f }; // #387ac7 blue
+    static constexpr ImVec4 ACCENT_DIM = { 0.120f, 0.280f, 0.500f, 1.f }; // #1f4780 darker blue
+    static constexpr ImVec4 ACCENT_URL = { 0.400f, 0.680f, 1.000f, 1.f }; // #66adff bright blue
+    static constexpr ImVec4 TRANSPARENT = { 0.f, 0.f, 0.f, 0.f };
+
+    static ImU32 U(ImVec4 v) { return ImGui::ColorConvertFloat4ToU32(v); }
+}
 
 void MortyDark()
 {
@@ -145,23 +162,6 @@ void defaultDark()
     style.ScrollbarRounding = 5.0f;
     style.GrabRounding = 3.0f;
     style.TabRounding = 0.0f;
-}
-
-namespace Pal
-{
-    static constexpr ImVec4 BG = { 0.082f, 0.082f, 0.082f, 1.f }; // #151515
-    static constexpr ImVec4 BG_WIDGET = { 0.110f, 0.110f, 0.110f, 1.f }; // #1c1c1c
-    static constexpr ImVec4 BG_GROUP = { 0.125f, 0.125f, 0.125f, 1.f }; // #202020
-    static constexpr ImVec4 BORDER = { 0.2f, 0.2f, 0.2f, 1.f }; // #383838
-    static constexpr ImVec4 BORDER_DIM = { 0.150f, 0.150f, 0.150f, 1.f }; // #262626
-    static constexpr ImVec4 TEXT = { 0.780f, 0.780f, 0.780f, 1.f }; // #c7c7c7
-    static constexpr ImVec4 TEXT_DIM = { 0.450f, 0.450f, 0.450f, 1.f }; // #737373
-    static constexpr ImVec4 ACCENT = { 0.220f, 0.480f, 0.780f, 1.f }; // #387ac7 blue
-    static constexpr ImVec4 ACCENT_DIM = { 0.120f, 0.280f, 0.500f, 1.f }; // #1f4780 darker blue
-    static constexpr ImVec4 ACCENT_URL = { 0.400f, 0.680f, 1.000f, 1.f }; // #66adff bright blue
-    static constexpr ImVec4 TRANSPARENT = { 0.f, 0.f, 0.f, 0.f };
-
-    static ImU32 U(ImVec4 v) { return ImGui::ColorConvertFloat4ToU32(v); }
 }
 
 

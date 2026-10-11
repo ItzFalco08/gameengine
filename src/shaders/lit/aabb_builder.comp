@@ -1,1 +1,58 @@
 #version 450 core
+uniform float tanHalfFov;
+uniform float aspect; // x : y
+uniform float zNear;
+uniform float zFar;
+uniform uvec3 gridSize;
+uniform uint clusterSize;
+
+layout(local_size_x = 64) in;
+
+struct GridAABB {
+	vec4 from;
+	vec4 to;
+};
+
+layout(std430, binding = 0) buffer MyBuffer {
+    GridAABB data[];
+};
+
+// x : 0..N
+float k_z(int x) {
+	return zNear * pow(zFar/zNear, float(x) / float(gridSize.z));
+}
+
+int gridSSBOindex(int cx, int cy, int cz) {
+	return cz * int(gridSize.x) * int(gridSize.y) + cy * int(gridSize.x) + cx;
+}
+
+void main()
+{
+    uint index = gl_GlobalInvocationID.x;
+    
+    if (index >= clusterSize) return; // skip filler invocations
+
+    // cell coordinate from flat invocation index
+    uint cx = index % gridSize.x;                   // (cx: 0..gridSize.x-1)
+    uint cy = (index / gridSize.x) % gridSize.y;    // (cy: 0..gridSize.y-1)
+    uint cz = index / (gridSize.x * gridSize.y);    // (cz: 0..gridSize.z-1)
+
+    float sliceNear = k_z(int(cz));
+    float sliceFar  = k_z(int(cz) + 1);
+
+    vec2 tanExtent = vec2(tanHalfFov * aspect, tanHalfFov);   // per unit depth, no z here
+
+    vec2 cellMin = (vec2(cx, cy) / vec2(gridSize.xy) * 2.0 - 1.0) * tanExtent;
+    vec2 cellMax = cellMin + 2.0 * tanExtent / vec2(gridSize.xy);
+
+    vec2 a = cellMin * sliceNear;
+    vec2 b = cellMax * sliceNear;
+    vec2 c = cellMin * sliceFar;
+    vec2 d = cellMax * sliceFar;
+
+    vec3 from = vec3(min(min(a, b), min(c, d)), sliceNear);
+    vec3 to   = vec3(max(max(a, b), max(c, d)), sliceFar);
+
+    data[index].from = vec4(from, 1.0);
+    data[index].to = vec4(to, 1.0);
+}

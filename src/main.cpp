@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 #include <glad/gl.h>
 #include "imgui.h"
 #include "backends/imgui_impl_sdl3.h"
@@ -15,6 +16,7 @@ void Update();
 void Start();
 void calcDeltaTime();
 void genSceneFramebuffers();
+void EditorUpdate();
 
 double lastLogTime = 0.0;
 double deltaTime = 0.0;
@@ -26,15 +28,15 @@ int main() {
         return 1;
     }
 
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 #ifdef __APPLE__
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG, SDL_GL_TRUE);
 #endif
 
     appState.window = SDL_CreateWindow(
-        "replife",
+        "Delta Engine - V3 Beta",
         1280,
         720,
         SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
@@ -65,7 +67,7 @@ int main() {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
 
     SetEditorStyle();
 
@@ -76,7 +78,7 @@ int main() {
     );
 
     // OpenGL 3 backend
-    ImGui_ImplOpenGL3_Init("#version 330");
+    ImGui_ImplOpenGL3_Init("#version 450");
     // -------------------
 #pragma endregion
 
@@ -88,6 +90,7 @@ int main() {
     // Initialize panel icons after GL is ready
     editor.assetsBrowserPanel.InitIcons();
     editor.scenePanel.initTextures();
+	engine.renderer.Init();
 
     Start();
 
@@ -102,7 +105,9 @@ int main() {
     while (running) {
         InputManager::clearFrameStates();
         while (SDL_PollEvent(&event)) {
+            ImGui_ImplSDL3_ProcessEvent(&event);
             InputManager::processEvent(event);
+
             if (event.type == SDL_EVENT_QUIT) {
                 running = false;
             }
@@ -161,8 +166,7 @@ void EditorUpdate() {
 
     drawScreen();
 }
-
-// draw editor
+// Draw editor
 void drawScreen()
 {
     ImGui_ImplSDL3_NewFrame();
@@ -170,59 +174,92 @@ void drawScreen()
     ImGui::NewFrame();
     ImGuizmo::BeginFrame();
 
-    // Fullscreen DockSpace window -------------------------
-    ImGuiWindowFlags host_window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
-                         ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-    const ImGuiViewport* viewport = ImGui::GetMainViewport(); 
+    ImGuiIO& io = ImGui::GetIO();
+    const ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+    ImGuiWindowFlags host_window_flags =
+        ImGuiWindowFlags_MenuBar |
+        ImGuiWindowFlags_NoDocking |
+        ImGuiWindowFlags_NoTitleBar |
+        ImGuiWindowFlags_NoCollapse |
+        ImGuiWindowFlags_NoResize |
+        ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoBringToFrontOnFocus |
+        ImGuiWindowFlags_NoNavFocus |
+        ImGuiWindowFlags_NoBackground;
+
     ImGui::SetNextWindowPos(viewport->Pos);
     ImGui::SetNextWindowSize(viewport->Size);
     ImGui::SetNextWindowViewport(viewport->ID);
 
-    // P A N E L - DockSpaceHost 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0,0));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
     ImGui::Begin("DockSpaceHost", nullptr, host_window_flags);
     ImGui::PopStyleVar(3);
 
-    // DockSpace itself
-    ImGuiID dockspace_id = ImGui::GetID("EngineDockspace");
-    ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode;
-
-    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-
-    // Menu bar (optional)
-    if (ImGui::BeginMenuBar()) {
-        if (ImGui::BeginMenu("File")) {
-            if (ImGui::MenuItem("Save Changes (Ctrl + S)")) {
+    // Menu bar
+    if (ImGui::BeginMenuBar())
+    {
+        if (ImGui::BeginMenu("File"))
+        {
+            if (ImGui::MenuItem("Save Changes", "Ctrl+S"))
                 sceneManager.activeScene->MakeDirty();
-            } 
+
             ImGui::EndMenu();
         }
+
         ImGui::EndMenuBar();
     }
 
-    ImGui::End(); // end DockSpaceHost
+    // Dockspace
+    ImGuiID dockspace_id = ImGui::GetID("EngineDockspace");
 
+    ImGuiDockNodeFlags dockspace_flags =
+        ImGuiDockNodeFlags_PassthruCentralNode;
+
+    ImGui::DockSpace(
+        dockspace_id,
+        ImVec2(0.0f, 0.0f),
+        dockspace_flags
+    );
+
+    ImGui::End();
+
+    // Editor panels
     editor.scenePanel.Render();
     editor.assetsBrowserPanel.Render();
     editor.hierarchyPanel.Render();
     editor.inspectorPanel.Render();
     editor.consolePanel.Render();
 
-    // Render ImGui
+    // Render
     ImGui::Render();
+
+    int fbW, fbH;
+    SDL_GetWindowSizeInPixels(appState.window, &fbW, &fbH);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, fbW, fbH);
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-    // When viewports are enabled, render additional platform windows
-    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+    // Multi-viewport support
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        SDL_Window* backup_window = SDL_GL_GetCurrentWindow();
         SDL_GLContext backup_context = SDL_GL_GetCurrentContext();
+
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
-        SDL_GL_MakeCurrent(appState.window, backup_context);
+
+        if (backup_window && backup_context)
+            SDL_GL_MakeCurrent(backup_window, backup_context);
     }
 }
-
 
 void genSceneFramebuffers() {
     glGenTextures(1, &editor.sceneView.textureObj);
@@ -271,9 +308,21 @@ void genSceneFramebuffers() {
         editor.sceneView.depthbuffObj
     );
 
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        std::cout << "FBO failed!" << std::endl;
+    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if (status != GL_FRAMEBUFFER_COMPLETE) {
+        const char* name = "unknown";
+        switch (status) {
+        case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:         name = "INCOMPLETE_ATTACHMENT"; break;
+        case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT: name = "INCOMPLETE_MISSING_ATTACHMENT"; break;
+        case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:        name = "INCOMPLETE_DRAW_BUFFER"; break;
+        case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:        name = "INCOMPLETE_READ_BUFFER"; break;
+        case GL_FRAMEBUFFER_UNSUPPORTED:                   name = "UNSUPPORTED"; break;
+        case GL_FRAMEBUFFER_UNDEFINED:                     name = "UNDEFINED"; break;
+        }
+        std::cout << "FBO failed: " << name << " (0x" << std::hex << status << std::dec
+            << "), glGetError=0x" << std::hex << glGetError() << std::dec
+            << ", size=" << editor.sceneView.SCENEVIEW_WIDTH << "x" << editor.sceneView.SCENEVIEW_HEIGHT << "\n";
     }
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
-

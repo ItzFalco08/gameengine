@@ -70,13 +70,11 @@ void ScenePanel::updateDimentions(ImVec2& dimensions) {
         changed = true;
     }
 
-    if (changed) {
-        lastchange = static_cast<double>(SDL_GetTicks()) / 1000.0;
-        editor.editorCamera.projDirty = true; // aspect ratio changed, recalculate projection
-    }
+    if (changed) lastchange = static_cast<double>(SDL_GetTicks()) / 1000.0;
 
     if (static_cast<double>(SDL_GetTicks()) / 1000.0 - lastchange > 0.15) { // 150ms debounce
         updateFBODimensions();
+        editor.editorCamera.projDirty = true;
     }
 }
 
@@ -242,8 +240,8 @@ void ScenePanel::handleCameraMovement() {
 void ScenePanel::initTextures() {
     TexDets texDets;
     texDets.minFilter = GL_NEAREST;
-    moveTex = Texture2D(ROOT_DIR "src/textures/move.png", texDets);
-    rotateTex = Texture2D(ROOT_DIR "src/textures/rotate.png", texDets);
-    scaleTex = Texture2D(ROOT_DIR "src/textures/scale.png", texDets);
-    gizmoTex = Texture2D(ROOT_DIR "src/textures/gizmo.png", texDets);
+    moveTex.Initialize(SRC_DIR "editor/resources/move.png", texDets);
+    rotateTex.Initialize(SRC_DIR "editor/resources/rotate.png", texDets);
+    scaleTex.Initialize(SRC_DIR "editor/resources/scale.png", texDets);
+    gizmoTex.Initialize(SRC_DIR "editor/resources/gizmo.png", texDets);
 }

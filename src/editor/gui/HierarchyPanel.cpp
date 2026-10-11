@@ -1,22 +1,23 @@
 #include "../../core/GameObject.hpp"
 #include "../../core/InputManager.hpp"
 #include "../../core/SceneManager.hpp"
+#include "../../utils/globals.hpp"
 #include "HierarchyPanel.hpp"
 #include "imgui.h"
 #include <cstring>
 
-extern SceneManager sceneManager;
-extern GameObject* selectedGameObject;
-
 void HierarchyPanel::renderPanels() {
-    if (ImGui::BeginPopupModal("Create GameObject", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+    if (showCreateGameobjectPopup) { ImGui::OpenPopup("CreateGameObject"); showCreateGameobjectPopup = false; }
+    if (showRenameGameobjectPopup) { ImGui::OpenPopup("RenameGameObject"); showRenameGameobjectPopup = false; }
+
+    if (ImGui::BeginPopupModal("CreateGameObject", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         ImGui::InputText("GameObject Name", createInputBuffer, sizeof(createInputBuffer));
 
         if (ImGui::Button("Create")) {
-            if (selectedGameObject) {
-                sceneManager.activeScene->AddGameObject(createInputBuffer, selectedGameObject);
+            if (editor.selectedGameObject) {
+                engine.sceneManager.activeScene->AddGameObject(createInputBuffer, editor.selectedGameObject);
             } else {
-                sceneManager.activeScene->AddGameObject(createInputBuffer, nullptr);
+                engine.sceneManager.activeScene->AddGameObject(createInputBuffer, nullptr);
             }
 
             ImGui::CloseCurrentPopup();
@@ -31,7 +32,7 @@ void HierarchyPanel::renderPanels() {
         ImGui::EndPopup();
     }
 
-    if (ImGui::BeginPopupModal("Rename GameObject", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+    if (ImGui::BeginPopupModal("RenameGameObject", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         ImGui::InputText("New Name", renameInputBuffer, sizeof(renameInputBuffer));
 
         if (ImGui::Button("Rename")) {
@@ -50,10 +51,10 @@ void HierarchyPanel::renderPanels() {
 }
 
 void HierarchyPanel::RenameSelected(const char* newName) {
-    if(!selectedGameObject) return;
+    if(!editor.selectedGameObject) return;
 
-    selectedGameObject->name = newName;
-    sceneManager.activeScene->MakeDirty();
+    editor.selectedGameObject->name = newName;
+    engine.sceneManager.activeScene->MakeDirty();
 }
 
 void HierarchyPanel::RenderHeriarchy(std::vector<GameObject*>& roots) {
@@ -64,7 +65,7 @@ void HierarchyPanel::RenderHeriarchy(std::vector<GameObject*>& roots) {
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanAvailWidth;
         if (gameObject->childs.empty()) flags |= ImGuiTreeNodeFlags_Leaf;
 
-        bool isSelected = selectedGameObject == gameObject;
+        bool isSelected = editor.selectedGameObject == gameObject;
         if (isSelected) flags |= ImGuiTreeNodeFlags_Selected;
 
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 1)); 
@@ -73,20 +74,20 @@ void HierarchyPanel::RenderHeriarchy(std::vector<GameObject*>& roots) {
 
         // left click
         if(!isSelected && ImGui::IsItemClicked(ImGuiMouseButton_Left))            
-            selectedGameObject = gameObject;
+            editor.selectedGameObject = gameObject;
 
         // right click
         if (ImGui::BeginPopupContextItem()) {
-            selectedGameObject = gameObject;
+            editor.selectedGameObject = gameObject;
 
             if(ImGui::MenuItem("Rename")) {
-                std::strncpy(renameInputBuffer, selectedGameObject->name.c_str(), sizeof(renameInputBuffer) - 1);
+                std::strncpy(renameInputBuffer, editor.selectedGameObject->name.c_str(), sizeof(renameInputBuffer) - 1);
                 renameInputBuffer[sizeof(renameInputBuffer) - 1] = '\0';
-                ImGui::OpenPopup("Rename GameObject");
+				showRenameGameobjectPopup = true;
             }
             if(ImGui::MenuItem("Delete")) {
-                sceneManager.activeScene->RemoveGameObject(selectedGameObject);
-                selectedGameObject = nullptr;
+                engine.sceneManager.activeScene->RemoveGameObject(editor.selectedGameObject);
+                editor.selectedGameObject = nullptr;
             }
 
             ImGui::EndPopup();
@@ -104,9 +105,9 @@ void HierarchyPanel::RenderHeriarchy(std::vector<GameObject*>& roots) {
 }
 
 void HierarchyPanel::handleKeyEvents() {
-    if(InputManager::isKeyPressed(SDL_SCANCODE_DELETE) && selectedGameObject) {
-        sceneManager.activeScene->RemoveGameObject(selectedGameObject);
-        selectedGameObject = nullptr;
+    if(InputManager::isKeyPressed(SDL_SCANCODE_DELETE) && editor.selectedGameObject) {
+        engine.sceneManager.activeScene->RemoveGameObject(editor.selectedGameObject);
+        editor.selectedGameObject = nullptr;
     }
 }
 
@@ -124,14 +125,14 @@ void HierarchyPanel::Render() {
     ImGui::BeginChild("TOP", ImVec2(width, 30));
 
     ImGui::SetCursorPos(ImVec2(8, 7));
-    ImGui::Text(sceneManager.activeScene->GetNameString());
+    ImGui::Text(engine.sceneManager.activeScene->GetNameString());
 
     ImGui::SameLine(width - 30);
     ImGui::SetCursorPosY(5);
     if(ImGui::Button("+", ImVec2(20, 20))) {
         std::strncpy(createInputBuffer, "GameObject", sizeof(createInputBuffer) - 1);
         createInputBuffer[sizeof(createInputBuffer) - 1] = '\0';
-        ImGui::OpenPopup("Create GameObject");
+		showCreateGameobjectPopup = true;
     }
 
     ImGui::EndChild();
@@ -148,16 +149,16 @@ void HierarchyPanel::Render() {
 
     // Save Scene
     if(InputManager::isSpecialDown(SDL_KMOD_CTRL) && InputManager::isKeyPressed(SDL_SCANCODE_S)) {
-        sceneManager.activeScene->SaveScene();
+        engine.sceneManager.activeScene->SaveScene();
     };
 
     // left click (content);
     if(ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImGui::IsWindowHovered() && !ImGui::IsAnyItemHovered()) {
-        selectedGameObject = nullptr;
+        editor.selectedGameObject = nullptr;
     }
 
-    if(!sceneManager.activeScene->gameObjects.empty()) {
-        RenderHeriarchy(sceneManager.activeScene->roots);
+    if(!engine.sceneManager.activeScene->gameObjects.empty()) {
+        RenderHeriarchy(engine.sceneManager.activeScene->roots);
     }
 
 

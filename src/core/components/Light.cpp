@@ -1,105 +1,20 @@
 #include "Light.hpp"
 #include "../SceneManager.hpp"
-#include "../../utils/Logger.hpp"
 
 extern SceneManager sceneManager;
 
-// DirLight
-
-DirLight::DirLight(nlohmann::json& json) { Deserialize(json); }
-
-void DirLight::Serialize(nlohmann::json& json) {
-    json["lightColor"] = {lightColor.x, lightColor.y, lightColor.z};
+void LightComponent::Serialize(nlohmann::json& json)
+{
+	json["type"] = static_cast<int>(type);
+	json["color"] = { color.r, color.g, color.b };
+	json["intensity"] = intensity;
+	json["range"] = range;
 }
 
-void DirLight::Deserialize(nlohmann::json& json) {
-    lightColor = {json["lightColor"][0], json["lightColor"][1], json["lightColor"][2]};
-}
-
-// PointLight
-
-void PointLight::Serialize(nlohmann::json& json) {
-    json["lightColor"] = {lightColor.x, lightColor.y, lightColor.z};
-    json["range"] = range;
-    json["intensity"] = intensity;
-}
-
-void PointLight::Deserialize(nlohmann::json& json) {
-    lightColor = {json["lightColor"][0], json["lightColor"][1], json["lightColor"][2]};
-    range = json["range"];
-    intensity = json["intensity"];
-}
-
-// Light
-
-LightType LightComponent::getLightType() {
-    return lightType;
-}
-
-void LightComponent::setLight(LightType type) {
-    if (lightType == type) {
-        LOG::Warning("Change of light to the same type | (Light::setLight)");
-        return;
-    };
-
-    switch (type)
-    {
-    case LightType::POINT:
-        lightProps = std::make_unique<PointLight>();
-        lightType = LightType::POINT;
-        break;
-    case LightType::DIRECTIONAL:
-        lightProps = std::make_unique<DirLight>();
-        lightType = LightType::DIRECTIONAL;
-        break;
-    default:
-        break;
-    }
-}
-
-void LightComponent::Serialize(nlohmann::json& json) {
-    json["lightType"] = lightType;
-    lightProps->Serialize(json);
-}
-
-void LightComponent::Deserialize(nlohmann::json& json) {
-    LightType type = static_cast<LightType>(json["lightType"]);
-    switch (type)
-    {
-    case LightType::DIRECTIONAL:
-        lightProps = std::make_unique<DirLight>();
-        lightProps->Deserialize(json);
-        break;
-    
-    case LightType::POINT:
-        lightProps = std::make_unique<PointLight>();
-        lightProps->Deserialize(json);
-        break;
-
-    default:
-        break;
-    }
-
-    sceneManager.activeScene->lights.push_back(this);
-}
-
-LightComponent::LightComponent(){
-    LightComponent* ptr = this;
-
-    if (sceneManager.activeScene) {
-        sceneManager.activeScene->lights.push_back(ptr);
-
-    } else {
-        LOG::Warning("trying to add a Light component when active Scene is null");
-    }
-}
-
-LightComponent::~LightComponent() {
-    LightComponent* ptr = this;
-    auto itr = std::find(sceneManager.activeScene->lights.begin(), sceneManager.activeScene->lights.end(), ptr);
-    if (itr != sceneManager.activeScene->lights.end()) {
-        sceneManager.activeScene->lights.erase(itr);
-    } else {
-        LOG::Warning("destructuring a light that doesn't exists");
-    }
+void LightComponent::Deserialize(const nlohmann::json& json)
+{
+	type = static_cast<LightType>(json["type"].get<int>());
+	color = glm::vec3(json["color"][0].get<float>(), json["color"][1].get<float>(), json["color"][2].get<float>());
+	intensity = json["intensity"].get<float>();
+	range = json["range"].get<float>();
 }

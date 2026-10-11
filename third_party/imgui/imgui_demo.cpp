@@ -1,4 +1,4 @@
-// dear imgui, v1.92.9 WIP
+// dear imgui, v1.93.0 WIP
 // (demo code)
 
 // Help:
@@ -86,6 +86,8 @@ Index of this file:
 // [SECTION] DemoWindowWidgetsFonts()
 // [SECTION] DemoWindowWidgetsImages()
 // [SECTION] DemoWindowWidgetsListBoxes()
+// [SECTION] DemoWindowWidgetsLiveEdit()
+// [SECTION] DemoWindowWidgetsMixedValues()
 // [SECTION] DemoWindowWidgetsMultiComponents()
 // [SECTION] DemoWindowWidgetsPlotting()
 // [SECTION] DemoWindowWidgetsProgressBars()
@@ -344,6 +346,8 @@ struct ImGuiDemoWindowData
 
     // Other data
     bool DisableSections = false;
+    bool LiveEditOverride = false;
+    ImGuiItemFlags LiveEditFlags = ImGuiItemFlags_LiveEditOnInputText;
     ExampleTreeNode* DemoTree = NULL;
 
     ~ImGuiDemoWindowData() { if (DemoTree) ExampleTree_DestroyNode(DemoTree); }
@@ -636,6 +640,8 @@ void ImGui::ShowDemoWindow(bool* p_open)
             ImGui::SameLine(); HelpMarker("Some calls to Begin()/BeginChild() will return false.\n\nWill cycle through window depths then repeat. Windows should be flickering while running.");
             ImGui::Checkbox("io.ConfigDebugIgnoreFocusLoss", &io.ConfigDebugIgnoreFocusLoss);
             ImGui::SameLine(); HelpMarker("Option to deactivate io.AddFocusEvent(false) handling. May facilitate interactions with a debugger when focus loss leads to clearing inputs data.");
+            ImGui::Checkbox("io.ConfigDebugDrawListDefaultsToStrokeLegacy", &io.ConfigDebugDrawListDefaultsToStrokeLegacy);
+            ImGui::SameLine(); HelpMarker("Option to default all ImDrawList to ImDrawFlags_StrokeLegacy mode, mimicking pre-1.93.0 rendering.");
             ImGui::Checkbox("io.ConfigDebugIniSettings", &io.ConfigDebugIniSettings);
             ImGui::SameLine(); HelpMarker("Option to save .ini data with extra comments (particularly helpful for Docking, but makes saving slower).");
 
@@ -1397,6 +1403,7 @@ static void DemoWindowWidgetsColorAndPickers()
                 ImGui::ColorEdit4("##RefColor", &ref_color_v.x, ImGuiColorEditFlags_NoInputs | base_flags);
             }
         }
+        ImGui::CheckboxFlags("ImGuiColorEditFlags_PickerNoRotate", &color_picker_flags, ImGuiColorEditFlags_PickerNoRotate);
 
         ImGui::Combo("Picker Mode", &picker_mode, "Auto/Current\0ImGuiColorEditFlags_PickerHueBar\0ImGuiColorEditFlags_PickerHueWheel\0");
         ImGui::SameLine(); HelpMarker("When not specified explicitly, user can right-click the picker to change mode.");
@@ -1405,7 +1412,7 @@ static void DemoWindowWidgetsColorAndPickers()
         ImGui::SameLine(); HelpMarker(
             "ColorEdit defaults to displaying RGB inputs if you don't specify a display mode, "
             "but the user can change it with a right-click on those inputs.\n\nColorPicker defaults to displaying RGB+HSV+Hex "
-            "if you don't specify a display mode.\n\nYou can change the defaults using SetColorEditOptions().");
+            "if you don't specify a display mode.\n\nYou can change the defaults using io.ConfigColorEditFlags.");
 
         ImGuiColorEditFlags flags = base_flags | color_picker_flags;
         if (picker_mode == 1)  flags |= ImGuiColorEditFlags_PickerHueBar;
@@ -1418,14 +1425,14 @@ static void DemoWindowWidgetsColorAndPickers()
 
         ImGui::Text("Set defaults in code:");
         ImGui::SameLine(); HelpMarker(
-            "SetColorEditOptions() is designed to allow you to set boot-time default.\n"
+            "io.ConfigColorEditFlags is designed to allow you to set boot-time default.\n"
             "We don't have Push/Pop functions because you can force options on a per-widget basis if needed, "
             "and the user can change non-forced ones with the options menu.\nWe don't have a getter to avoid "
             "encouraging you to persistently save values that aren't forward-compatible.");
-        if (ImGui::Button("Default: Uint8 + HSV + Hue Bar"))
-            ImGui::SetColorEditOptions(ImGuiColorEditFlags_Uint8 | ImGuiColorEditFlags_DisplayHSV | ImGuiColorEditFlags_PickerHueBar);
-        if (ImGui::Button("Default: Float + HDR + Hue Wheel"))
-            ImGui::SetColorEditOptions(ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_PickerHueWheel);
+        if (ImGui::Button("Overwrite default: Uint8 + HSV + Hue Bar"))
+            ImGui::GetIO().ConfigColorEditFlags = ImGuiColorEditFlags_Uint8 | ImGuiColorEditFlags_DisplayHSV | ImGuiColorEditFlags_PickerHueBar;
+        if (ImGui::Button("Overwrite default: Float + HDR + Hue Wheel"))
+            ImGui::GetIO().ConfigColorEditFlags = ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_PickerHueWheel;
 
         // Always display a small version of both types of pickers
         // (that's in order to make it more visible in the demo to people who are skimming quickly through it)
@@ -1518,7 +1525,8 @@ static void DemoWindowWidgetsComboBoxes()
                 filter.Clear();
             }
             ImGui::SetNextItemShortcut(ImGuiMod_Ctrl | ImGuiKey_F);
-            filter.Draw("##Filter", -FLT_MIN);
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            filter.DrawWithHint("##Filter", "Filter (incl -excl)");
 
             for (int n = 0; n < IM_COUNTOF(items); n++)
             {
@@ -1814,7 +1822,7 @@ static void DemoWindowWidgetsDragAndDrop()
 
                 if (ImGui::IsItemActive() && !ImGui::IsItemHovered())
                 {
-                    int n_next = n + (ImGui::GetMouseDragDelta(0).y < 0.f ? -1 : 1);
+                    int n_next = n + (ImGui::GetMouseDragDelta(0).y < 0.0f ? -1 : 1);
                     if (n_next >= 0 && n_next < IM_COUNTOF(item_names))
                     {
                         item_names[n] = item_names[n_next];
@@ -2080,6 +2088,103 @@ static void DemoWindowWidgetsListBoxes()
 }
 
 //-----------------------------------------------------------------------------
+// [SECTION] DemoWindowWidgetsLiveEdit()
+//-----------------------------------------------------------------------------
+
+static void DemoWindowWidgetsLiveEdit(ImGuiDemoWindowData* demo_data)
+{
+    if (ImGui::TreeNode("Live Edit Flags"))
+    {
+        IMGUI_DEMO_MARKER("Widgets/Live Edit Flags");
+
+        ImGui::TextWrapped("Select whether to apply keyboard edits to backing variables _while_ typing.");
+
+        ImGui::Checkbox("Override Live Edit Flags in Demo Window", &demo_data->LiveEditOverride);
+        if (!demo_data->LiveEditOverride)
+            demo_data->LiveEditFlags = ImGui::GetItemFlags();
+
+        ImGui::BeginDisabled(demo_data->LiveEditOverride == false);
+        ImGui::Indent();
+        ImGui::CheckboxFlags("ImGuiItemFlags_LiveEditOnInputText", &demo_data->LiveEditFlags, ImGuiItemFlags_LiveEditOnInputText);
+        ImGui::CheckboxFlags("ImGuiItemFlags_LiveEditOnInputScalar", &demo_data->LiveEditFlags, ImGuiItemFlags_LiveEditOnInputScalar);
+        ImGui::Unindent();
+        ImGui::EndDisabled();
+
+        ImGui::Text("Try typing '123' and seeing effect on backing value:");
+        static char str[32] = "";
+        ImGui::InputText("str", str, IM_COUNTOF(str));
+        ImGui::Text("Backing value: \"%s\"", str);
+        static int i = 0;
+        ImGui::InputInt("int", &i, 0, 0);
+        ImGui::Text("Backing value: %d", i);
+        static float f = 0.0f;
+        ImGui::SliderFloat("float", &f, 0.0f, 100.0f);
+        ImGui::Text("Backing value: %f", f);
+
+        ImGui::TreePop();
+    }
+}
+
+//-----------------------------------------------------------------------------
+// [SECTION] DemoWindowWidgetsMixedValues()
+//-----------------------------------------------------------------------------
+
+static void DemoWindowWidgetsMixedValues()
+{
+    if (ImGui::TreeNode("Mixed Values"))
+    {
+        // This is designed for advanced property editors which are generally reusable and data-driven.
+        HelpMarker("Using ImGuiItemFlags_MixedValue.");
+
+        static bool use_liveedit = false;
+        static float items[3] = { 12.0f, 0.0f, 0.0f };
+        float* item_ref = &items[0];
+        ImGui::Checkbox("ImGuiItemFlags_LiveEditOnInput", &use_liveedit);
+
+        ImGui::SeparatorText("Scalar/Text Widgets");
+        const bool is_mixed = memcmp(&items[0], &items[1], sizeof(float)) != 0 || memcmp(&items[0], &items[2], sizeof(float)) != 0;
+
+        // Demonstrate Drags, Sliders, Inputs
+        ImGui::PushItemFlag(ImGuiItemFlags_LiveEditOnInput, use_liveedit);
+        ImGui::PushItemFlag(ImGuiItemFlags_MixedValue, is_mixed);
+        bool edited = false;
+        edited |= ImGui::DragFloat("DragFloat", item_ref);
+        edited |= ImGui::SliderFloat("SliderFloat", item_ref, 0.0f, 100.0f);
+        edited |= ImGui::InputFloat("InputFloat", item_ref, 1.0f);
+        if (edited)
+            for (float& item : items)
+                if (&item != item_ref)
+                    item = *item_ref;
+        ImGui::PopItemFlag();
+
+        ImGui::Text("Underlying data:");
+        ImGui::InputFloat("item 0 (ref)", &items[0]);
+        ImGui::InputFloat("item 1", &items[1]);
+        ImGui::InputFloat("item 2", &items[2]);
+        ImGui::PopItemFlag();
+
+        // Demonstrate Checkbox(), RadioButton(), Combo(), ColorEdit4()
+        ImGui::SeparatorText("Others Widgets");
+        ImGui::Text("(note: edits are not applied in this demo)"); // <-- Would need more state tracking.
+        bool b_on = true, b_off = false;
+        ImGui::Checkbox("Checkbox On", &b_on);
+        ImGui::Checkbox("Checkbox Off", &b_off);
+        ImGui::PushItemFlag(ImGuiItemFlags_MixedValue, true);
+        ImGui::Checkbox("Checkbox Mixed", &b_off);
+        ImGui::RadioButton("RadioButton Mixed", true);
+        ImGui::SameLine();
+        ImGui::RadioButton("RadioButton Mixed##2", true); // Showing 2 radio buttons makes the example more clear
+        int combo_idx = 0;
+        ImGui::Combo("Combo", &combo_idx, "One\0Two\0Three\0");
+        ImVec4 color(0.5f, 0.5f, 0.5f, 0.5f);
+        ImGui::ColorEdit4("ColorEdit4", &color.x);
+        ImGui::PopItemFlag();
+
+        ImGui::TreePop();
+    }
+}
+
+//-----------------------------------------------------------------------------
 // [SECTION] DemoWindowWidgetsMultiComponents()
 //-----------------------------------------------------------------------------
 
@@ -2230,7 +2335,7 @@ static void DemoWindowWidgetsProgressBars()
 
         char buf[32];
         sprintf(buf, "%d/%d", (int)(progress * 1753), 1753);
-        ImGui::ProgressBar(progress, ImVec2(0.f, 0.f), buf);
+        ImGui::ProgressBar(progress, ImVec2(0.0f, 0.0f), buf);
 
         // Pass an animated negative value, e.g. -1.0f * (float)ImGui::GetTime() is the recommended value.
         // Adjust the factor if you want to adjust the animation speed.
@@ -2259,10 +2364,30 @@ static void DemoWindowWidgetsQueryingStatuses()
         };
         static int item_type = 4;
         static bool item_disabled = false;
+        static bool item_mixedvalue = false;
+        static bool liveedit_flags_override = false;
+        static ImGuiItemFlags liveedit_flags = 0;
         ImGui::Combo("Item Type", &item_type, item_names, IM_COUNTOF(item_names), IM_COUNTOF(item_names));
         ImGui::SameLine();
         HelpMarker("Testing how various types of items are interacting with the IsItemXXX functions. Note that the bool return value of most ImGui function is generally equivalent to calling ImGui::IsItemHovered().");
         ImGui::Checkbox("Item Disabled", &item_disabled);
+        ImGui::Checkbox("Item MixedValue", &item_mixedvalue);
+        ImGui::Checkbox("Override LiveEdit:", &liveedit_flags_override);
+        ImGui::SameLine();
+        if (!liveedit_flags_override)
+            liveedit_flags = ImGui::GetItemFlags();
+        ImGui::BeginDisabled(liveedit_flags_override == false);
+        ImGui::CheckboxFlags("_LiveEditOnInput", &liveedit_flags, ImGuiItemFlags_LiveEditOnInput);
+        ImGui::SameLine();
+        ImGui::CheckboxFlags("_LiveEditOnInputText", &liveedit_flags, ImGuiItemFlags_LiveEditOnInputText);
+        ImGui::SameLine();
+        ImGui::CheckboxFlags("_LiveEditOnInputScalar", &liveedit_flags, ImGuiItemFlags_LiveEditOnInputScalar);
+        ImGui::EndDisabled();
+        if (liveedit_flags_override)
+        {
+            ImGui::PushItemFlag(ImGuiItemFlags_LiveEditOnInputText, (liveedit_flags & ImGuiItemFlags_LiveEditOnInputText) != 0);
+            ImGui::PushItemFlag(ImGuiItemFlags_LiveEditOnInputScalar, (liveedit_flags & ImGuiItemFlags_LiveEditOnInputScalar) != 0);
+        }
 
         // Submit selected items so we can query their status in the code following it.
         bool ret = false;
@@ -2271,6 +2396,8 @@ static void DemoWindowWidgetsQueryingStatuses()
         static char str[16] = {};
         if (item_disabled)
             ImGui::BeginDisabled(true);
+        if (item_mixedvalue)
+            ImGui::PushItemFlag(ImGuiItemFlags_MixedValue, true);
         if (item_type == 0) { ImGui::Text("ITEM: Text"); }                                              // Testing text items with no identifier/interaction
         if (item_type == 1) { ret = ImGui::Button("ITEM: Button"); }                                    // Testing button
         if (item_type == 2) { ImGui::PushItemFlag(ImGuiItemFlags_ButtonRepeat, true); ret = ImGui::Button("ITEM: Button"); ImGui::PopItemFlag(); } // Testing button (with repeater)
@@ -2349,6 +2476,13 @@ static void DemoWindowWidgetsQueryingStatuses()
             "IsItemHovered(_Tooltip) = %d",
             hovered_delay_none, hovered_delay_stationary, hovered_delay_short, hovered_delay_normal, hovered_delay_tooltip);
 
+        if (liveedit_flags_override)
+        {
+            ImGui::PopItemFlag();
+            ImGui::PopItemFlag();
+        }
+        if (item_mixedvalue)
+            ImGui::PopItemFlag();
         if (item_disabled)
             ImGui::EndDisabled();
 
@@ -3699,11 +3833,13 @@ static void DemoWindowWidgetsTabs()
             // but they tend to make more sense together)
             static bool show_leading_button = true;
             static bool show_trailing_button = true;
+            static bool show_leading_trailing_tabs = false;
             ImGui::Checkbox("Show Leading TabItemButton()", &show_leading_button);
             ImGui::Checkbox("Show Trailing TabItemButton()", &show_trailing_button);
+            ImGui::Checkbox("Show Leading+Trailing TabItem()", &show_leading_trailing_tabs);
 
             // Expose some other flags which are useful to showcase how they interact with Leading/Trailing tabs
-            static ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_AutoSelectNewTabs | ImGuiTabBarFlags_Reorderable | ImGuiTabBarFlags_FittingPolicyShrink;
+            static ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_AutoSelectNewTabs | ImGuiTabBarFlags_Reorderable | ImGuiTabBarFlags_FittingPolicyMixed;
             EditTabBarFittingPolicyFlags(&tab_bar_flags);
 
             if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags))
@@ -3716,6 +3852,15 @@ static void DemoWindowWidgetsTabs()
                 {
                     ImGui::Selectable("Hello!");
                     ImGui::EndPopup();
+                }
+
+                // Demo Leading/Trailing Tabs
+                if (show_leading_trailing_tabs)
+                {
+                    if (ImGui::BeginTabItem("Leading", NULL, ImGuiTabItemFlags_Leading))
+                        ImGui::EndTabItem();
+                    if (ImGui::BeginTabItem("Trailing", NULL, ImGuiTabItemFlags_Trailing))
+                        ImGui::EndTabItem();
                 }
 
                 // Demo Trailing Tabs: click the "+" button to add a new tab.
@@ -3886,14 +4031,24 @@ static void DemoWindowWidgetsTextFilter()
         static ImGuiTextFilter filter;
         ImGui::Text("Filter usage:\n"
             "  \"\"         display all lines\n"
-            "  \"xxx\"      display lines containing \"xxx\"\n"
-            "  \"xxx,yyy\"  display lines containing \"xxx\" or \"yyy\"\n"
-            "  \"-xxx\"     hide lines containing \"xxx\"");
-        filter.Draw();
-        const char* lines[] = { "aaa1.c", "bbb1.c", "ccc1.c", "aaa2.cpp", "bbb2.cpp", "ccc2.cpp", "abc.h", "hello, world" };
-        for (int i = 0; i < IM_COUNTOF(lines); i++)
-            if (filter.PassFilter(lines[i]))
-                ImGui::BulletText("%s", lines[i]);
+            "  xxx        display lines containing \"xxx\"\n"
+            "  xxx yyy    display lines containing \"xxx\" and \"yyy\"\n"
+            "  \"xxx yyy\"  display lines containing \"xxx yyy\"\n"
+            "  xxx,yyy    display lines containing \"xxx\" or \"yyy\"\n"
+            "  -xxx       hide lines containing \"xxx\"");
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        filter.DrawWithHint("##Filter", "Filter (incl -excl)");
+        if (ImGui::BeginChild("##items", ImVec2(-FLT_MIN, ImGui::GetTextLineHeightWithSpacing() * 15), ImGuiChildFlags_FrameStyle))
+        {
+            const char* lines[] = { "aaa1.c", "bbb1.c", "ccc1.c", "aaa2.cpp", "bbb2.cpp", "ccc2.cpp", "abc.h", "hello, world" };
+            for (const char* item : lines)
+                if (filter.PassFilter(item))
+                    ImGui::TextUnformatted(item);
+            for (const char* item : ExampleNames)
+                if (filter.PassFilter(item))
+                    ImGui::TextUnformatted(item);
+        }
+        ImGui::EndChild();
         ImGui::TreePop();
     }
 }
@@ -4498,8 +4653,14 @@ static void DemoWindowWidgets(ImGuiDemoWindowData* demo_data)
     // IMGUI_DEMO_MARKER("Widgets");
 
     const bool disable_all = demo_data->DisableSections; // The Checkbox for that is inside the "Disabled" section at the bottom
+    const bool override_liveedit = demo_data->LiveEditOverride;
     if (disable_all)
         ImGui::BeginDisabled();
+    if (override_liveedit)
+    {
+        ImGui::PushItemFlag(ImGuiItemFlags_LiveEditOnInputText, (demo_data->LiveEditFlags & ImGuiItemFlags_LiveEditOnInputText) != 0);
+        ImGui::PushItemFlag(ImGuiItemFlags_LiveEditOnInputScalar, (demo_data->LiveEditFlags & ImGuiItemFlags_LiveEditOnInputScalar) != 0);
+    }
 
     DemoWindowWidgetsBasic();
     DemoWindowWidgetsBullets();
@@ -4519,6 +4680,8 @@ static void DemoWindowWidgets(ImGuiDemoWindowData* demo_data)
     DemoWindowWidgetsFonts();
     DemoWindowWidgetsImages();
     DemoWindowWidgetsListBoxes();
+    DemoWindowWidgetsLiveEdit(demo_data);
+    DemoWindowWidgetsMixedValues();
     DemoWindowWidgetsMultiComponents();
     DemoWindowWidgetsPlotting();
     DemoWindowWidgetsProgressBars();
@@ -4533,6 +4696,11 @@ static void DemoWindowWidgets(ImGuiDemoWindowData* demo_data)
     DemoWindowWidgetsTreeNodes();
     DemoWindowWidgetsVerticalSliders();
 
+    if (override_liveedit)
+    {
+        ImGui::PopItemFlag();
+        ImGui::PopItemFlag();
+    }
     if (disable_all)
         ImGui::EndDisabled();
 }
@@ -5177,7 +5345,8 @@ static void DemoWindowLayout()
             // If you want to create your own time line for a real application you may be better off manipulating
             // the cursor position yourself, aka using SetCursorPos/SetCursorScreenPos to position the widgets
             // yourself. You may also want to use the lower-level ImDrawList API.
-            int num_buttons = 10 + ((line & 1) ? line * 9 : line * 3);
+            const int num_buttons = 10 + ((line & 1) ? line * 9 : line * 3);
+            const float base_w = ImGui::GetFontSize() * 3;
             for (int n = 0; n < num_buttons; n++)
             {
                 if (n > 0) ImGui::SameLine();
@@ -5189,7 +5358,7 @@ static void DemoWindowLayout()
                 ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(hue, 0.6f, 0.6f));
                 ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(hue, 0.7f, 0.7f));
                 ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(hue, 0.8f, 0.8f));
-                ImGui::Button(label, ImVec2(40.0f + sinf((float)(line + n)) * 20.0f, 0.0f));
+                ImGui::Button(label, ImVec2(base_w + sinf((float)(line + n)) * base_w * 0.5f, 0.0f));
                 ImGui::PopStyleColor(3);
                 ImGui::PopID();
             }
@@ -8778,9 +8947,6 @@ void ImGui::ShowStyleEditor(ImGuiStyle* ref)
             SameLine(); SetNextItemWidth(GetFontSize() * 10); Combo("##output_type", &output_dest, "To Clipboard\0To TTY\0");
             SameLine(); Checkbox("Only Modified Colors", &output_only_modified);
 
-            static ImGuiTextFilter filter;
-            filter.Draw("Filter colors", GetFontSize() * 16);
-
             static ImGuiColorEditFlags alpha_flags = 0;
             if (RadioButton("Opaque", alpha_flags == ImGuiColorEditFlags_AlphaOpaque))       { alpha_flags = ImGuiColorEditFlags_AlphaOpaque; } SameLine();
             if (RadioButton("Alpha",  alpha_flags == ImGuiColorEditFlags_None))              { alpha_flags = ImGuiColorEditFlags_None; } SameLine();
@@ -8789,6 +8955,10 @@ void ImGui::ShowStyleEditor(ImGuiStyle* ref)
                 "In the color list:\n"
                 "Left-click on color square to open color picker,\n"
                 "Right-click to open edit options menu.");
+
+            static ImGuiTextFilter filter;
+            SetNextItemWidth(-FLT_MIN);
+            filter.DrawWithHint("##FilterColors", "Filter Colors (incl -excl)");
 
             SetNextWindowSizeConstraints(ImVec2(0.0f, GetTextLineHeightWithSpacing() * 10), ImVec2(FLT_MAX, FLT_MAX));
             BeginChild("##colors", ImVec2(0, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_NavFlattened, ImGuiWindowFlags_AlwaysVerticalScrollbar | ImGuiWindowFlags_AlwaysHorizontalScrollbar);
@@ -8857,15 +9027,25 @@ void ImGui::ShowStyleEditor(ImGuiStyle* ref)
             Checkbox("Anti-aliased lines", &style.AntiAliasedLines);
             SameLine();
             HelpMarker("When disabling anti-aliasing lines, you'll probably want to disable borders in your style as well.");
+            BeginDisabled(style.AntiAliasedLines == false);
+            Checkbox("Anti-aliased line ends", &style.AntiAliasedLineEnds);
+            EndDisabled();
 
+#ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
+            BeginDisabled();
             Checkbox("Anti-aliased lines use texture", &style.AntiAliasedLinesUseTex);
             SameLine();
             HelpMarker("Faster lines using texture data. Require backend to render with bilinear filtering (not point/nearest filtering).");
+            EndDisabled();
+#endif
 
             Checkbox("Anti-aliased fill", &style.AntiAliasedFill);
+            Checkbox("Debug: DrawList Defaults to _StrokeLegacy", &ImGui::GetIO().ConfigDebugDrawListDefaultsToStrokeLegacy);
+
             PushItemWidth(GetFontSize() * 8);
-            DragFloat("Curve Tessellation Tolerance", &style.CurveTessellationTol, 0.02f, 0.10f, 10.0f, "%.2f");
-            if (style.CurveTessellationTol < 0.10f) style.CurveTessellationTol = 0.10f;
+            DragFloat("Curve Tessellation Max Error", &style.CurveTessellationMaxError, 0.02f, 0.10f, 10.0f, "%.2f");
+            if (style.CurveTessellationMaxError < 0.10f)
+                style.CurveTessellationMaxError = 0.10f;
 
             // When editing the "Circle Segment Max Error" value, draw a preview of its effect on auto-tessellated circles.
             DragFloat("Circle Tessellation Max Error", &style.CircleTessellationMaxError , 0.005f, 0.10f, 5.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
@@ -9130,7 +9310,7 @@ struct ExampleAppConsole
     static int   Stricmp(const char* s1, const char* s2)         { int d; while ((d = toupper(*s2) - toupper(*s1)) == 0 && *s1) { s1++; s2++; } return d; }
     static int   Strnicmp(const char* s1, const char* s2, int n) { int d = 0; while (n > 0 && (d = toupper(*s2) - toupper(*s1)) == 0 && *s1) { s1++; s2++; n--; } return d; }
     static char* Strdup(const char* s)                           { IM_ASSERT(s); size_t len = strlen(s) + 1; void* buf = ImGui::MemAlloc(len); IM_ASSERT(buf); return (char*)memcpy(buf, (const void*)s, len); }
-    static void  Strtrim(char* s)                                { char* str_end = s + strlen(s); while (str_end > s && str_end[-1] == ' ') str_end--; *str_end = 0; }
+    static void  Strtrimblanks(char* s)                          { char* str_end = s + strlen(s); while (str_end > s && str_end[-1] == ' ') str_end--; *str_end = 0; }
 
     void    ClearLog()
     {
@@ -9201,7 +9381,10 @@ struct ExampleAppConsole
         if (ImGui::Button("Options"))
             ImGui::OpenPopup("Options");
         ImGui::SameLine();
-        Filter.Draw("Filter (\"incl,-excl\") (\"error\")", 180);
+
+        ImGui::SetNextItemShortcut(ImGuiMod_Ctrl | ImGuiKey_F, ImGuiInputFlags_Tooltip);
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        Filter.DrawWithHint("##Filter", "Filter (incl -excl)");
         ImGui::Separator();
 
         // Reserve enough left-over height for 1 separator + 1 input text
@@ -9279,10 +9462,10 @@ struct ExampleAppConsole
         if (ImGui::InputText("Input", InputBuf, IM_COUNTOF(InputBuf), input_text_flags, &TextEditCallbackStub, (void*)this))
         {
             char* s = InputBuf;
-            Strtrim(s);
+            Strtrimblanks(s);
             if (s[0])
                 ExecCommand(s);
-            strcpy(s, "");
+            s[0] = 0;
             reclaim_focus = true;
         }
 
@@ -9536,7 +9719,8 @@ struct ExampleAppLog
         ImGui::SameLine();
         bool copy = ImGui::Button("Copy");
         ImGui::SameLine();
-        Filter.Draw("Filter", -100.0f);
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        Filter.DrawWithHint("##Filter", "Filter (incl -excl)");
 
         ImGui::Separator();
 
@@ -9731,7 +9915,7 @@ struct ExampleAppPropertyEditor
             ImGui::Text("(%d root nodes)", root_node->Childs.Size);
             ImGui::SetNextItemWidth(-FLT_MIN);
             ImGui::SetNextItemShortcut(ImGuiMod_Ctrl | ImGuiKey_F, ImGuiInputFlags_Tooltip);
-            if (ImGui::InputTextWithHint("##Filter", "incl,-excl", Filter.InputBuf, IM_COUNTOF(Filter.InputBuf), ImGuiInputTextFlags_EscapeClearsAll))
+            if (ImGui::InputTextWithHint("##Filter", "incl -excl", Filter.InputBuf, IM_COUNTOF(Filter.InputBuf), ImGuiInputTextFlags_EscapeClearsAll))
                 Filter.Build();
             ImGui::PopItemFlag();
 
@@ -10275,13 +10459,10 @@ static void ShowExampleAppWindowTitles(bool*)
 // [SECTION] Example App: Custom Rendering using ImDrawList API / ShowExampleAppCustomRendering()
 //-----------------------------------------------------------------------------
 
-// Add a |_| looking shape
-static void PathConcaveShape(ImDrawList* draw_list, float x, float y, float sz)
-{
-    const ImVec2 pos_norms[] = { { 0.0f, 0.0f }, { 0.3f, 0.0f }, { 0.3f, 0.7f }, { 0.7f, 0.7f }, { 0.7f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
-    for (const ImVec2& p : pos_norms)
-        draw_list->PathLineTo(ImVec2(x + 0.5f + (int)(sz * p.x), y + 0.5f + (int)(sz * p.y)));
-}
+// See our Wiki guides:
+// - ImDrawList Vector Rendering Reference: https://github.com/ocornut/imgui/wiki/Draw-List
+// - Pixel Perfect Anti-aliased Rendering: https://github.com/ocornut/imgui/wiki/Pixel-Perfect-Rendering
+// - How Anti-aliased Polyline Rendering is Implemented: https://github.com/ocornut/imgui/wiki/Polyline-Rendering
 
 // Demonstrate using the low-level ImDrawList to draw custom shapes.
 static void ShowExampleAppCustomRendering(bool* p_open)
@@ -10304,6 +10485,7 @@ static void ShowExampleAppCustomRendering(bool* p_open)
         {
             IMGUI_DEMO_MARKER("Examples/Custom rendering/Primitives");
             ImGui::PushItemWidth(-ImGui::GetFontSize() * 15);
+            ImGui::PushItemFlag(ImGuiItemFlags_LiveEditOnInput, true);
             ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
             // Draw gradients
@@ -10312,118 +10494,251 @@ static void ShowExampleAppCustomRendering(bool* p_open)
             ImGui::Text("Gradients");
             ImVec2 gradient_size = ImVec2(ImGui::CalcItemWidth(), ImGui::GetFrameHeight());
             {
-                ImVec2 p0 = ImGui::GetCursorScreenPos();
-                ImVec2 p1 = ImVec2(p0.x + gradient_size.x, p0.y + gradient_size.y);
+                ImGui::InvisibleButton("##gradient1", gradient_size);
                 ImU32 col_a = ImGui::GetColorU32(IM_COL32(0, 0, 0, 255));
                 ImU32 col_b = ImGui::GetColorU32(IM_COL32(255, 255, 255, 255));
-                draw_list->AddRectFilledMultiColor(p0, p1, col_a, col_b, col_b, col_a);
-                ImGui::InvisibleButton("##gradient1", gradient_size);
+                draw_list->AddRectFilledMultiColor(ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), col_a, col_b, col_b, col_a);
             }
             {
-                ImVec2 p0 = ImGui::GetCursorScreenPos();
-                ImVec2 p1 = ImVec2(p0.x + gradient_size.x, p0.y + gradient_size.y);
+                ImGui::InvisibleButton("##gradient2", gradient_size);
                 ImU32 col_a = ImGui::GetColorU32(IM_COL32(0, 255, 0, 255));
                 ImU32 col_b = ImGui::GetColorU32(IM_COL32(255, 0, 0, 255));
-                draw_list->AddRectFilledMultiColor(p0, p1, col_a, col_b, col_b, col_a);
-                ImGui::InvisibleButton("##gradient2", gradient_size);
+                draw_list->AddRectFilledMultiColor(ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), col_a, col_b, col_b, col_a);
             }
 
             // Draw a bunch of primitives
             ImGui::Text("All primitives");
-            static float sz = 36.0f;
-            static float thickness = 3.0f;
-            static int ngon_sides = 6;
+            static float sz = 42.0f;
+            static float base_rounding = 8.0f;
+            static float base_thickness = 3.0f;
+            static bool animate_rounding = false;
+            static bool animate_thickness = false;
+            static int ngon_segments = 6;
             static bool circle_segments_override = false;
             static int circle_segments_override_v = 12;
             static bool curve_segments_override = false;
             static int curve_segments_override_v = 8;
-            static ImVec4 colf = ImVec4(1.0f, 1.0f, 0.4f, 1.0f);
-            ImGui::DragFloat("Size", &sz, 0.2f, 2.0f, 100.0f, "%.0f");
-            ImGui::DragFloat("Thickness", &thickness, 0.05f, 1.0f, 8.0f, "%.02f");
-            ImGui::SliderInt("N-gon sides", &ngon_sides, 3, 12);
-            ImGui::Checkbox("##circlesegmentoverride", &circle_segments_override);
-            ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-            circle_segments_override |= ImGui::SliderInt("Circle segments override", &circle_segments_override_v, 3, 40);
-            ImGui::Checkbox("##curvessegmentoverride", &curve_segments_override);
-            ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-            curve_segments_override |= ImGui::SliderInt("Curves segments override", &curve_segments_override_v, 3, 40);
-            ImGui::ColorEdit4("Color", &colf.x);
+            static ImVec4 colf_stroke = ImVec4(1.000f, 0.384f, 0.169f, 1.000f);
+            static ImVec4 colf_fill = ImVec4(0.416f, 0.378f, 0.420f, 1.000f);
 
-            const ImVec2 p = ImGui::GetCursorScreenPos();
-            const ImU32 col = ImColor(colf);
-            const float spacing = 10.0f;
-            const ImDrawFlags corners_tl_br = ImDrawFlags_RoundCornersTopLeft | ImDrawFlags_RoundCornersBottomRight;
-            const float rounding = sz / 5.0f;
+            ImGui::DragFloat("Size", &sz, 0.2f, 0.2f, 100.0f, "%.0f");
+
+            const float rounding_anim_period = 3.0f;
+            const float rounding_wave = 1.0f - fabsf(fmodf((float)ImGui::GetTime(), rounding_anim_period) * (2.0f / rounding_anim_period) - 1.0f);
+            const float rounding = animate_rounding ? (float)(int)(rounding_wave * base_rounding * 10.0f) / 10.0f  : base_rounding; // Sub-integer rounding works but has discontinuities in small values, so best disable we
+            ImGui::DragFloat("Rounding", &base_rounding, 0.02f, 0.0f, 32.0f, "%.1f"); ImGui::SameLine();
+            ImGui::Checkbox("Animate##rounding", &animate_rounding); ImGui::SameLine();
+            ImGui::Text("%.2f", rounding);
+
+            const float thickness_anim_period = 5.0f;
+            const float thickness_wave = 1.0f - fabsf(fmodf((float)ImGui::GetTime(), thickness_anim_period) * (2.0f / thickness_anim_period) - 1.0f);
+            const float thickness = animate_thickness ? thickness_wave * base_thickness : base_thickness;
+            ImGui::DragFloat("Thickness", &base_thickness, 0.02f, 0.0f, 32.0f, "%.02f"); ImGui::SameLine();
+            ImGui::Checkbox("Animate##thickness", &animate_thickness); ImGui::SameLine();
+            ImGui::Text("%.2f", thickness);
+
+            ImGui::SliderInt("N-gon sides", &ngon_segments, 3, 12);
+            ImGui::Checkbox("##CircleSegmentOverride", &circle_segments_override);
+            ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+            circle_segments_override |= ImGui::SliderInt("Circle segments override", &circle_segments_override_v, 3, 30);
+            ImGui::Checkbox("##CurvesSegmentOverride", &curve_segments_override);
+            ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+            curve_segments_override |= ImGui::SliderInt("Curves segments override", &curve_segments_override_v, 3, 30);
+            ImGui::ColorEdit4("Stroke Color", &colf_stroke.x);
+            ImGui::ColorEdit4("Fill Color", &colf_fill.x);
+
+            static ImDrawFlags prim_stroke_flags = ImDrawFlags_None;
+            static ImDrawFlags prim_other_flags = ImDrawFlags_AALineEnds;
+            ImGui::SeparatorText("Per primitive flags (AddXXX functions)");
+            ImGui::RadioButton("Default", &prim_stroke_flags, ImDrawFlags_None); ImGui::SameLine();
+            ImGui::RadioButton("Inside", &prim_stroke_flags, ImDrawFlags_StrokeInside); ImGui::SameLine();
+            ImGui::RadioButton("Center", &prim_stroke_flags, ImDrawFlags_StrokeCenter); ImGui::SameLine();
+            ImGui::RadioButton("CenterBiased", &prim_stroke_flags, ImDrawFlags_StrokeCenterBiased); ImGui::SameLine();
+            ImGui::RadioButton("Outside", &prim_stroke_flags, ImDrawFlags_StrokeOutside); ImGui::SameLine();
+            ImGui::RadioButton("Legacy", &prim_stroke_flags, ImDrawFlags_StrokeLegacy);
+            ImGui::CheckboxFlags("AAFill", &prim_other_flags, ImDrawFlags_AAFill); ImGui::SameLine(); // Note: Only for functions taking flags.
+            ImGui::CheckboxFlags("AALines", &prim_other_flags, ImDrawFlags_AALines); ImGui::SameLine(); // Note: Only for functions taking flags.
+            ImGui::CheckboxFlags("AALineEnds", &prim_other_flags, ImDrawFlags_AALineEnds); ImGui::SameLine();
+            ImGui::CheckboxFlags("JoinMiter", &prim_other_flags, ImDrawFlags_JoinMiter); ImGui::SameLine();
+            ImGui::CheckboxFlags("CapSquare", &prim_other_flags, ImDrawFlags_CapSquare);
+            //ImGui::CheckboxFlags("UseTexForRoundCorners", &prim_other_flags, ImDrawFlags_UseTexForRoundCorners);
+
+            static ImDrawFlags scope_flags = draw_list->Flags & ImDrawFlags_AllowInPushScope_; // First init copy current state.
+            ImGui::SeparatorText("Current ImDrawList flags (e.g. PushDrawFlag function)");
+            ImGui::PushID("ScopeFlags");
+            ImGui::CheckboxFlags("AAFill", &scope_flags, ImDrawFlags_AAFill); ImGui::SameLine();
+            ImGui::CheckboxFlags("AALines", &scope_flags, ImDrawFlags_AALines); ImGui::SameLine();
+            ImGui::CheckboxFlags("AALineEnds", &scope_flags, ImDrawFlags_AALineEnds); ImGui::SameLine();
+            ImGui::CheckboxFlags("StrokeLegacy", &scope_flags, ImDrawFlags_StrokeLegacy);
+            //ImGui::CheckboxFlags("UseTexForRoundCorners", &scope_flags, ImDrawFlags_UseTexForRoundCorners);
+            ImGui::PopID();
+            ImGui::Spacing();
+
+            draw_list->PushDrawFlag(ImDrawFlags_AllowInPushScope_, false); // Reset all existing (very unusual: done for this demo)
+            draw_list->PushDrawFlag(scope_flags, true);
+            const ImDrawFlags flags = prim_stroke_flags | prim_other_flags;
+
+            const ImVec2 start_pos = ImGui::GetCursorScreenPos();
+            const float pi = 3.141592f;
+            const float step = sz + 10.0f;
+            const ImDrawFlags corners_tl_br = ImDrawFlags_RoundTopLeft | ImDrawFlags_RoundBottomRight;
+            const float half_sz = sz * 0.5f;
             const int circle_segments = circle_segments_override ? circle_segments_override_v : 0;
             const int curve_segments = curve_segments_override ? curve_segments_override_v : 0;
-            const ImVec2 cp3[3] = { ImVec2(0.0f, sz * 0.6f), ImVec2(sz * 0.5f, -sz * 0.4f), ImVec2(sz, sz) }; // Control points for curves
-            const ImVec2 cp4[4] = { ImVec2(0.0f, 0.0f), ImVec2(sz * 1.3f, sz * 0.3f), ImVec2(sz - sz * 1.3f, sz - sz * 0.3f), ImVec2(sz, sz) };
-
-            float x = p.x + 4.0f;
-            float y = p.y + 4.0f;
-            for (int n = 0; n < 2; n++)
+            const ImVec2 cp3[3] = { { 0.0f, sz * 0.6f }, { sz * 0.5f, -sz * 0.4f }, { sz, sz } }; // Control points for curves
+            const ImVec2 cp4[4] = { { 0.0f, 0.0f }, { sz * 1.3f, sz * 0.3f }, { sz - sz * 1.3f, sz - sz * 0.3f }, { sz, sz } };
+            const ImVec2 concave_shape[] = { { 0.0f, 0.0f }, { 0.3f, 0.0f }, { 0.3f, 0.7f }, { 0.7f, 0.7f }, { 0.7f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } }; // |_| looking shape. Normalized.
+            const ImVec2 zigzag_shape[] = { { 0.0f, 0.0f }, { 0.9f, 0.0f }, { 1.0f, 0.1f }, { 1.0f, 0.9f }, { 0.9f, 1.0f }, { 0.3f, 1.0f }, { 0.3f, 0.4f }, { 0.9f, 0.4f } };
+            ImVec2 rotating_square[4];
+            for (int side = 0; side < 4; side++)
             {
-                // First line uses a thickness of 1.0f, second line uses the configurable thickness
-                float th = (n == 0) ? 1.0f : thickness;
-                draw_list->AddNgon(ImVec2(x + sz*0.5f, y + sz*0.5f), sz*0.5f, col, ngon_sides, th);                 x += sz + spacing;  // N-gon
-                draw_list->AddCircle(ImVec2(x + sz*0.5f, y + sz*0.5f), sz*0.5f, col, circle_segments, th);          x += sz + spacing;  // Circle
-                draw_list->AddEllipse(ImVec2(x + sz*0.5f, y + sz*0.5f), ImVec2(sz*0.5f, sz*0.3f), col, -0.3f, circle_segments, th); x += sz + spacing;  // Ellipse
-                draw_list->AddRect(ImVec2(x, y), ImVec2(x + sz, y + sz), col, 0.0f, th);                            x += sz + spacing;  // Square
-                draw_list->AddRect(ImVec2(x, y), ImVec2(x + sz, y + sz), col, rounding, th);                        x += sz + spacing;  // Square with all rounded corners
-                draw_list->AddRect(ImVec2(x, y), ImVec2(x + sz, y + sz), col, rounding, th, corners_tl_br);         x += sz + spacing;  // Square with two rounded corners
-                draw_list->AddTriangle(ImVec2(x+sz*0.5f,y), ImVec2(x+sz, y+sz-0.5f), ImVec2(x, y+sz-0.5f), col, th);x += sz + spacing;  // Triangle
-                //draw_list->AddTriangle(ImVec2(x+sz*0.2f,y), ImVec2(x, y+sz-0.5f), ImVec2(x+sz*0.4f, y+sz-0.5f), col, th);x+= sz*0.4f + spacing; // Thin triangle
-                PathConcaveShape(draw_list, x, y, sz); draw_list->PathStroke(col, th, ImDrawFlags_Closed);          x += sz + spacing;  // Concave Shape
-                //draw_list->AddPolyline(concave_shape, IM_COUNTOF(concave_shape), col, ImDrawFlags_Closed, th);
-                draw_list->AddLineH(x, x + sz, y, col, th);                                                         x += sz + spacing;  // Horizontal line (note: drawing a filled rectangle will be faster!)
-                draw_list->AddLineV(x, y, y + sz, col, th);                                                         x += spacing;       // Vertical line (note: drawing a filled rectangle will be faster!)
-                draw_list->AddLine(ImVec2(x, y), ImVec2(x + sz, y + sz), col, th);                                  x += sz + spacing;  // Diagonal line
-
-                // Path
-                draw_list->PathArcTo(ImVec2(x + sz*0.5f, y + sz*0.5f), sz*0.5f, 3.141592f, 3.141592f * -0.5f);
-                draw_list->PathStroke(col, th);
-                x += sz + spacing;
-
-                // Quadratic Bezier Curve (3 control points)
-                draw_list->AddBezierQuadratic(ImVec2(x + cp3[0].x, y + cp3[0].y), ImVec2(x + cp3[1].x, y + cp3[1].y), ImVec2(x + cp3[2].x, y + cp3[2].y), col, th, curve_segments);
-                x += sz + spacing;
-
-                // Cubic Bezier Curve (4 control points)
-                draw_list->AddBezierCubic(ImVec2(x + cp4[0].x, y + cp4[0].y), ImVec2(x + cp4[1].x, y + cp4[1].y), ImVec2(x + cp4[2].x, y + cp4[2].y), ImVec2(x + cp4[3].x, y + cp4[3].y), col, th, curve_segments);
-
-                x = p.x + 4;
-                y += sz + spacing;
+                float t = (float)ImGui::GetTime() * 0.1f + side * pi * 0.5f;
+                rotating_square[side] = { (float)cosf(t) * half_sz, (float)sinf(t) * half_sz };
             }
 
-            // Filled shapes
-            draw_list->AddNgonFilled(ImVec2(x + sz * 0.5f, y + sz * 0.5f), sz * 0.5f, col, ngon_sides);             x += sz + spacing;  // N-gon
-            draw_list->AddCircleFilled(ImVec2(x + sz * 0.5f, y + sz * 0.5f), sz * 0.5f, col, circle_segments);      x += sz + spacing;  // Circle
-            draw_list->AddEllipseFilled(ImVec2(x + sz * 0.5f, y + sz * 0.5f), ImVec2(sz * 0.5f, sz * 0.3f), col, -0.3f, circle_segments); x += sz + spacing;// Ellipse
-            draw_list->AddRectFilled(ImVec2(x, y), ImVec2(x + sz, y + sz), col);                                    x += sz + spacing;  // Square
-            draw_list->AddRectFilled(ImVec2(x, y), ImVec2(x + sz, y + sz), col, 10.0f);                             x += sz + spacing;  // Square with all rounded corners
-            draw_list->AddRectFilled(ImVec2(x, y), ImVec2(x + sz, y + sz), col, 10.0f, corners_tl_br);              x += sz + spacing;  // Square with two rounded corners
-            draw_list->AddTriangleFilled(ImVec2(x+sz*0.5f,y), ImVec2(x+sz, y+sz-0.5f), ImVec2(x, y+sz-0.5f), col);  x += sz + spacing;  // Triangle
-            //draw_list->AddTriangleFilled(ImVec2(x+sz*0.2f,y), ImVec2(x, y+sz-0.5f), ImVec2(x+sz*0.4f, y+sz-0.5f), col); x += sz*0.4f + spacing; // Thin triangle
-            PathConcaveShape(draw_list, x, y, sz); draw_list->PathFillConcave(col);                                 x += sz + spacing;  // Concave shape
-            draw_list->AddRectFilled(ImVec2(x, y), ImVec2(x + sz, y + thickness), col);                             x += sz + spacing;  // Horizontal line (faster than AddLine, but only handle integer thickness)
-            draw_list->AddRectFilled(ImVec2(x, y), ImVec2(x + thickness, y + sz), col);                             x += spacing * 2.0f;// Vertical line (faster than AddLine, but only handle integer thickness)
-            draw_list->AddRectFilled(ImVec2(x, y), ImVec2(x + 1, y + 1), col);                                      x += sz;            // Pixel (faster than AddLine)
+            float x = start_pos.x;
+            float y = start_pos.y;
+            for (int row = 0; row < 4; row++)
+            {
+                x = start_pos.x;
+                bool draw_fill = (row == 2 || row == 3);
+                bool draw_strokes = (row == 0 || row == 1 || row == 3);
+                if (draw_fill)
+                {
+                    // FILLED SHAPES
+                    const ImU32 col = ImColor(colf_fill);
+                    draw_list->AddNgonFilled({ x + half_sz, y + half_sz }, half_sz, col, ngon_segments);                x += step;  // N-gon
+                    draw_list->AddCircleFilled({ x + half_sz, y + half_sz }, half_sz, col, circle_segments);            x += step;  // Circle
+                    draw_list->AddEllipseFilled({ x + half_sz, y + half_sz }, { half_sz, sz * 0.3f }, col, -0.3f, circle_segments); x += step;// Ellipse
+                    draw_list->AddRectFilled({ x, y }, { x + sz, y + sz }, col, 0.0f, flags);                           x += step;  // Square
+                    draw_list->AddRectFilled({ x, y }, { x + sz, y + sz }, col, rounding, flags);                       x += step;  // Square with all rounded corners
+                    draw_list->AddRectFilled({ x, y }, { x + sz, y + sz }, col, rounding, flags | corners_tl_br);       x += step;  // Square with two rounded corners
+                    draw_list->AddTriangleFilled({ x + sz * 0.5f, y }, { x + sz, y + sz }, { x, y + sz }, col);         x += step;  // Triangle
+                    draw_list->AddTriangleFilled({ x + sz * 0.2f, y }, { x + sz * 0.4f, y + sz }, { x, y + sz }, col);  x += step - (float)(int)(sz * 0.6f); // Thin triangle
 
-            // Path
-            draw_list->PathArcTo(ImVec2(x + sz * 0.5f, y + sz * 0.5f), sz * 0.5f, 3.141592f * -0.5f, 3.141592f);
-            draw_list->PathFillConvex(col);
-            x += sz + spacing;
+                    // Concave shape: U
+                    for (const ImVec2& p : concave_shape)
+                        draw_list->PathLineTo({ x + (int)(sz * p.x), y + (int)(sz * p.y) });
+                    draw_list->PathFillConcave(col);
+                    x += step;
 
-            // Quadratic Bezier Curve (3 control points)
-            draw_list->PathLineTo(ImVec2(x + cp3[0].x, y + cp3[0].y));
-            draw_list->PathBezierQuadraticCurveTo(ImVec2(x + cp3[1].x, y + cp3[1].y), ImVec2(x + cp3[2].x, y + cp3[2].y), curve_segments);
-            draw_list->PathFillConvex(col);
-            x += sz + spacing;
+                    // Concave shape: Zig-Zag with sharp angles (see difference with/without JoinMiter)
+                    for (const ImVec2& p : zigzag_shape)
+                        draw_list->PathLineTo({ x + (int)(sz * p.x), y + (int)(sz * p.y) });
+                    draw_list->PathFillConcave(col);
+                    x += step;
 
-            draw_list->AddRectFilledMultiColor(ImVec2(x, y), ImVec2(x + sz, y + sz), IM_COL32(0, 0, 0, 255), IM_COL32(255, 0, 0, 255), IM_COL32(255, 255, 0, 255), IM_COL32(0, 255, 0, 255));
-            x += sz + spacing;
+                    // Horizontal/Vertical lines
+                    // (here for consistency with the strokes section. AddRectFilled() is roughly close to AddLineH(), AddLineV()
+                    draw_list->AddRectFilled({ x, y }, { x + sz, y + thickness }, col); x += step;
+                    draw_list->AddRectFilled({ x, y }, { x + thickness, y + sz }, col); x += step - (float)(int)half_sz;
+                    if (!(draw_fill && draw_strokes)) //-V560
+                        for (int block_sz = 1, off = 0; block_sz < 16 && off + block_sz <= sz; off += block_sz + 1, block_sz++)
+                            draw_list->AddRectFilled({ x, y + off }, { x + block_sz, y + off + block_sz }, col);
+                    x += step - (float)(int)half_sz;
 
-            ImGui::Dummy(ImVec2((sz + spacing) * 13.2f, (sz + spacing) * 3.0f));
+                    // Rotating square
+                    for (int n = 0; n < 4; n++)
+                        draw_list->PathLineTo({ x + half_sz + rotating_square[n].x, y + half_sz + rotating_square[n].y });
+                    draw_list->PathFillConvex(col, flags);
+                    x += step;
+
+                    // Path
+                    draw_list->PathArcTo({ x + half_sz, y + half_sz }, half_sz, pi * -0.5f, pi * 1.1f);
+                    draw_list->PathFillConvex(col);
+                    x += step;
+
+                    // Quadratic Bezier Curve (3 control points)
+                    draw_list->PathLineTo({ x + cp3[0].x, y + cp3[0].y });
+                    draw_list->PathBezierQuadraticCurveTo({ x + cp3[1].x, y + cp3[1].y }, { x + cp3[2].x, y + cp3[2].y }, curve_segments);
+                    draw_list->PathFillConvex(col);
+                    x += step;
+
+                    if (!(draw_fill && draw_strokes)) //-V560
+                    {
+                        draw_list->AddRectFilledMultiColor({ x, y }, { x + sz, y + sz }, IM_COL32(0, 0, 0, 255), IM_COL32(255, 0, 0, 255), IM_COL32(255, 255, 0, 255), IM_COL32(0, 255, 0, 255));
+                        x += step;
+                    }
+                }
+                if (draw_fill && draw_strokes)
+                    x = start_pos.x;
+                if (draw_strokes)
+                {
+                    // STROKES
+                    // First row uses a thickness of 1.0f, second row uses the configurable thickness
+                    const ImU32 col = ImColor(colf_stroke);
+                    float th = (row == 0) ? 1.0f : thickness;
+                    draw_list->AddNgon({ x + half_sz, y + half_sz }, half_sz, col, ngon_segments, th, flags);               x += step;  // N-gon
+                    draw_list->AddCircle({ x + half_sz, y + half_sz }, half_sz, col, circle_segments, th, flags);           x += step;  // Circle
+                    draw_list->AddEllipse({ x + half_sz, y + half_sz }, { half_sz, sz * 0.3f }, col, -0.3f, circle_segments, th, flags); x += step;  // Ellipse
+                    draw_list->AddRect({ x, y }, { x + sz, y + sz }, col, 0.0f, th, flags);                                 x += step;  // Square
+                    draw_list->AddRect({ x, y }, { x + sz, y + sz }, col, rounding, th, flags);                             x += step;  // Square with all rounded corners
+                    draw_list->AddRect({ x, y }, { x + sz, y + sz }, col, rounding, th, flags | corners_tl_br);             x += step;  // Square with two rounded corners
+                    draw_list->AddTriangle({ x + sz * 0.5f, y }, { x + sz, y + sz }, { x, y + sz }, col, th, flags);        x += step;  // Triangle
+                    draw_list->AddTriangle({ x + sz * 0.2f, y }, { x + sz * 0.4f, y + sz }, { x, y + sz }, col, th, flags); x += step - (float)(int)(sz * 0.6f); // Thin triangle
+
+                    // Concave shape: U
+                    for (const ImVec2& p : concave_shape)
+                        draw_list->PathLineTo({ x + (int)(sz * p.x), y + (int)(sz * p.y) });
+                    draw_list->PathStroke(col, th, flags | ImDrawFlags_Closed);
+                    x += step;
+
+                    // Concave shape: Zig-Zag with sharp angles (see difference with/without JoinMiter)
+                    for (const ImVec2& p : zigzag_shape)
+                        draw_list->PathLineTo({ x + (int)(sz * p.x), y + (int)(sz * p.y) });
+                    draw_list->PathStroke(col, th, flags | ImDrawFlags_Closed);
+                    x += step;
+
+                    // Horizontal/Vertical/Diagonal lines
+                    const float off = (float)(int)(sz * 0.4f);
+                    draw_list->AddLineH(x, x + sz, y, col, th, flags);
+                    draw_list->AddLine({ x, y + off }, { x + sz, y + off }, col, th, flags);
+                    x += step;
+                    draw_list->AddLineV(x, y, y + sz, col, th, flags);
+                    draw_list->AddLine({ x + off, y + sz }, { x + off, y }, col, th, flags);
+                    x += step - (float)(int)half_sz;
+                    if (!(draw_fill && draw_strokes)) //-V560
+                    {
+                        draw_list->AddLine({ x, y }, { x + half_sz, y + sz }, col, th, flags);
+                        draw_list->AddLine({ x, y + sz }, { x + half_sz, y }, col, th, flags);
+                    }
+                    x += step - (float)(int)half_sz;
+
+                    // Rotating square
+                    for (int n = 0; n < 4; n++)
+                        draw_list->PathLineTo({ x + half_sz + rotating_square[n].x, y + half_sz + rotating_square[n].y });
+                    draw_list->PathStroke(col, th, flags | ImDrawFlags_Closed);
+                    //for (int n = 0; n < 4; n++) // ...made of individual line
+                    //    draw_list->AddLine({ x + half_sz + rotating_square[n].x, y + half_sz + rotating_square[n].y }, { x + half_sz + rotating_square[(n + 1) & 3].x, y + half_sz + rotating_square[(n + 1) & 3].y }, col, th, flags);
+                    x += step;
+
+                    // Path
+                    draw_list->PathArcTo({ x + half_sz, y + half_sz }, half_sz, pi * -0.5f, pi * 1.1f);
+                    draw_list->PathStroke(col, th, flags);
+                    x += step;
+
+                    // Quadratic Bezier Curve (3 control points)
+                    draw_list->AddBezierQuadratic({ x + cp3[0].x, y + cp3[0].y }, { x + cp3[1].x, y + cp3[1].y }, { x + cp3[2].x, y + cp3[2].y }, col, th, curve_segments, flags);
+                    x += step;
+
+                    // Cubic Bezier Curve (4 control points)
+                    if (!(draw_fill && draw_strokes)) //-V560
+                    {
+                        draw_list->AddBezierCubic({ x + cp4[0].x, y + cp4[0].y }, { x + cp4[1].x, y + cp4[1].y }, { x + cp4[2].x, y + cp4[2].y }, { x + cp4[3].x, y + cp4[3].y }, col, th, curve_segments, flags);
+                        x += step;
+                    }
+                }
+                y += step;
+            }
+
+            ImGui::Dummy(ImVec2(step * 15.5f, step * 4.0f));
+            draw_list->PopDrawFlag();
+            draw_list->PopDrawFlag();
+
+            ImGui::Text("ImDrawList Vector Rendering Reference:");
+            ImGui::TextLinkOpenURL("https://github.com/ocornut/imgui/wiki/Draw-List");
+
+            ImGui::PopItemFlag();
             ImGui::PopItemWidth();
             ImGui::EndTabItem();
         }
@@ -10556,9 +10871,9 @@ static void ShowExampleAppCustomRendering(bool* p_open)
                 ImGui::Text("Blue shape is drawn first: appears in back");
                 ImGui::Text("Red shape is drawn after: appears in front");
                 ImVec2 p0 = ImGui::GetCursorScreenPos();
-                draw_list->AddRectFilled(ImVec2(p0.x, p0.y), ImVec2(p0.x + 50, p0.y + 50), IM_COL32(0, 0, 255, 255)); // Blue
-                draw_list->AddRectFilled(ImVec2(p0.x + 25, p0.y + 25), ImVec2(p0.x + 75, p0.y + 75), IM_COL32(255, 0, 0, 255)); // Red
-                ImGui::Dummy(ImVec2(75, 75));
+                draw_list->AddRectFilled({ p0.x, p0.y }, { p0.x + 50, p0.y + 50 }, IM_COL32(0, 0, 255, 255)); // Blue
+                draw_list->AddRectFilled({ p0.x + 25, p0.y + 25 }, { p0.x + 75, p0.y + 75 }, IM_COL32(255, 0, 0, 255)); // Red
+                ImGui::Dummy({ 75, 75 });
             }
             ImGui::Separator();
             {
@@ -10570,14 +10885,14 @@ static void ShowExampleAppCustomRendering(bool* p_open)
                 // You can create any number of channels. Tables API use 1 channel per column in order to better batch draw calls.
                 draw_list->ChannelsSplit(2);
                 draw_list->ChannelsSetCurrent(1);
-                draw_list->AddRectFilled(ImVec2(p1.x, p1.y), ImVec2(p1.x + 50, p1.y + 50), IM_COL32(0, 0, 255, 255)); // Blue
+                draw_list->AddRectFilled({ p1.x, p1.y }, { p1.x + 50, p1.y + 50 }, IM_COL32(0, 0, 255, 255)); // Blue
                 draw_list->ChannelsSetCurrent(0);
-                draw_list->AddRectFilled(ImVec2(p1.x + 25, p1.y + 25), ImVec2(p1.x + 75, p1.y + 75), IM_COL32(255, 0, 0, 255)); // Red
+                draw_list->AddRectFilled({ p1.x + 25, p1.y + 25 }, { p1.x + 75, p1.y + 75 }, IM_COL32(255, 0, 0, 255)); // Red
 
                 // Flatten/reorder channels. Red shape is in channel 0 and it appears below the Blue shape in channel 1.
                 // This works by copying draw indices only (vertices are not copied).
                 draw_list->ChannelsMerge();
-                ImGui::Dummy(ImVec2(75, 75));
+                ImGui::Dummy({ 75, 75 });
                 ImGui::Text("After reordering, contents of channel 0 appears below channel 1.");
             }
             ImGui::EndTabItem();

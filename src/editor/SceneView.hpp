@@ -1,8 +1,8 @@
 #pragma once
 
 struct SceneView {
-    int SCENEVIEW_WIDTH;
-    int SCENEVIEW_HEIGHT;
+    int SCENEVIEW_WIDTH = 100;
+    int SCENEVIEW_HEIGHT = 100;
 
     unsigned int textureObj, framebuffObj, depthbuffObj;
 

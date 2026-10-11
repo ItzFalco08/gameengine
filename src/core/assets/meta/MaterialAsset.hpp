@@ -1,13 +1,18 @@
+#pragma once
 #include "AssetMeta.hpp"
 #include "glm/glm.hpp"
 
+enum class ShaderType {
+	LIT,
+	UNLIT
+};
+
 struct MaterialAsset : public AssetMeta {
-	glm::vec3 ambientColor;
-	glm::vec3 diffuseColor;
-	glm::vec3 specularColor;
+	ShaderType shaderType = ShaderType::LIT;
+	glm::vec3 diffuseColor; // baseColor
+	glm::vec3 specularColor; // specular highlight Color
 	float shininess;
 
-	UUID ambientMapUUID{ 0 };
 	UUID diffuseMapUUID{ 0 };
 	UUID specularMapUUID{ 0 };
 	UUID normalMapUUID{ 0 };

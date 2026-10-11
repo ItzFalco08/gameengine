@@ -1,5 +1,5 @@
 #pragma once
-#include "../../core/Texture.hpp"
+#include "../../core/assets/runtime/Texture.hpp"
 
 class InspectorPanel {
 public:

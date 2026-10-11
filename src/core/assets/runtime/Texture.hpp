@@ -23,10 +23,13 @@ public:
 
 	virtual TextureType getTextureType() const = 0;
 
+    // bind texture to a texture unit
+	void bind(unsigned int unit = 0) const;
+
     // move symantics
     Texture(Texture&& other) noexcept;
     Texture& operator=(Texture&& other) noexcept;
-    virtual ~Texture() = default;
+    ~Texture();
     Texture(const Texture&) = delete;
     Texture& operator=(const Texture&) = delete;
 };
@@ -35,7 +38,9 @@ class Texture2D : public Texture {
 public:
     Texture2D() = default;
     Texture2D(const char* path, TexDets texDets);
+    Texture2D(const unsigned char* data, int width, int height, int channels, TexDets texDetails = TexDets());
     void Initialize(const fs::path& path, TexDets texDetails = TexDets());
+    void Initialize(const unsigned char* data, int width, int height, int channels, TexDets texDetails = TexDets());
     void applyParams(TexDets dets);
 
     bool Serialize(const AssetMeta& entry) override;
@@ -45,6 +50,7 @@ public:
     }
 private:
     void setTexParam(unsigned int Param, unsigned int Value) const;
+    void UploadToGL(const unsigned char* data, int width, int height, int channels, TexDets texDets, bool generateMips);
 };
 
 class Cubemap : public Texture {

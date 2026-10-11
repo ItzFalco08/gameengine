@@ -1,53 +1,74 @@
 #pragma once
 #include "Scene.hpp"
-#include "Camera.hpp"
-#include "components/Mesh.hpp"
-#include "components/Light.hpp"
-#include "../utils/globals.hpp"
-#include "../utils/Shader.hpp"
-
-extern Shader litShader;
-extern Shader unlitShader;
+#include "components/Transform.hpp"
+#include "assets/meta/MaterialAsset.hpp"
+#include "assets/runtime/Mesh.hpp"
+#include "assets/runtime/Texture.hpp"
 
 struct GPUPointLight {
 	glm::vec4 positionRange;     // w = range 
 	glm::vec4 colorIntensity;    // w = intensity 
 };
 
+struct GPUDirLight {
+	glm::vec3 direction;         
+	glm::vec3 color;    
+};
+
+inline constinit unsigned char whitepixel[] = { 255, 255, 255, 255 };
+inline constinit unsigned char normal[] = { 128, 128, 255, 255 };
+inline Texture2D fallbackmap;
+inline Texture2D normalfallback;
+
+struct BatchEntry {
+    uint64_t key; // shader, material, mesh
+    ShaderType m_shaderType;
+    MaterialAsset* m_material;
+    Mesh* m_mesh;
+    Submesh* m_submesh;
+    TransformComponent* m_transform;
+};
+
 class Renderer {
-public:
-    Renderer() = default;
-
-    void OpenGLRenderer(Scene* _scene) {
-        scene = _scene;
-        // renders the scene in a opengl context
-
-        loadLights();
-        renderScene();
-    }
-private:
     Scene* scene;
-    
-	// Clustered Forward Rendering constants
-    static constexpr uint32_t GX = 16, GY = 9, GZ = 24;
-    static constexpr uint32_t CLUSTER_COUNT = GX * GY * GZ;
+
+    // Clustered Forward Rendering constants
+    uint32_t GX = 16, GY = 9, GZ = 24;
+    uint32_t CLUSTER_COUNT = GX * GY * GZ;
+    uint32_t LIGHT_COUNT = 0;
+
     static constexpr uint32_t MAX_LIGHTS = 1024;          // buffer capacity
     static constexpr uint32_t MAX_PER_CLUSTER = 128;
-    GLuint lightSSBO, clusterSSBO, countSSBO, indexSSBO = GL_NONE;
 
-    void loadLights() {
-        glCreateBuffers(1, &lightSSBO);
-        glCreateBuffers(1, &clusterSSBO);
-        glCreateBuffers(1, &countSSBO);
-        glCreateBuffers(1, &indexSSBO);
+    union {
+        struct {
+            GLuint lightSSBO;
+            GLuint clusterSSBO;
+            GLuint countSSBO;
+            GLuint indexSSBO;
+        };
 
-		// light data
-		glNamedBufferStorage(lightSSBO, sizeof(GPUPointLight) * MAX_LIGHTS, nullptr, GL_DYNAMIC_STORAGE_BIT);
-		glNamedBufferStorage(clusterSSBO, sizeof(glm::vec3) * 2 * CLUSTER_COUNT, nullptr, GL_DYNAMIC_STORAGE_BIT);
-		glNamedBufferStorage(countSSBO, sizeof(uint32_t) * CLUSTER_COUNT, nullptr, GL_DYNAMIC_STORAGE_BIT);
-		glNamedBufferStorage(indexSSBO, sizeof(uint32_t) * CLUSTER_COUNT, nullptr, GL_DYNAMIC_STORAGE_BIT);
+        GLuint SSBOs[4];
     };
 
-    void renderScene() {
-    };
+    // other constrants
+	static constexpr uint32_t MAX_DIRLIGHTS = 6;
+    bool firstFrame = true;
+	float prevAspect = 0.0f;
+    inline static std::vector<GPUDirLight> gpuDirLights;
+
+
+public:
+    Renderer() = default;
+    void Init(); // allocates opengl resource in runtime
+    void OpenGLRenderer(Scene* _scene);
+
+private:
+    void loadLights();
+    void calculateAABBClusters();;
+	void calculateClusterLights();;
+
+    // batch material. select material, apply transform, render mesh
+    constexpr uint64_t makeKey(uint32_t shader, uint32_t material, uint32_t mesh, uint32_t sub);
+    void renderScene();;
 };

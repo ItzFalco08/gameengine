@@ -20,8 +20,8 @@ struct Camera {
     void rotate(double dx, double dy);
     void move(glm::vec3 deltaPos);
 
-    glm::mat4 getProjMat();
-    glm::mat4 getViewMat();
+    glm::mat4& getProjMat();
+    glm::mat4& getViewMat();
 
     bool projDirty = true;
     bool viewDirty = true;
