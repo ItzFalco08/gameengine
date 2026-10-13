@@ -1,11 +1,13 @@
 # GameEngine
-a simple and minimal gameengine or a renderer made with OpenGL.
+a simple and minimal gameengine or a renderer made with OpenGL 4.5.
 
 # Features 
 - ECS sysem
-- Assets
+- Assets Manager
 - Serialized Scenes
-- Obj Loader
+- Forward+ rendering
+- Assimp Loader
+- Editor Gui (inspector, content browser, scene, heriarchy)
 
 # How to Run
 - Built the main "engine" target of the CMakeLists.txt.
