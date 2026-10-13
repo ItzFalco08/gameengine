@@ -7,6 +7,6 @@ bool MeshAsset::Serialize(const fs::path& assetFile) {
 		return false;
 	}
 	std::ifstream(assetFile).read(reinterpret_cast<char*>(&m_uuid), sizeof(UUID));
-
+	m_path = assetFile;
 	return true;
 }

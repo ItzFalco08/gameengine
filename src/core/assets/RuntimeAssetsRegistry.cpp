@@ -4,7 +4,7 @@
 #include <memory>
 #include <utility>
 #include "runtime/Texture.hpp"
-#include "../../utils/Utils.hpp"
+#include "../../utils/UUID.hpp"
 #include "../../utils/globals.hpp"
 
 template<typename T>

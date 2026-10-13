@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include "../../core/assets/runtime/Texture.hpp"
-#include <mutex>
+#include <atomic>
 
 namespace fs = std::filesystem;
 
@@ -40,7 +40,7 @@ private:
     std::vector<AssetItem> getAssetItems(const fs::path& path);
     void rename(std::string input);
 
-    fs::path currentPath;
+    fs::path currentPath = ROOT_DIR "Assets";
     Texture2D fileTex;
     Texture2D folderTex;
     Texture2D folderEmptyTex;
@@ -48,8 +48,8 @@ private:
     fs::path selectedItem;
     fs::path toRename = "";
 	fs::path importModelPath = "";
-    std::mutex impProgressMtx;
-    int progress = 0;
+    std::atomic<int> progress = 0;
+    std::future<void> importFuture;
 
     // popup flags
 	bool showCreateFolderPopup = false;

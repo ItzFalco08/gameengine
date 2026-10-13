@@ -1,7 +1,7 @@
 #pragma once
 
 #include "runtime/AssetRuntime.hpp"
-#include "../../utils/Utils.hpp"
+#include "../../utils/UUID.hpp"
 #include "AssetPool.hpp"
 
 class RuntimeAssetsRegistry {

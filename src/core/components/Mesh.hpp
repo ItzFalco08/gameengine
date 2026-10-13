@@ -1,6 +1,6 @@
 #pragma once
 #include "Component.hpp"
-#include "../../utils/Utils.hpp"
+#include "../../utils/UUID.hpp"
 #include "json/json.hpp"
 
 class MeshComponent : public Component {

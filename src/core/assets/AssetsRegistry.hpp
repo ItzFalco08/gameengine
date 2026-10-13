@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include <vector>
 #include "meta/AssetMeta.hpp"
 #include <future>
 #include "AssetPool.hpp"
@@ -11,10 +12,10 @@ class AssetsRegistry {
 public:
     AssetsPool<AssetMeta> m_assetsMeta; // UUID -> runtimeId -> AssetHandle
 
-    std::future<void> m_syncFuture;
-
     void syncAssets();
     void syncAssets(const fs::path& dir);
+
+    uint32_t size();
 
     void addAsset(const fs::path& path);
     template<typename T>

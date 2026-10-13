@@ -2,10 +2,15 @@
 #include <vector>
 #include <unordered_map>
 #include <memory>
-#include "../../utils/Utils.hpp"
+#include "../../utils/UUID.hpp"
+#include <iostream>
 
 template<typename T>
 struct AssetsPool {
+	// expose iteration
+	auto begin() const { return m_fromUUID.begin(); }
+	auto end() const { return m_fromUUID.end(); }
+
 	static constexpr uint32_t INVALID = ~0u;
 
 	void set(const UUID& id, std::unique_ptr<T> item) {
@@ -50,8 +55,12 @@ struct AssetsPool {
 		m_assets[id].reset();  // Reset the unique_ptr to free the memory
 	}
 
+	uint32_t size() {
+		return m_fromUUID.size();
+	}
+
+	std::unordered_map<UUID, uint32_t, UUIDHasher> m_fromUUID;
 private:
 	std::vector<std::unique_ptr<T>> m_assets;
 	std::vector<uint32_t> m_freeIndices;
-	std::unordered_map<UUID, uint32_t, UUIDHasher> m_fromUUID;
 };

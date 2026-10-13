@@ -91,6 +91,7 @@ int main() {
     editor.assetsBrowserPanel.InitIcons();
     editor.scenePanel.initTextures();
 	engine.renderer.Init();
+    engine.assetsRegistry.syncAssets();
 
     Start();
 
@@ -157,13 +158,6 @@ void Update() {
 
 // engine update (gui/states)
 void EditorUpdate() {
-    if (engine.assetsRegistry.m_syncFuture.valid() &&
-        engine.assetsRegistry.m_syncFuture.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
-
-        engine.assetsRegistry.m_syncFuture.get();
-        SDL_SetCursor(appState.cursor);
-    }
-
     drawScreen();
 }
 // Draw editor
@@ -210,6 +204,12 @@ void drawScreen()
             ImGui::EndMenu();
         }
 
+        if (ImGui::BeginMenu("View")) {
+            if (ImGui::MenuItem("Assets Registry"))
+                editor.assetsRegistryPanel.Activate();
+            ImGui::EndMenu();
+        }
+
         ImGui::EndMenuBar();
     }
 
@@ -233,6 +233,7 @@ void drawScreen()
     editor.hierarchyPanel.Render();
     editor.inspectorPanel.Render();
     editor.consolePanel.Render();
+    editor.assetsRegistryPanel.Render();
 
     // Render
     ImGui::Render();

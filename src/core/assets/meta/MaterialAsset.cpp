@@ -1,6 +1,7 @@
 #include "MaterialAsset.hpp"
 #include <json/json.hpp>
 #include <fstream>
+#include <iostream>
 
 bool MaterialAsset::Serialize(const fs::path& assetFile) {
     if (!fs::exists(assetFile) || !fs::is_regular_file(assetFile))
@@ -35,6 +36,7 @@ bool MaterialAsset::Serialize(const fs::path& assetFile) {
         normalMapUUID = UUID::fromString(j.at("normalMap").get<std::string>());
 
 		shaderType = j.at("shaderType").get<ShaderType>();
+        m_path = assetFile;
 
         return true;
     }

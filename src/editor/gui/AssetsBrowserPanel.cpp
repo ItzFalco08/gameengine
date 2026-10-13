@@ -1,4 +1,4 @@
-#include "../../utils/Utils.hpp"
+#include "../../utils/UUID.hpp"
 #include "../../utils/globals.hpp"
 #include "AssetsBrowserPanel.hpp"
 #include "glad/gl.h"
@@ -7,11 +7,17 @@
 #include <assimp/scene.h>
 #include <assimp/types.h>
 #include <cstring>
+#include <cstdint>
 #include <fstream>
 #include <future>
+#include <limits>
 #include <json/json.hpp>
+#include <stdexcept>
+#include <unordered_map>
 #include <vector>
+#include "../../utils/utils.hpp"
 #include "../../core/assets/meta/MaterialAsset.hpp"
+#include "../../core/assets/runtime/Mesh.hpp"
 
 namespace {
     bool showYesNoDialog(const char* title, const char* message) {
@@ -39,9 +45,10 @@ void AssetsBrowser::renderPanels() {
 	if (showCreateScenePopup) { ImGui::OpenPopup("CreateScene"); showCreateScenePopup = false; }
 	if (showImportModelPopup) { ImGui::OpenPopup("ImportModelPopup"); showImportModelPopup = false; }
 	if (showRenamePopup) { ImGui::OpenPopup("Rename"); showRenamePopup = false; }
-	if (showImportProgressPopup) { ImGui::OpenPopup("ImportProgress"); showImportProgressPopup = false; }
+	if (showImportProgressPopup) { ImGui::OpenPopup("ImportProgressPopup"); showImportProgressPopup = false; }
 
-	if (ImGui::BeginPopupModal("CreateFolder", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+    centerWindow();
+	if (ImGui::BeginPopupModal("CreateFolder", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize)) {
         static char inputBuffer[256] = { 0 };
         ImGui::InputText("Folder Name", inputBuffer, sizeof(inputBuffer));
         if (inputBuffer[0] == '\0') {
@@ -63,8 +70,9 @@ void AssetsBrowser::renderPanels() {
         }
 		ImGui::EndPopup();
 	}
-    
-    if (ImGui::BeginPopupModal("CreateScene", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+
+    centerWindow();
+    if (ImGui::BeginPopupModal("CreateScene", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize)) {
         static char inputBuffer[256] = { 0 };
         ImGui::InputText("Scene Name", inputBuffer, sizeof(inputBuffer));
         if (inputBuffer[0] == '\0') {
@@ -86,7 +94,9 @@ void AssetsBrowser::renderPanels() {
         }
         ImGui::EndPopup();
     }
-    if (ImGui::BeginPopupModal("RenamePopup")) {
+
+    centerWindow();
+    if (ImGui::BeginPopupModal("RenamePopup", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize)) {
         static char inputBuffer[256] = { 0 };
         ImGui::InputText("New Name", inputBuffer, sizeof(inputBuffer));
         if (inputBuffer[0] == '\0') {
@@ -108,10 +118,11 @@ void AssetsBrowser::renderPanels() {
         }
         ImGui::EndPopup();
     }
-    if (ImGui::BeginPopupModal("ImportModelPopup")) {
-        ImGui::Text((std::string("Import ") + importModelPath.filename().string()).c_str());
 
-        unsigned int flags = 0;
+    centerWindow();
+    if (ImGui::BeginPopupModal("ImportModelPopup", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize)) {
+        const std::string importLabel = std::string("Import ") + importModelPath.filename().string();
+        ImGui::Text("%s", importLabel.c_str());
 
         struct AssimpFlagOption {
             const char* label;
@@ -151,264 +162,252 @@ void AssetsBrowser::renderPanels() {
         };
 
         if (ImGui::Button("Import")) {
-            // Import the model
-            
             unsigned int flags = 0;
-             
             for (auto& option : s_assimpFlags) {
                 if (option.enabled) {
                     flags |= option.flag;
-                };
+                }
             }
 
-            if (!(flags & aiProcess_GenSmoothNormals)) flags |= aiProcess_GenNormals; // Generate normals if smooth normals are not requested
-			flags |= aiProcess_CalcTangentSpace; // Always calculate tangent space for normal mapping
+            flags |= aiProcess_Triangulate | aiProcess_CalcTangentSpace;
+            if (!(flags & aiProcess_GenSmoothNormals)) flags |= aiProcess_GenNormals;
 
-            std::future<void> importFuture = std::async(std::launch::async, [&]() {
-                // load model from file
-                const aiScene* scene = editor.importer.ReadFile(importModelPath.string(), flags);
+            const fs::path sourceModelPath = importModelPath;
+            const fs::path outputRoot = currentPath;
+            const std::string modelName = sourceModelPath.stem().string();
 
-                if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+            importFuture = std::async(std::launch::async, [this, flags, sourceModelPath, outputRoot, modelName]() {
+                fs::path modelDir;
+                bool createdModelDir = false;
+                auto failImport = [&](const std::string& message) {
+                    if (createdModelDir) {
+                        std::error_code ec;
+                        fs::remove_all(modelDir, ec);
+                    }
+                    LOG::EditorError(message);
                     progress = -1;
-                    return;
-                }
+                };
 
-                std::unique_lock<std::mutex> impprogressLock(impProgressMtx);
-
-                // --- EXTRACT ASSETS ---
-
-                const fs::path modelDir = currentPath / (scene->mName.length > 0 ? scene->mName.C_Str() : importModelPath.stem().string());
-                const fs::path materialsDir = modelDir / "materials";
-                const fs::path texturesDir = modelDir / "textures";
-
-                fs::create_directories(materialsDir);
-                fs::create_directories(texturesDir);
-
-                // assimp material index -> material asset uuid
-				std::unordered_map<unsigned int, UUID> materialMap;
-
-                impprogressLock.lock();
-                progress += 2;
-                impprogressLock.unlock();
-
-                // materials
-                for (int i = 0; i < scene->mNumMaterials; i++) {
-                    aiMaterial* material = scene->mMaterials[i];
-                    aiColor3D baseColor(1.0f, 1.0f, 1.0f);
-                    aiColor3D diffuse(1.0f, 1.0f, 1.0f);
-                    aiColor3D specular(1.0f, 1.0f, 1.0f);
-                    float shininess = 32.0f;
-
-                    material->Get(AI_MATKEY_BASE_COLOR, baseColor);
-                    material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
-                    material->Get(AI_MATKEY_COLOR_SPECULAR, specular);
-                    material->Get(AI_MATKEY_SHININESS, shininess);
-
-                    fs::path matPath = materialsDir / ((material->GetName().length > 0 ? material->GetName().C_Str() : "material_" + std::to_string(i)) + ".mat");
-                    fs::path tempPath = matPath / ".tmp";
-                    std::ofstream matFile(tempPath, std::ios::binary);
-
-                    if (!matFile.is_open()) {
-                        progress = -1;
-                        std::filesystem::remove_all(modelDir);
-                        LOG::EditorError("Failed to write material file: " + tempPath.string());
+                try {
+                    const aiScene* scene = editor.importer.ReadFile(sourceModelPath.string(), flags);
+                    if (!scene || (scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) || !scene->mRootNode || scene->mNumMeshes == 0) {
+                        failImport(std::string("Failed to import model: ") + editor.importer.GetErrorString());
                         return;
                     }
 
-                    UUID matUUID = generateUUID();
-                    nlohmann::json matMetaJson;
-                    matMetaJson["uuid"] = UUID::toString(matUUID);
-                    matMetaJson["diffuseColor"] = { diffuse.r, diffuse.g, diffuse.b };
-                    matMetaJson["specularColor"] = { specular.r, specular.g, specular.b };
-                    matMetaJson["shininess"] = shininess;
-					matMetaJson["shaderType"] = ShaderType::LIT; // default to LIT shader type
-
-                    matMetaJson["diffuseMap"] = "";
-                    matMetaJson["specularMap"] = "";
-                    matMetaJson["normalMap"] = "";
-
-                    materialMap[i] = matUUID;
-
-                    auto createTextureAsset = [&](aiTextureType textureType, const std::string& mapKey) {
-                        if (material->GetTextureCount(textureType) > 0) {
-                            aiString texturePath;
-                            material->GetTexture(textureType, 0, &texturePath);
-                            fs::path srcPath = texturesDir / fs::path(texturePath.C_Str()).filename();
-                            fs::path metaPath = srcPath.string() + ".tex";
-                            UUID texUUID;
-                            if (fs::exists(srcPath)) {
-                                // existing texture asset
-                                std::ifstream file(metaPath);
-                                nlohmann::json j;
-                                file >> j;
-                                texUUID = UUID::fromString(j["uuid"].get<std::string>());
-                            }
-                            else {
-                                // new texture asset
-                                texUUID = generateUUID();
-                                fs::copy_file(texturePath.C_Str(), srcPath);
-                                std::ofstream textureMetaFile(metaPath, std::ios::binary);
-                                nlohmann::json textureMetaJson;
-                                textureMetaJson["uuid"] = UUID::toString(texUUID);
-                                textureMetaJson["textureType"] = "Texture2D";
-                                textureMetaJson["wrapU"] = GL_REPEAT;
-                                textureMetaJson["wrapV"] = GL_REPEAT;
-                                textureMetaJson["minFilter"] = GL_NEAREST;
-                                textureMetaJson["magFilter"] = GL_NEAREST;
-                                textureMetaFile << textureMetaJson.dump(4);
-                                textureMetaFile.close();
-                            }
-                            matMetaJson[mapKey] = UUID::toString(texUUID);
-                        }
-                    };
-
-                    createTextureAsset(aiTextureType_DIFFUSE, "diffuseMap");
-                    createTextureAsset(aiTextureType_SPECULAR, "specularMap");
-                    createTextureAsset(aiTextureType_NORMALS, "normalMap");
-
-                    impprogressLock.lock();
-                    progress += 3;
-                    impprogressLock.unlock();
-                }
-
-                // mesh
-                std::ofstream meshFile(modelDir / importModelPath.stem().string() / ".mesh", std::ios::binary);
-                UUID uuid = generateUUID();
-                meshFile.write(reinterpret_cast<const char*>(&uuid), sizeof(UUID));
-
-                struct Vertex {
-                    float x, y, z;
-                    float u, v;
-                    float nx, ny, nz;
-					float tx, ty, tz, tw;
-                };
-
-                // write nV
-                uint32_t nV = 0;
-                for (int i = 0; i < scene->mNumMeshes; i++) {
-                    const aiMesh* mesh = scene->mMeshes[i];
-                    nV += mesh->mNumVertices;
-                }
-                meshFile.write(reinterpret_cast<const char*>(&nV), sizeof(uint32_t));
-
-                // write nI
-                uint32_t nI = 0;
-                for (int i = 0; i < scene->mNumMeshes; i++) {
-                    const aiMesh* mesh = scene->mMeshes[i];
-                    nI += mesh->mNumFaces * 3;
-                }
-                meshFile.write(reinterpret_cast<const char*>(&nI), sizeof(uint32_t));
-
-                // write vertices
-                for (int i = 0; i < scene->mNumMeshes; i++) {
-                    const aiMesh* mesh = scene->mMeshes[i];
-
-                    for (int iv = 0; iv < mesh->mNumVertices; iv++) {
-						// xyz, normal, uv, tanjent (vec4)
-                        float w = glm::dot(glm::cross(glm::vec3(mesh->mNormals[iv].x, mesh->mNormals[iv].y, mesh->mNormals[iv].z), glm::vec3(mesh->mTangents[iv].x, mesh->mTangents[iv].y, mesh->mTangents[iv].z)), glm::vec3(mesh->mBitangents[iv].x, mesh->mBitangents[iv].y, mesh->mBitangents[iv].z)) < 0.0f ? -1.0f : 1.0f;
-                        Vertex vertex = { mesh->mVertices[iv].x, mesh->mVertices[iv].y, mesh->mVertices[iv].z, mesh->mNormals[iv].x, mesh->mNormals[iv].y, mesh->mNormals[iv].z, mesh->mTextureCoords[0][iv].x, mesh->mTextureCoords[0][iv].y, mesh->mTangents[iv].x, mesh->mTangents[iv].y, mesh->mTangents[iv].z, w };
-                        meshFile.write(reinterpret_cast<const char*>(&vertex), sizeof(Vertex));
+                    modelDir = outputRoot / modelName;
+                    if (fs::exists(modelDir)) {
+                        failImport("Import destination already exists: " + modelDir.string());
+                        return;
                     }
-                }
+                    fs::create_directories(modelDir);
+                    createdModelDir = true;
+                    fs::create_directories(modelDir / "materials");
+                    fs::create_directories(modelDir / "textures");
+                    progress = 2;
 
-                impprogressLock.lock();
-                progress += 2;
-                impprogressLock.unlock();
+                    const fs::path materialsDir = modelDir / "materials";
+                    const fs::path texturesDir = modelDir / "textures";
+                    std::unordered_map<unsigned int, UUID> materialMap;
 
-                uint32_t lastVertIdx = 0;
-                uint32_t lastIndicesIdx = 0;
-                // meshIdx -> lastIndicesIdx
-                std::vector<uint32_t> lastIndicesIdxMap(scene->mNumMeshes);
+                    for (unsigned int i = 0; i < scene->mNumMaterials; ++i) {
+                        const aiMaterial* material = scene->mMaterials[i];
+                        // base color ignored
+                        aiColor3D diffuse(1.0f, 1.0f, 1.0f);
+                        aiColor3D specular(1.0f, 1.0f, 1.0f);
+                        float shininess = 32.0f;
 
-                // write indices
-                for (int i = 0; i < scene->mNumMeshes; i++) {
-                    const aiMesh* mesh = scene->mMeshes[i];
+                        material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
+                        material->Get(AI_MATKEY_COLOR_SPECULAR, specular);
+                        material->Get(AI_MATKEY_SHININESS, shininess);
 
-                    lastIndicesIdxMap[i] = lastIndicesIdx;
+                        const UUID materialUUID = generateUUID();
+                        materialMap.emplace(i, materialUUID);
+                        nlohmann::json materialJson = {
+                            {"uuid", UUID::toString(materialUUID)},
+                            {"diffuseColor", {diffuse.r, diffuse.g, diffuse.b}},
+                            {"specularColor", {specular.r, specular.g, specular.b}},
+                            {"shininess", shininess},
+                            {"shaderType", ShaderType::LIT},
+                            {"diffuseMap", ""},
+                            {"specularMap", ""},
+                            {"normalMap", ""}
+                        };
 
-                    for (int f = 0; f < mesh->mNumFaces; f++) {
-                        const aiFace& face = mesh->mFaces[f];
-                        for (int j = 0; j < face.mNumIndices; j++) {
-                            uint32_t index = lastVertIdx + face.mIndices[j];
-                            meshFile.write(reinterpret_cast<const char*>(&index), sizeof(uint32_t));
-                        }
+                        auto importTexture = [&](aiTextureType textureType, const char* mapKey) {
+                            if (material->GetTextureCount(textureType) == 0) return;
+                            aiString textureRef;
+                            if (material->GetTexture(textureType, 0, &textureRef) != AI_SUCCESS) return;
+
+                            fs::path sourceTexture(textureRef.C_Str());
+                            fs::path textureOutput;
+                            if (const aiTexture* embedded = scene->GetEmbeddedTexture(textureRef.C_Str())) {
+                                std::string extension = embedded->achFormatHint;
+                                if (extension.empty()) return;
+                                if (extension.front() != '.') extension.insert(extension.begin(), '.');
+                                textureOutput = texturesDir / ("texture_" + std::to_string(i) + "_" + mapKey + extension);
+                                if (embedded->mHeight == 0) {
+                                    std::ofstream out(textureOutput, std::ios::binary);
+                                    out.write(reinterpret_cast<const char*>(embedded->pcData), embedded->mWidth);
+                                    if (!out) throw std::runtime_error("Failed to extract embedded texture: " + textureOutput.string());
+                                } else {
+                                    return; // Uncompressed embedded textures are left unassigned.
+                                }
+                            } else {
+                                if (sourceTexture.is_relative()) sourceTexture = sourceModelPath.parent_path() / sourceTexture;
+                                if (!fs::exists(sourceTexture) || !fs::is_regular_file(sourceTexture)) return;
+                                std::string extension = sourceTexture.extension().string();
+                                if (extension.empty()) extension = ".img";
+                                textureOutput = texturesDir / ("texture_" + std::to_string(i) + "_" + mapKey + extension);
+                                fs::copy_file(sourceTexture, textureOutput, fs::copy_options::overwrite_existing);
+                            }
+
+                            const UUID textureUUID = generateUUID();
+                            nlohmann::json textureJson = {
+                                {"uuid", UUID::toString(textureUUID)},
+                                {"texturePath", fs::relative(textureOutput, fs::path(ROOT_DIR)).generic_string()},
+                                {"textureType", "Texture2D"},
+                                {"wrapU", GL_REPEAT}, {"wrapV", GL_REPEAT},
+                                {"minFilter", GL_LINEAR_MIPMAP_LINEAR}, {"magFilter", GL_LINEAR}
+                            };
+                            fs::path textureMetaPath = textureOutput;
+                            textureMetaPath += ".tex";
+                            std::ofstream textureMetaFile(textureMetaPath);
+                            textureMetaFile << textureJson.dump(4);
+                            if (!textureMetaFile) throw std::runtime_error("Failed to write texture metadata: " + textureMetaPath.string());
+                            materialJson[mapKey] = UUID::toString(textureUUID);
+                        };
+
+                        importTexture(aiTextureType_BASE_COLOR, "diffuseMap");
+                        importTexture(aiTextureType_SPECULAR, "specularMap");
+                        importTexture(aiTextureType_NORMALS, "normalMap");
+                        if (materialJson["diffuseMap"] == "") importTexture(aiTextureType_DIFFUSE, "diffuseMap");
+                        if (materialJson["normalMap"] == "") importTexture(aiTextureType_HEIGHT, "normalMap");
+
+                        // material path :skull:
+                        aiString materialName;
+                        material->Get(AI_MATKEY_NAME, materialName);
+                        std::string safeMaterialName = materialName.length > 0 ? materialName.C_Str() : "material_" + std::to_string(i);
+                        for (char& c : safeMaterialName) if (c == '/' || c == '\\' || c == ':') c = '_';
+                        fs::path materialPath = materialsDir / (safeMaterialName + (materialName.length > 0 ? ("_" + std::to_string(i)) : "") + ".mat");
+                        
+                        std::ofstream materialFile(materialPath);
+
+                        materialFile << materialJson.dump(4);
+                        if (!materialFile) throw std::runtime_error("Failed to write material file: " + materialPath.string());
+                        progress = 2 + (scene->mNumMaterials ? static_cast<int>((i + 1) * 3 / scene->mNumMaterials) : 3);
                     }
 
-                    lastVertIdx += mesh->mNumVertices;
-                    lastIndicesIdx += mesh->mNumFaces * 3; // assuming triangulated meshes
+                    uint64_t vertexCount64 = 0;
+                    uint64_t indexCount64 = 0;
+                    for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
+                        const aiMesh* mesh = scene->mMeshes[i];
+                        vertexCount64 += mesh->mNumVertices;
+                        for (unsigned int f = 0; f < mesh->mNumFaces; ++f) indexCount64 += mesh->mFaces[f].mNumIndices;
+                    }
+
+                    if (vertexCount64 == 0 || indexCount64 == 0 || vertexCount64 > std::numeric_limits<uint32_t>::max() || indexCount64 > std::numeric_limits<uint32_t>::max())
+                        throw std::runtime_error("Imported model exceeds supported mesh size.");
+
+                    const uint32_t vertexCount = static_cast<uint32_t>(vertexCount64);
+                    const uint32_t indexCount = static_cast<uint32_t>(indexCount64);
+                    const fs::path meshDataPath = modelDir / modelName;
+                    std::ofstream meshData(meshDataPath, std::ios::binary);
+                    if (!meshData) throw std::runtime_error("Failed to create mesh data: " + meshDataPath.string());
+                    meshData.write(reinterpret_cast<const char*>(&vertexCount), sizeof(vertexCount));
+                    meshData.write(reinterpret_cast<const char*>(&indexCount), sizeof(indexCount));
+
+                    for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
+                        const aiMesh* mesh = scene->mMeshes[i];
+                        for (unsigned int v = 0; v < mesh->mNumVertices; ++v) {
+                            Vertex vertex{};
+                            vertex.position = {mesh->mVertices[v].x, mesh->mVertices[v].y, mesh->mVertices[v].z};
+                            if (mesh->HasNormals()) vertex.normal = {mesh->mNormals[v].x, mesh->mNormals[v].y, mesh->mNormals[v].z};
+                            if (mesh->HasTextureCoords(0)) vertex.uv = {mesh->mTextureCoords[0][v].x, mesh->mTextureCoords[0][v].y};
+                            if (mesh->HasTangentsAndBitangents()) {
+                                const glm::vec3 normal(mesh->mNormals[v].x, mesh->mNormals[v].y, mesh->mNormals[v].z);
+                                const glm::vec3 tangent(mesh->mTangents[v].x, mesh->mTangents[v].y, mesh->mTangents[v].z);
+                                const glm::vec3 bitangent(mesh->mBitangents[v].x, mesh->mBitangents[v].y, mesh->mBitangents[v].z);
+                                const float handedness = glm::dot(glm::cross(normal, tangent), bitangent) < 0.0f ? -1.0f : 1.0f;
+                                vertex.tangent = {tangent.x, tangent.y, tangent.z, handedness};
+                            }
+                            meshData.write(reinterpret_cast<const char*>(&vertex), sizeof(vertex));
+                        }
+                    }
+                    progress = 7;
+
+                    std::vector<uint32_t> indexOffsets(scene->mNumMeshes);
+                    uint32_t vertexOffset = 0;
+                    uint32_t indexOffset = 0;
+                    for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
+                        const aiMesh* mesh = scene->mMeshes[i];
+                        indexOffsets[i] = indexOffset;
+                        for (unsigned int f = 0; f < mesh->mNumFaces; ++f) {
+                            const aiFace& face = mesh->mFaces[f];
+                            for (unsigned int j = 0; j < face.mNumIndices; ++j) {
+                                const uint32_t index = vertexOffset + face.mIndices[j];
+                                meshData.write(reinterpret_cast<const char*>(&index), sizeof(index));
+                            }
+                            indexOffset += face.mNumIndices;
+                        }
+                        vertexOffset += mesh->mNumVertices;
+                    }
+                    progress = 9;
+
+                    const uint32_t submeshCount = scene->mNumMeshes;
+                    meshData.write(reinterpret_cast<const char*>(&submeshCount), sizeof(submeshCount));
+                    for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
+                        const aiMesh* mesh = scene->mMeshes[i];
+                        Submesh submesh{};
+                        aiString meshName = mesh->mName;
+                        if (meshName.length == 0) meshName.Set("mesh_" + std::to_string(i));
+                        std::strncpy(submesh.name, meshName.C_Str(), sizeof(submesh.name) - 1);
+                        submesh.indicesOffset = indexOffsets[i];
+                        for (unsigned int f = 0; f < mesh->mNumFaces; ++f) submesh.indicesSize += mesh->mFaces[f].mNumIndices;
+                        if (auto it = materialMap.find(mesh->mMaterialIndex); it != materialMap.end()) submesh.material = it->second;
+                        meshData.write(reinterpret_cast<const char*>(&submesh), sizeof(submesh));
+                    }
+                    meshData.close();
+                    if (!meshData) throw std::runtime_error("Failed while writing mesh data: " + meshDataPath.string());
+
+                    const UUID meshUUID = generateUUID();
+                    std::ofstream meshMeta(modelDir / (modelName + ".mesh"), std::ios::binary);
+                    meshMeta.write(reinterpret_cast<const char*>(&meshUUID), sizeof(meshUUID));
+                    if (!meshMeta) throw std::runtime_error("Failed to write mesh metadata.");
+                    progress = -2;
+                } catch (const std::exception& e) {
+                    failImport(std::string("Model import failed: ") + e.what());
                 }
-
-                impprogressLock.lock();
-                progress += 2;
-                impprogressLock.unlock();
-
-                // write submeshes
-				meshFile.write(reinterpret_cast<const char*>(&scene->mNumMeshes), sizeof(uint32_t)); // nrsubmeshes
-
-                for (int i = 0; i < scene->mNumMeshes; i++) {
-                    const aiMesh* mesh = scene->mMeshes[i];
-
-                    uint32_t indicesOffset = lastIndicesIdxMap[i];
-                    uint32_t indicesSize = mesh->mFaces->mNumIndices * mesh->mNumFaces;
-
-                    char buffer[512] = { 0 };
-                    aiString materialName = scene->mMaterials[mesh->mMaterialIndex]->GetName();
-                    strncpy(buffer, materialName.C_Str(), sizeof(buffer) - 1);
-
-                    meshFile.write(reinterpret_cast<const char*>(&buffer), sizeof(buffer));
-                    meshFile.write(reinterpret_cast<const char*>(&indicesOffset), sizeof(uint32_t));
-                    meshFile.write(reinterpret_cast<const char*>(&indicesSize), sizeof(uint32_t));
-                    meshFile.write(reinterpret_cast<const char*>(&materialMap[i]), sizeof(UUID));
-                }
-
-                impprogressLock.lock();
-                progress += 1;
-                impprogressLock.unlock();
-
-                std::this_thread::sleep_for(std::chrono::milliseconds(10));
-
-                impprogressLock.lock();
-                progress = -2;
-                impprogressLock.unlock();
-
-                return;
-                
             });
-            
+
             ImGui::CloseCurrentPopup();
-			ImGui::OpenPopup("ImportProgressPopup");
+            showImportProgressPopup = true;
         }
         ImGui::EndPopup();
     }
-    if (ImGui::BeginPopup("ImportProgressPopup")) {
-        std::unique_lock<std::mutex> lock(impProgressMtx);
+
+    centerWindow();
+    if (ImGui::BeginPopupModal("ImportProgressPopup", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize)) {
 
         if (progress == -1) {
-            lock.unlock();
 
-            ImGui::Text("Import failed.");
+            ImGui::Text("Import failed. Check editor console for details.");
 
             if (ImGui::Button("Close")) {
                 ImGui::CloseCurrentPopup();
 
-                lock.lock();
                 progress = 0;
-                lock.unlock();
             }
 		}
 		else if (progress == -2) {
-			lock.unlock();
-			ImGui::Text("Import complete.");
+			ImGui::Text("Boom Baam! Import complete.");
 			if (ImGui::Button("Close")) {
 				ImGui::CloseCurrentPopup();
-				lock.lock();
 				progress = 0;
-				lock.unlock();
 			}
 		}
         else {
             int currentProgress = progress;
-            lock.unlock();
 
             ImGui::ProgressBar(
                 (float)currentProgress / 10.0f,
@@ -443,6 +442,17 @@ void AssetsBrowser::createFolder(const fs::path& path) {
 
 void AssetsBrowser::deleteAsset(const fs::path& path)
 {
+    if (!fs::exists(path)) {
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "File Not Found", "The file or folder you are trying to delete does not exist.", appState.window);
+        return;
+    }
+    try {
+        // Your filesystem operation
+        fs::remove_all(path);
+    }
+    catch (const fs::filesystem_error& e) {
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Failed to delete asset", (std::string("An error occurred while trying to delete the asset. Error: ") + std::string(e.what())).c_str(), appState.window);
+    }
 }
 
 std::vector<AssetItem> AssetsBrowser::getAssetItems(const fs::path& path)
@@ -469,7 +479,6 @@ std::vector<AssetItem> AssetsBrowser::getAssetItems(const fs::path& path)
 }
 
 void AssetsBrowser::InitIcons() {
-    currentPath = ASSETS_DIR;
     TexDets texDets;
     texDets.minFilter = GL_NEAREST;
     fileTex.Initialize(SRC_DIR "editor/resources/File.png", texDets);
@@ -502,13 +511,13 @@ void AssetsBrowser::Render() {
 
         ImGui::BeginChild("##toolbar", ImVec2(0, toolbarHeight), true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
         
-        
-        if(currentPath.string() != (ROOT_DIR "/Assets")) {
+        static const fs::path assetsPath = fs::path(ROOT_DIR "Assets");
+
+        if(currentPath != assetsPath) {
             if(ImGui::Button("<-", ImVec2(20, 20))) {
-                
                 currentPath = currentPath.parent_path();
             }
-        } 
+        }
 
         ImGui::SameLine();
         ImGui::Text(currentPath.filename().string().c_str());

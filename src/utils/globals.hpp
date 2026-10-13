@@ -13,6 +13,7 @@
 #include "../editor/gui/ScenePanel.hpp"
 #include "../editor/gui/AssetsBrowserPanel.hpp"
 #include "../editor/gui/ConsolePanel.hpp"
+#include "../editor/gui/AssetsRegistryPanel.hpp"
 #include <assimp/Importer.hpp>
 
 struct AppState {
@@ -41,6 +42,7 @@ struct Editor {
     SceneView sceneView;
     ScenePanel scenePanel;
     AssetsBrowser assetsBrowserPanel;
+	AssetsRegistryPanel assetsRegistryPanel;
     HierarchyPanel hierarchyPanel;
     InspectorPanel inspectorPanel;
     ConsolePanel consolePanel;

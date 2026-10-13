@@ -3,6 +3,7 @@
 #include "../../core/SceneManager.hpp"
 #include "../../utils/globals.hpp"
 #include "HierarchyPanel.hpp"
+#include "../../utils/utils.hpp"
 #include "imgui.h"
 #include <cstring>
 
@@ -10,7 +11,8 @@ void HierarchyPanel::renderPanels() {
     if (showCreateGameobjectPopup) { ImGui::OpenPopup("CreateGameObject"); showCreateGameobjectPopup = false; }
     if (showRenameGameobjectPopup) { ImGui::OpenPopup("RenameGameObject"); showRenameGameobjectPopup = false; }
 
-    if (ImGui::BeginPopupModal("CreateGameObject", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+    centerWindow();
+    if (ImGui::BeginPopupModal("CreateGameObject", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize)) {
         ImGui::InputText("GameObject Name", createInputBuffer, sizeof(createInputBuffer));
 
         if (ImGui::Button("Create")) {
@@ -32,7 +34,8 @@ void HierarchyPanel::renderPanels() {
         ImGui::EndPopup();
     }
 
-    if (ImGui::BeginPopupModal("RenameGameObject", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+    centerWindow();
+    if (ImGui::BeginPopupModal("RenameGameObject", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize)) {
         ImGui::InputText("New Name", renameInputBuffer, sizeof(renameInputBuffer));
 
         if (ImGui::Button("Rename")) {

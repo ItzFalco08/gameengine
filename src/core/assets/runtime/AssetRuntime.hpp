@@ -1,5 +1,5 @@
 #pragma once
-#include "../../../utils/Utils.hpp"
+#include "../../../utils/UUID.hpp"
 #include "../meta/AssetMeta.hpp"
 
 struct RuntimeAsset {
