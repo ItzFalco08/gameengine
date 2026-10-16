@@ -57,11 +57,21 @@ public:
 		return static_cast<T*>(it->second.get());
 	}
 
+	Component* GetComponent(std::type_index index) {
+		auto it = components.find(index);
+		if (it == components.end()) return nullptr;
+		return it->second.get();
+	}
+
 	template<typename T>
-	bool hasComponent() {
+	bool HasComponent() {
 		static_assert(std::is_base_of_v<Component, T>, "T must derive from 'Component'");
 		if constexpr (std::is_same_v<T, TransformComponent>) return transform != nullptr;
 		return components.find(std::type_index(typeid(T))) != components.end();
+	}
+
+	bool HasComponent(std::type_index index) {
+		return components.find(index) != components.end();
 	}
 
 	void Serialize(nlohmann::json& json);

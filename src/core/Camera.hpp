@@ -4,7 +4,9 @@
 
 struct Camera {
     // Camera properties
-    glm::vec3 position = glm::vec3(0.0f);
+    // Keep the editor camera in front of objects at the world origin so they
+    // are visible in the scene view and their transform gizmos are not clipped.
+    glm::vec3 position = glm::vec3(0.0f, 0.0f, 5.0f);
     glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
     glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);
 

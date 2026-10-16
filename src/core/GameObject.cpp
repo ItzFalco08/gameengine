@@ -31,7 +31,7 @@ void GameObject::Deserialize(nlohmann::json& json) {
     };
 
     std::unordered_map<ComponentType, ComponentInfo> comp_info = {
-        { ComponentType::MeshRenderer,{ std::type_index(typeid(MeshComponent)), []() { return std::make_unique<MeshComponent>(); } } },
+        { ComponentType::Mesh,{ std::type_index(typeid(MeshComponent)), []() { return std::make_unique<MeshComponent>(); } } },
         { ComponentType::Light,{ std::type_index(typeid(LightComponent)), []() { return std::make_unique<LightComponent>(); } } },
     };
 

@@ -10,7 +10,7 @@ public:
     void Serialize(nlohmann::json& json) override;
     void Deserialize(const nlohmann::json& json) override;
 
-	ComponentType GetType() override { return ComponentType::MeshRenderer; }
+	ComponentType GetType() override { return ComponentType::Mesh; }
 
     ~MeshComponent() override;
 };

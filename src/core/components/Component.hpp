@@ -8,10 +8,8 @@ class GameObject;
 
 enum class ComponentType {
 	Transform,
-	MeshRenderer,
-	Camera,
-	Light,
-	Script
+	Mesh,
+    Light
 };
 
 class Component {

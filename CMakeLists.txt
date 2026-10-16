@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.14)
 project(engine)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_C_STANDARD 23)
+set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -15,6 +17,7 @@ set(SDL_TESTS OFF CACHE BOOL "" FORCE)
 set(SDL_TEST_LIBRARY OFF CACHE BOOL "" FORCE)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_FRAMEWORK OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(third_party/SDL)
 add_subdirectory(third_party/imgui)
@@ -25,6 +28,14 @@ add_subdirectory(third_party/json)
 add_subdirectory(third_party/KHR)
 add_subdirectory(third_party/STB)
 add_subdirectory(third_party/assimp)
+
+find_path(MINIZIP_INCLUDE_DIR unzip.h PATH_SUFFIXES minizip REQUIRED)
+target_include_directories(assimp PRIVATE "${MINIZIP_INCLUDE_DIR}")
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_compile_options(assimp PRIVATE -Wno-unsafe-buffer-usage)
+endif()
+
 # source files and libs
 add_executable(engine ${SOURCES})
 

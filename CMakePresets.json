@@ -2,25 +2,25 @@
   "version": 3,
   "configurePresets": [
     {
-        "name": "msvc-ninja-release",
-        "displayName": "MSVC Ninja Release",
+        "name": "clang-ninja-release",
+        "displayName": "Clang Ninja Release",
         "generator": "Ninja",
         "binaryDir": "${sourceDir}/build/release",
         "cacheVariables": {
             "CMAKE_BUILD_TYPE": "Release",
-            "CMAKE_C_COMPILER": "cl.exe",
-            "CMAKE_CXX_COMPILER": "cl.exe"
+            "CMAKE_C_COMPILER": "clang",
+            "CMAKE_CXX_COMPILER": "clang++"
         }
     },
     {
-        "name": "msvc-ninja-debug",
-        "displayName": "MSVC Ninja Debug",
+        "name": "clang-ninja-debug",
+        "displayName": "Clang Ninja Debug",
         "generator": "Ninja",
         "binaryDir": "${sourceDir}/build/debug",
         "cacheVariables": {
             "CMAKE_BUILD_TYPE": "Debug",
-            "CMAKE_C_COMPILER": "cl.exe",
-            "CMAKE_CXX_COMPILER": "cl.exe"
+            "CMAKE_C_COMPILER": "clang",
+            "CMAKE_CXX_COMPILER": "clang++"
         }
     }
   ]

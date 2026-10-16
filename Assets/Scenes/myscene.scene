@@ -2,7 +2,12 @@
   "gameObjects": [
     {
       "childs": [],
-      "components": [],
+      "components": [
+        {
+          "meshUUID": "00000000000000000000000000000000",
+          "type": 1
+        }
+      ],
       "name": "GameObject",
       "transform": {
         "gEulars": [

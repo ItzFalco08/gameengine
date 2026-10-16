@@ -52,7 +52,7 @@ void AssetsBrowser::renderPanels() {
         static char inputBuffer[256] = { 0 };
         ImGui::InputText("Folder Name", inputBuffer, sizeof(inputBuffer));
         if (inputBuffer[0] == '\0') {
-            strncpy_s(inputBuffer, "new folder", sizeof(inputBuffer) - 1);
+            strncpy(inputBuffer, "new folder", sizeof(inputBuffer) - 1);
             inputBuffer[sizeof(inputBuffer) - 1] = '\0';
         }
 
@@ -76,7 +76,7 @@ void AssetsBrowser::renderPanels() {
         static char inputBuffer[256] = { 0 };
         ImGui::InputText("Scene Name", inputBuffer, sizeof(inputBuffer));
         if (inputBuffer[0] == '\0') {
-            strncpy_s(inputBuffer, "myscene", sizeof(inputBuffer) - 1);
+            strncpy(inputBuffer, "myscene", sizeof(inputBuffer) - 1);
             inputBuffer[sizeof(inputBuffer) - 1] = '\0';
         }
 
@@ -100,7 +100,7 @@ void AssetsBrowser::renderPanels() {
         static char inputBuffer[256] = { 0 };
         ImGui::InputText("New Name", inputBuffer, sizeof(inputBuffer));
         if (inputBuffer[0] == '\0') {
-            strncpy_s(inputBuffer, "new name", sizeof(inputBuffer) - 1);
+            strncpy(inputBuffer, "new name", sizeof(inputBuffer) - 1);
             inputBuffer[sizeof(inputBuffer) - 1] = '\0';
         }
 
@@ -265,7 +265,7 @@ void AssetsBrowser::renderPanels() {
                             const UUID textureUUID = generateUUID();
                             nlohmann::json textureJson = {
                                 {"uuid", UUID::toString(textureUUID)},
-                                {"texturePath", fs::relative(textureOutput, fs::path(ROOT_DIR)).generic_string()},
+                                {"texturePath", fs::relative(textureOutput, fs::path(ASSETS_DIR)).generic_string()},
                                 {"textureType", "Texture2D"},
                                 {"wrapU", GL_REPEAT}, {"wrapV", GL_REPEAT},
                                 {"minFilter", GL_LINEAR_MIPMAP_LINEAR}, {"magFilter", GL_LINEAR}
@@ -298,19 +298,17 @@ void AssetsBrowser::renderPanels() {
                         progress = 2 + (scene->mNumMaterials ? static_cast<int>((i + 1) * 3 / scene->mNumMaterials) : 3);
                     }
 
-                    uint64_t vertexCount64 = 0;
-                    uint64_t indexCount64 = 0;
+                    uint32_t vertexCount = 0;
+                    uint32_t indexCount = 0;
                     for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
                         const aiMesh* mesh = scene->mMeshes[i];
-                        vertexCount64 += mesh->mNumVertices;
-                        for (unsigned int f = 0; f < mesh->mNumFaces; ++f) indexCount64 += mesh->mFaces[f].mNumIndices;
+                        vertexCount += mesh->mNumVertices;
+                        for (unsigned int f = 0; f < mesh->mNumFaces; ++f) indexCount += mesh->mFaces[f].mNumIndices;
                     }
 
-                    if (vertexCount64 == 0 || indexCount64 == 0 || vertexCount64 > std::numeric_limits<uint32_t>::max() || indexCount64 > std::numeric_limits<uint32_t>::max())
+                    if (vertexCount == 0 || indexCount == 0 || vertexCount > std::numeric_limits<uint32_t>::max() || indexCount > std::numeric_limits<uint32_t>::max())
                         throw std::runtime_error("Imported model exceeds supported mesh size.");
 
-                    const uint32_t vertexCount = static_cast<uint32_t>(vertexCount64);
-                    const uint32_t indexCount = static_cast<uint32_t>(indexCount64);
                     const fs::path meshDataPath = modelDir / modelName;
                     std::ofstream meshData(meshDataPath, std::ios::binary);
                     if (!meshData) throw std::runtime_error("Failed to create mesh data: " + meshDataPath.string());
@@ -372,8 +370,18 @@ void AssetsBrowser::renderPanels() {
 
                     const UUID meshUUID = generateUUID();
                     std::ofstream meshMeta(modelDir / (modelName + ".mesh"), std::ios::binary);
-                    meshMeta.write(reinterpret_cast<const char*>(&meshUUID), sizeof(meshUUID));
-                    if (!meshMeta) throw std::runtime_error("Failed to write mesh metadata.");
+                    if (!meshMeta) throw std::runtime_error("Failed to create mesh metadata file.");
+
+                    nlohmann::json meshMetaJson = {
+                        {"uuid", UUID::toString(meshUUID)},
+                        {"vertexCount", vertexCount},
+                        {"indexCount", indexCount},
+                        {"submeshCount", submeshCount},
+                    };
+
+                    meshMeta << meshMetaJson.dump(4);
+                    meshMeta.close();
+
                     progress = -2;
                 } catch (const std::exception& e) {
                     failImport(std::string("Model import failed: ") + e.what());
@@ -645,8 +653,8 @@ void AssetsBrowser::DrawAssetItem(
     );
 
     if (ImGui::BeginDragDropSource()) {
-        const wchar_t* itemPathW = itemPath.c_str();
-        ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPathW, (wcslen(itemPathW) + 1) * sizeof(wchar_t));
+        const char* itemPathW = itemPath.c_str();
+        ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPathW, (strlen(itemPathW) + 1) * sizeof(char));
         ImGui::Text("%s", label); 
         ImGui::EndDragDropSource();
     }
@@ -660,6 +668,20 @@ void AssetsBrowser::DrawAssetItem(
             currentPath = selectedItem;
         } else if (selectedItem.extension() == ".scene") {
             engine.sceneManager.SetScene(selectedItem);
+        } else {
+            // an asset opened.
+            std::ifstream selectedItemFile(selectedItem, std::ios::binary);
+            if(!selectedItemFile) {
+                LOG::EditorError("Failed to open asset file: ", selectedItem.string());
+                return;
+            }
+            
+            nlohmann::json assetMetaJson;
+            selectedItemFile >> assetMetaJson;
+            
+            editor.selectedAssetMeta = engine.assetsRegistry.getAsset<AssetMeta>(
+                UUID::fromString(assetMetaJson.at("uuid").get<std::string>())
+            );
         }
     }
 
@@ -698,8 +720,6 @@ void AssetsBrowser::DrawAssetItem(
     ImGui::EndGroup();
 
 }
-
-
 
 void AssetsBrowser::OpenFile(std::string filePath)
 {

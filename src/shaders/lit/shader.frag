@@ -12,9 +12,9 @@ struct PointLight {
 	vec4 positionRange;
 	vec4 colorIntensity;
 };
-layout(std430, binding = 0) buffer readonly LightSSBO { PointLight lights[]; };
-layout(std430, binding = 1) buffer readonly IndexSSBO { ClusterLights indices[]; };
-layout(std430, binding = 2) buffer readonly CountSSBO { uint counts[CLUSTER_COUNT]; };
+layout(std430, binding = 0) readonly buffer LightSSBO { PointLight lights[]; };
+layout(std430, binding = 1) readonly buffer IndexSSBO { ClusterLights indices[]; };
+layout(std430, binding = 2) readonly buffer CountSSBO { uint counts[CLUSTER_COUNT]; };
 
 in vec3 FragPos;
 in vec3 FragPosViewSpace;

@@ -142,7 +142,7 @@ inline void Renderer::renderScene() {
     static std::vector<BatchEntry> batchEntries;
 
     for (auto& go : scene->gameObjects) {
-        if (!go->hasComponent<MeshComponent>()) continue;
+        if (!go->HasComponent<MeshComponent>()) continue;
         Mesh* runtimeMeshAsset = engine.runtimeAssetsRegistry.getAsset<Mesh>(go->GetComponent<MeshComponent>()->meshUUID);
         if (runtimeMeshAsset == nullptr) continue;
         std::vector<Submesh>& submeshes = reinterpret_cast<Mesh*>(runtimeMeshAsset)->submeshes;

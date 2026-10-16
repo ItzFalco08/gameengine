@@ -2,6 +2,7 @@
 #include <fstream>
 #include "../meta/MeshAsset.hpp"
 #include "Mesh.hpp"
+#include <cstring>
 
 bool Mesh::Serialize(const AssetMeta& entry) {
 	if (VAO != GL_NONE || VBO != GL_NONE || EBO != GL_NONE) {
@@ -12,7 +13,7 @@ bool Mesh::Serialize(const AssetMeta& entry) {
 	}
 
 	const MeshAsset& meshMeta = static_cast<const MeshAsset&>(entry);
-	std::ifstream file(meshMeta.sourceFile, std::ios::binary);
+	std::ifstream file(meshMeta.m_sourceFile, std::ios::binary);
 	if (!file.is_open()) return false;
 
 	std::streamsize size = file.tellg();

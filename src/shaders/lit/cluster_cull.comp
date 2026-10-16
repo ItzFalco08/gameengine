@@ -19,8 +19,8 @@ struct ClusterLights {
 
 uniform uint nPointLight;
 
-layout(std430, binding = 0) buffer readonly LightSSBO { PointLight lights[]; };
-layout(std430, binding = 1) buffer readonly ClusterSSBO { GridAABB clusters[]; };
+layout(std430, binding = 0) readonly buffer LightSSBO { PointLight lights[]; };
+layout(std430, binding = 1) readonly buffer ClusterSSBO { GridAABB clusters[]; };
 layout(std430, binding = 2) buffer IndexSSBO { ClusterLights indices[]; };
 layout(std430, binding = 3) buffer CountSSBO { uint counts[CLUSTER_COUNT]; };
 

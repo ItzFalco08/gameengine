@@ -8,8 +8,10 @@ extern double deltaTime;
 
 void ScenePanel::Render() {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0,0));
-    ImGui::Begin("Scene");
+    bool open = ImGui::Begin("Scene");
     ImGui::PopStyleVar();
+
+    if (!open) { ImGui::End(); return; }
 
     // variables
     ImVec2 dimensions = ImGui::GetContentRegionAvail();
@@ -17,9 +19,9 @@ void ScenePanel::Render() {
 
     updateDimentions(dimensions);
     renderFrameBuffer();
+    renderGuizmos();
     gizmoSelectorGui(windowPos);
     statsGui(windowPos, dimensions);
-    renderGuizmos();
     handleCameraMovement();
 
     ImGui::End();
@@ -55,33 +57,36 @@ void ScenePanel::updateFBODimensions() {
 }
 
 void ScenePanel::updateDimentions(ImVec2& dimensions) {
-    int p_w = editor.sceneView.SCENEVIEW_WIDTH;
-    int p_h = editor.sceneView.SCENEVIEW_HEIGHT;
-    static double lastchange = 0;
+    int width = static_cast<int>(dimensions.x);
+    int height = static_cast<int>(dimensions.y);
 
-    bool changed = false;
-    //[02614] [imgui - error] In window 'Scene': Incorrect parameter.Did you swap 'thickness' and 'flags' ?
-    if (dimensions.x != p_w) {
-        editor.sceneView.SCENEVIEW_WIDTH = static_cast<int>(dimensions.x);
-        changed = true;
+    if (width <= 0 || height <= 0)
+        return;
+
+    static Uint64 lastChange = 0;
+    static bool resizePending = false;
+
+    if (width != editor.sceneView.SCENEVIEW_WIDTH ||
+        height != editor.sceneView.SCENEVIEW_HEIGHT) {
+
+        editor.sceneView.SCENEVIEW_WIDTH = width;
+        editor.sceneView.SCENEVIEW_HEIGHT = height;
+
+        lastChange = SDL_GetTicks();
+        resizePending = true;
     }
-    if (dimensions.y != p_h) {
-        editor.sceneView.SCENEVIEW_HEIGHT = static_cast<int>(dimensions.y);
-        changed = true;
-    }
 
-    if (changed) lastchange = static_cast<double>(SDL_GetTicks()) / 1000.0;
-
-    if (static_cast<double>(SDL_GetTicks()) / 1000.0 - lastchange > 0.15) { // 150ms debounce
+    if (resizePending && SDL_GetTicks() - lastChange >= 150) {
         updateFBODimensions();
         editor.editorCamera.projDirty = true;
+        resizePending = false;
     }
 }
 
 void ScenePanel::renderFrameBuffer() {
-        ImGui::Image((ImTextureID)(uintptr_t)editor.sceneView.textureObj,
-            ImVec2((float)editor.sceneView.SCENEVIEW_WIDTH, (float)editor.sceneView.SCENEVIEW_HEIGHT),
-            ImVec2(0, 1), ImVec2(1, 0));
+    ImGui::Image((ImTextureID)(uintptr_t)editor.sceneView.textureObj,
+        ImVec2((float)editor.sceneView.SCENEVIEW_WIDTH, (float)editor.sceneView.SCENEVIEW_HEIGHT),
+        ImVec2(0, 1), ImVec2(1, 0));
 }
 
 void ScenePanel::gizmoSelectorGui(ImVec2& windowPos) {
@@ -165,6 +170,10 @@ void ScenePanel::renderGuizmos() {
     // render Gizmos;
     ImGuizmo::Enable(true);
     if (editor.selectedGameObject) {
+        
+        editor.editorCamera.getProjMat();
+        editor.editorCamera.getViewMat();
+        
         ImGuizmo::Manipulate(
             glm::value_ptr(editor.editorCamera.viewMat),
             glm::value_ptr(editor.editorCamera.projectionMat),

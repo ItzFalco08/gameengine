@@ -37,6 +37,7 @@ struct Engine {
 struct Editor {
     Camera editorCamera;
     GameObject* selectedGameObject = nullptr;
+    AssetMeta* selectedAssetMeta = nullptr;
 
     Assimp::Importer importer;
     SceneView sceneView;

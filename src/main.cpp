@@ -18,7 +18,6 @@ void calcDeltaTime();
 void genSceneFramebuffers();
 void EditorUpdate();
 
-double lastLogTime = 0.0;
 double deltaTime = 0.0;
 
 int main() {
@@ -122,8 +121,11 @@ int main() {
         glViewport(0, 0, editor.sceneView.SCENEVIEW_WIDTH, editor.sceneView.SCENEVIEW_HEIGHT);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
         Update();
+
+        // Render the scene into the texture shown by the Scene panel. The UI renderer
+        // switches back to the window framebuffer in drawScreen().
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
         EditorUpdate();
         SDL_GL_SwapWindow(appState.window);
     }
@@ -140,9 +142,14 @@ int main() {
 }
 
 void calcDeltaTime() {
-    double curTime = static_cast<double>(SDL_GetTicks()) / 1000.0;
-    deltaTime = curTime - lastLogTime;
-    lastLogTime = curTime;
+    static Uint64 lastCounter = SDL_GetPerformanceCounter();
+
+    Uint64 currentCounter = SDL_GetPerformanceCounter();
+
+    deltaTime = static_cast<double>(currentCounter - lastCounter)
+              / SDL_GetPerformanceFrequency();
+
+    lastCounter = currentCounter;
 }
 
 // Start
@@ -269,7 +276,7 @@ void genSceneFramebuffers() {
 
     // TEXTURE OBJECT
     glBindTexture(GL_TEXTURE_2D, editor.sceneView.textureObj);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, editor.sceneView.SCENEVIEW_WIDTH, editor.sceneView.SCENEVIEW_HEIGHT, 0,
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, editor.sceneView.SCENEVIEW_WIDTH, editor.sceneView.SCENEVIEW_HEIGHT, 0,
         GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
