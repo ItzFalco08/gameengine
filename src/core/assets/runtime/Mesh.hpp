@@ -18,7 +18,7 @@ struct Submesh {
 };
 
 struct Mesh : public RuntimeAsset {
-	GLuint VAO, VBO, EBO{ GL_NONE };
+	GLuint VAO{ GL_NONE }, VBO{ GL_NONE }, EBO{ GL_NONE };
 	std::vector<Submesh> submeshes;
 
 	AssetType getType() const override {

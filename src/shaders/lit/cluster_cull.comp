@@ -3,7 +3,6 @@
 layout(local_size_x = 64) in; // doesnt matter unless different data is read from two invocations.
 
 #define MAX_LIGHTS_PER_CLUSTER 128
-#define CLUSTER_COUNT 3456
 
 struct GridAABB {
 	vec4 from;
@@ -18,15 +17,18 @@ struct ClusterLights {
 };
 
 uniform uint nPointLight;
+uniform uint clusterCount;
+uniform mat4 uView;
 
 layout(std430, binding = 0) readonly buffer LightSSBO { PointLight lights[]; };
 layout(std430, binding = 1) readonly buffer ClusterSSBO { GridAABB clusters[]; };
-layout(std430, binding = 2) buffer IndexSSBO { ClusterLights indices[]; };
-layout(std430, binding = 3) buffer CountSSBO { uint counts[CLUSTER_COUNT]; };
+layout(std430, binding = 2) buffer CountSSBO { uint counts[]; };
+layout(std430, binding = 3) buffer IndexSSBO { ClusterLights indices[]; };
 
 void main() {
 	// cluster we are in
 	uint idx = gl_GlobalInvocationID.x;
+	if (idx >= clusterCount) return;
 	GridAABB cluster = clusters[idx];
 
 	// iterate lights
@@ -34,15 +36,16 @@ void main() {
 		PointLight light = lights[i];
 		
 		// aabb check
-		if (light.positionRange.x - light.positionRange.w < cluster.to.x &&
-			light.positionRange.x + light.positionRange.w > cluster.from.x &&
-			light.positionRange.y - light.positionRange.w < cluster.to.y &&
-			light.positionRange.y + light.positionRange.w > cluster.from.y &&
-			light.positionRange.z - light.positionRange.w < cluster.to.z &&
-			light.positionRange.z + light.positionRange.w > cluster.from.z) {
+		vec3 lightPosition = (uView * vec4(light.positionRange.xyz, 1.0)).xyz;
+		if (lightPosition.x - light.positionRange.w < cluster.to.x &&
+			lightPosition.x + light.positionRange.w > cluster.from.x &&
+			lightPosition.y - light.positionRange.w < cluster.to.y &&
+			lightPosition.y + light.positionRange.w > cluster.from.y &&
+			-lightPosition.z - light.positionRange.w < cluster.to.z &&
+			-lightPosition.z + light.positionRange.w > cluster.from.z) {
 			// Light is in the cluster
-			indices[idx].lightsIndices[counts[idx]] = i;
-			counts[idx]++;
+			uint count = atomicAdd(counts[idx], 1u);
+			if (count < MAX_LIGHTS_PER_CLUSTER) indices[idx].lightsIndices[count] = i;
 		}
 	}
 }

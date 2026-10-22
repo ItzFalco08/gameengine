@@ -160,7 +160,7 @@ void Start() {
 // renderer update
 void Update() {
     calcDeltaTime();
-    engine.renderer.OpenGLRenderer(sceneManager.activeScene.get());
+    engine.renderer.OpenGLRenderer(engine.sceneManager.activeScene.get());
 }
 
 // engine update (gui/states)
@@ -206,7 +206,7 @@ void drawScreen()
         if (ImGui::BeginMenu("File"))
         {
             if (ImGui::MenuItem("Save Changes", "Ctrl+S"))
-                sceneManager.activeScene->MakeDirty();
+                engine.sceneManager.activeScene->MakeDirty();
 
             ImGui::EndMenu();
         }

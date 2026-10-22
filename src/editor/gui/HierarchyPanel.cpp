@@ -76,12 +76,15 @@ void HierarchyPanel::RenderHeriarchy(std::vector<GameObject*>& roots) {
         ImGui::PopStyleVar();
 
         // left click
-        if(!isSelected && ImGui::IsItemClicked(ImGuiMouseButton_Left))            
+        if(!isSelected && ImGui::IsItemClicked(ImGuiMouseButton_Left)) {
             editor.selectedGameObject = gameObject;
+            editor.selectedAssetMeta = nullptr;
+        }
 
         // right click
         if (ImGui::BeginPopupContextItem()) {
             editor.selectedGameObject = gameObject;
+            editor.selectedAssetMeta = nullptr;
 
             if(ImGui::MenuItem("Rename")) {
                 std::strncpy(renameInputBuffer, editor.selectedGameObject->name.c_str(), sizeof(renameInputBuffer) - 1);

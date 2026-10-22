@@ -6,10 +6,13 @@
 #ifndef SHADER_DIR
 #define SHADER_DIR ""
 #endif
+#ifndef ASSETS_DIR
+#define ASSETS_DIR ""
+#endif
 
 void Texture::bind(unsigned int unit) const
 {
-    glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(GL_TEXTURE0 + unit);
     glBindTexture(GL_TEXTURE_2D, TexId);
 }
 
@@ -121,8 +124,9 @@ void Texture2D::applyParams(TexDets dets) {
 
 bool Texture2D::Serialize(const AssetMeta& entry) {
     TextureAsset& texAsset = (TextureAsset&)entry;
-    texturePath = texAsset.m_texturePath.string();
-    Initialize(texturePath, TexDets{
+    fs::path resolvedPath = texAsset.m_texturePath;
+    if (resolvedPath.is_relative()) resolvedPath = fs::path(ASSETS_DIR) / resolvedPath;
+    Initialize(resolvedPath, TexDets{
         texAsset.m_wrapU,
         texAsset.m_wrapV,
         texAsset.m_minFilter,
@@ -278,8 +282,9 @@ void Cubemap::Initialize(const fs::path& path, TexDets texDets) {
 
 bool Cubemap::Serialize(const AssetMeta& entry) {
     TextureAsset& texAsset = (TextureAsset&)entry;
-    texturePath = texAsset.m_texturePath.string();
-    Initialize(texturePath, TexDets{
+    fs::path resolvedPath = texAsset.m_texturePath;
+    if (resolvedPath.is_relative()) resolvedPath = fs::path(ASSETS_DIR) / resolvedPath;
+    Initialize(resolvedPath, TexDets{
         texAsset.m_wrapU,
         texAsset.m_wrapV,
         texAsset.m_minFilter,

@@ -1,5 +1,7 @@
 #include "InspectorPanel.hpp"
+#include "AssetDragPayload.hpp"
 #include "imgui.h"
+#include "../../utils/UUID.hpp"
 #include "../../utils/globals.hpp"
 #include "../../core/components/Mesh.hpp"
 #include "../../core/components/Light.hpp"
@@ -23,7 +25,6 @@ void InspectorPanel::renderPanels() {
         }
         ImGui::EndPopup();
     }
-
 
     if(ImGui::BeginPopup("AddComponentPopup", ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove)) {
         char buf[50] = {}; // temp value, internally managed by imgui
@@ -51,14 +52,13 @@ void InspectorPanel::renderPanels() {
 
         ImGui::EndPopup();
     }
-
 };
 
 void InspectorPanel::Render() {
     renderPanels();
 
     ImGui::Begin("Inspector");
-
+    
     if (editor.selectedGameObject) {
         ImGui::InputText("Name", editor.selectedGameObject->name.data(), editor.selectedGameObject->name.size() + 1, ImGuiInputTextFlags_ReadOnly);
 
@@ -71,13 +71,13 @@ void InspectorPanel::Render() {
         if(ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
             if (ImGui::DragFloat3("position", &editor.selectedGameObject->transform->position.x, 0.1f)) {
                 editor.selectedGameObject->transform->modelDirty = true;
-                sceneManager.activeScene->MakeDirty();
+                engine.sceneManager.activeScene->MakeDirty();
             }
 
             if (ImGui::DragFloat3("scale", &editor.selectedGameObject->transform->scale.x, 0.1f)) {
                 editor.selectedGameObject->transform->modelDirty = true;
                 editor.selectedGameObject->transform->normalDirty= true;
-                sceneManager.activeScene->MakeDirty();
+                engine.sceneManager.activeScene->MakeDirty();
             }
 
             glm::vec3 gEulars = editor.selectedGameObject->transform->gEulars;
@@ -85,7 +85,7 @@ void InspectorPanel::Render() {
                 editor.selectedGameObject->transform->SetRotationGlobal(gEulars);
                 editor.selectedGameObject->transform->modelDirty = true;
                 editor.selectedGameObject->transform->normalDirty= true;
-                sceneManager.activeScene->MakeDirty();
+                engine.sceneManager.activeScene->MakeDirty();
             }
 
             ImGui::Dummy(ImVec2(0.0f, 6.0f));
@@ -104,6 +104,18 @@ void InspectorPanel::Render() {
 
                 if (compOpen) {
                     ImGui::Text("Mesh UUID: %s", UUID::toString(meshComp->meshUUID).c_str());
+                    if (ImGui::BeginDragDropTarget()) {
+
+                        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_UUID")) {
+                            const auto* asset = static_cast<const AssetDragPayload*>(payload->Data);
+                            if (asset->type == AssetType::MESH) {
+                                meshComp->meshUUID = UUID::fromString(asset->uuid);
+                                engine.sceneManager.activeScene->MakeDirty();
+                            }
+                        }
+
+                        ImGui::EndDragDropTarget();
+                    }
                     ImGui::Dummy(ImVec2(0.0f, 6.0f));
                 }
             

@@ -28,7 +28,7 @@ void main() {
     
     // O U T S (Normal and Pos of fragment)
     FragPos = vec3(uModel * vec4(aPos, 1.0));
-    FragPosViewSpace = vec3(uView * vec4(aPos, 1.0));
+    FragPosViewSpace = vec3(uView * uModel * vec4(aPos, 1.0));
     TexCoords = aTexCoords;
     Normal = normalize(uNormalMatrix * aNormal); // apply correct rotation, scaling to normal
 }

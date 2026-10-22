@@ -9,6 +9,10 @@
 
 template<typename T>
 T* RuntimeAssetsRegistry::getAsset(const UUID& uuid) {
+    if (uuid.low == 0 && uuid.high == 0) {
+        return nullptr;
+    }
+
     // Return the cached runtime asset if it already exists.
     if (m_assetsRuntime.has(uuid)) {
         return dynamic_cast<T*>(m_assetsRuntime.get(uuid));

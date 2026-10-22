@@ -2,6 +2,7 @@
 #include "components/Mesh.hpp"
 #include "components/Light.hpp"
 #include "../utils/globals.hpp"
+#include <algorithm>
 
 
 
@@ -15,15 +16,22 @@ void Renderer::Init()
     glCreateBuffers(SDL_arraysize(SSBOs), SSBOs);
 
     glNamedBufferStorage(lightSSBO, sizeof(GPUPointLight) * MAX_LIGHTS, nullptr, GL_DYNAMIC_STORAGE_BIT);
-    glNamedBufferStorage(clusterSSBO, sizeof(glm::vec4) * 2 * CLUSTER_COUNT, nullptr, GL_DYNAMIC_STORAGE_BIT);
-    glNamedBufferStorage(countSSBO, sizeof(uint32_t) * CLUSTER_COUNT, nullptr, GL_DYNAMIC_STORAGE_BIT);
-    glNamedBufferStorage(indexSSBO, sizeof(uint32_t) * MAX_PER_CLUSTER * CLUSTER_COUNT, nullptr, GL_DYNAMIC_STORAGE_BIT);
+    glNamedBufferData(clusterSSBO, sizeof(glm::vec4) * 2 * CLUSTER_COUNT, nullptr, GL_DYNAMIC_DRAW);
+    glNamedBufferData(countSSBO, sizeof(uint32_t) * CLUSTER_COUNT, nullptr, GL_DYNAMIC_DRAW);
+    glNamedBufferData(indexSSBO, sizeof(uint32_t) * MAX_PER_CLUSTER * CLUSTER_COUNT, nullptr, GL_DYNAMIC_DRAW);
+    clusterWidth = editor.sceneView.SCENEVIEW_WIDTH;
+    clusterHeight = editor.sceneView.SCENEVIEW_HEIGHT;
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, lightSSBO);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, clusterSSBO);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, countSSBO);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, indexSSBO);
     gpuDirLights.reserve(MAX_DIRLIGHTS);
 
     // set fragment shader properties for cluster rendering
+    engine.litShader.use();
     engine.litShader.setFloat("zNear", editor.editorCamera._near);
     engine.litShader.setFloat("zFar", editor.editorCamera._far);
-    engine.litShader.setVec3("gridSize", glm::vec3(GX, GY, GZ));
+    engine.litShader.setVec3u("gridSize", glm::uvec3(GX, GY, GZ));
     engine.litShader.setVec2("uTileSize", glm::vec2(editor.sceneView.SCENEVIEW_WIDTH, editor.sceneView.SCENEVIEW_HEIGHT) / glm::vec2(GX, GY));
 
     fallbackmap.Initialize(whitepixel, 1, 1, 4);
@@ -32,19 +40,44 @@ void Renderer::Init()
 
 void Renderer::OpenGLRenderer(Scene* _scene) {
     // renders the scene in a opengl context
+    const bool sceneChanged = previousScene != _scene;
     scene = _scene;
+    previousScene = _scene;
+
+    // change cluster dimentions on size change 
+    bool clustersResized = false;
+    if (clusterWidth != editor.sceneView.SCENEVIEW_WIDTH || clusterHeight != editor.sceneView.SCENEVIEW_HEIGHT) {
+        clusterWidth = editor.sceneView.SCENEVIEW_WIDTH;
+        clusterHeight = editor.sceneView.SCENEVIEW_HEIGHT;
+        GX = std::max(1u, static_cast<uint32_t>((clusterWidth + 23) / 24));
+        GY = std::max(1u, static_cast<uint32_t>((clusterHeight + 23) / 24));
+        CLUSTER_COUNT = GX * GY * GZ;
+        glNamedBufferData(clusterSSBO, sizeof(glm::vec4) * 2 * CLUSTER_COUNT, nullptr, GL_DYNAMIC_DRAW);
+        glNamedBufferData(countSSBO, sizeof(uint32_t) * CLUSTER_COUNT, nullptr, GL_DYNAMIC_DRAW);
+        glNamedBufferData(indexSSBO, sizeof(uint32_t) * MAX_PER_CLUSTER * CLUSTER_COUNT, nullptr, GL_DYNAMIC_DRAW);
+        engine.litShader.use();
+        engine.litShader.setVec3u("gridSize", glm::uvec3(GX, GY, GZ));
+        engine.litShader.setVec2("uTileSize", glm::vec2(clusterWidth, clusterHeight) / glm::vec2(GX, GY));
+        clustersResized = true;
+    }
 
     // build AABB -> load lights -> calculate clusters (AABB + lights) -> render scene
-    if (firstFrame || editor.editorCamera.projDirty || editor.sceneView.getAspect() != prevAspect) {
+    const bool projectionChanged = firstFrame || clustersResized || editor.editorCamera.projDirty;
+    if (projectionChanged) {
+        // projection related propertes in shader
+        engine.litShader.setFloat("zNear", editor.editorCamera._near);
+        engine.litShader.setFloat("zFar", editor.editorCamera._far);
+        
+        editor.editorCamera.getProjMat();
         calculateAABBClusters();
     }
 
-    if (scene->dirty || firstFrame) {
+    const bool lightsDirty = scene->rendererDirty || sceneChanged || firstFrame;
+    if (lightsDirty) {
         loadLights();
-        prevAspect = editor.sceneView.getAspect();
     }
 
-    if (editor.editorCamera.viewDirty || firstFrame) {
+    if (editor.editorCamera.viewDirty || lightsDirty || projectionChanged || firstFrame) {
         calculateClusterLights();
     }
 
@@ -53,11 +86,23 @@ void Renderer::OpenGLRenderer(Scene* _scene) {
     if (firstFrame) firstFrame = false;
 }
 
-inline void Renderer::loadLights() {
+void Renderer::loadLights() {
     // point lights -> pointlight SSBO
     static std::vector<GPUPointLight> gpuPointLights;
+    gpuPointLights.clear();
 
-    gpuDirLights.reserve(MAX_LIGHTS);
+    // Components can be added or removed after a scene is loaded. Rebuild the
+    // light list from the scene's current objects so the renderer never uses
+    // stale component pointers and newly added lights become active.
+    scene->lights.clear();
+    for (const auto& gameObject : scene->gameObjects) {
+        if (LightComponent* light = gameObject->GetComponent<LightComponent>()) {
+            scene->lights.push_back(light);
+        }
+    }
+
+    gpuDirLights.clear();
+    gpuDirLights.reserve(MAX_DIRLIGHTS);
 
     uint8_t nDirLight = 0;
 
@@ -70,11 +115,13 @@ inline void Renderer::loadLights() {
             nDirLight++;
         }
         else {
+            if (gpuPointLights.size() >= MAX_LIGHTS) continue;
             gpuPointLights.push_back({ glm::vec4(light->parent->transform->position, light->range), glm::vec4(light->color, light->intensity) });
         };
     }
 
     // point lights -> SSBO: upload only the lights you actually have
+    engine.litShader.use();
     LIGHT_COUNT = gpuPointLights.size();
     engine.litShader.setInt("nPointLight", LIGHT_COUNT);
     glNamedBufferSubData(lightSSBO, 0, LIGHT_COUNT * sizeof(GPUPointLight), gpuPointLights.data());
@@ -92,7 +139,7 @@ inline void Renderer::loadLights() {
     gpuDirLights.clear();
 }
 
-inline void Renderer::calculateAABBClusters() {
+void Renderer::calculateAABBClusters() {
     // Calculate the forward clusters
     static ComputeShader aabbBuilderProg(SHADER_DIR "lit/aabb_builder.comp");
 
@@ -106,7 +153,7 @@ inline void Renderer::calculateAABBClusters() {
     aabbBuilderProg.setFloat("zNear", editor.editorCamera._near);
     aabbBuilderProg.setFloat("zFar", editor.editorCamera._far);
     aabbBuilderProg.setVec3u("gridSize", glm::uvec3(GX, GY, GZ));
-    aabbBuilderProg.setUInt("clusterCount", CLUSTER_COUNT);
+    aabbBuilderProg.setUInt("clusterSize", CLUSTER_COUNT);
 
     constexpr int LOCAL_SIZE = 64;
     GLuint count = GX * GY * GZ;
@@ -115,16 +162,21 @@ inline void Renderer::calculateAABBClusters() {
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 }
 
-inline void Renderer::calculateClusterLights() {
+void Renderer::calculateClusterLights() {
     // Calculate the light clusters
     static ComputeShader lightClusterProg(SHADER_DIR "lit/cluster_cull.comp");
+    glClearNamedBufferData(countSSBO, GL_R32UI, GL_RED_INTEGER, GL_UNSIGNED_INT, nullptr);
+    glMemoryBarrier(GL_BUFFER_UPDATE_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
     lightClusterProg.use();
     lightClusterProg.setUInt("nPointLight", LIGHT_COUNT);
+    lightClusterProg.setUInt("clusterCount", CLUSTER_COUNT);
+    lightClusterProg.setMat4("uView", editor.editorCamera.getViewMat());
+
     glDispatchCompute((CLUSTER_COUNT + 63) / 64, 1, 1);
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 }
 
-inline constexpr uint64_t Renderer::makeKey(uint32_t shader, uint32_t material, uint32_t mesh, uint32_t sub) {
+constexpr uint64_t Renderer::makeKey(uint32_t shader, uint32_t material, uint32_t mesh, uint32_t sub) {
     // Field	Bits	Max Optimal distinct values
     // shader	8	256
     // material	16	65, 536
@@ -138,64 +190,72 @@ inline constexpr uint64_t Renderer::makeKey(uint32_t shader, uint32_t material, 
 }
 
 // batch material. select material, apply transform, render mesh
-inline void Renderer::renderScene() {
+void Renderer::renderScene() {
     static std::vector<BatchEntry> batchEntries;
 
-    for (auto& go : scene->gameObjects) {
-        if (!go->HasComponent<MeshComponent>()) continue;
-        Mesh* runtimeMeshAsset = engine.runtimeAssetsRegistry.getAsset<Mesh>(go->GetComponent<MeshComponent>()->meshUUID);
-        if (runtimeMeshAsset == nullptr) continue;
-        std::vector<Submesh>& submeshes = reinterpret_cast<Mesh*>(runtimeMeshAsset)->submeshes;
+    if (scene->rendererDirty) {
+        batchEntries.clear();
+        for (auto& go : scene->gameObjects) {
+            if (!go->HasComponent<MeshComponent>()) continue;
+            Mesh* runtimeMeshAsset = engine.runtimeAssetsRegistry.getAsset<Mesh>(go->GetComponent<MeshComponent>()->meshUUID);
+            if (runtimeMeshAsset == nullptr) continue;
+            std::vector<Submesh>& submeshes = reinterpret_cast<Mesh*>(runtimeMeshAsset)->submeshes;
 
-        for (int i = 0; i < submeshes.size(); i++) {
-            MaterialAsset* materialAsset = engine.assetsRegistry.getAsset<MaterialAsset>(submeshes[i].material);
+            for (int i = 0; i < submeshes.size(); i++) {
+                MaterialAsset* materialAsset = engine.assetsRegistry.getAsset<MaterialAsset>(submeshes[i].material);
+                if (materialAsset == nullptr) continue;
 
-            // Process each submesh of a gameobject
-            BatchEntry entry;
-            entry.key = makeKey(static_cast<uint32_t>(materialAsset->shaderType), engine.assetsRegistry.m_assetsMeta.find(submeshes[i].material), engine.assetsRegistry.m_assetsMeta.find(go->GetComponent<MeshComponent>()->meshUUID.low), i);
+                // Process each submesh of a gameobject
+                BatchEntry entry;
+                entry.key = makeKey(static_cast<uint32_t>(materialAsset->shaderType), engine.assetsRegistry.m_assetsMeta.find(submeshes[i].material), engine.assetsRegistry.m_assetsMeta.find(go->GetComponent<MeshComponent>()->meshUUID.low), i);
 
-            entry.m_shaderType = materialAsset->shaderType;
-            entry.m_material = materialAsset;
-            entry.m_mesh = runtimeMeshAsset;
-            entry.m_submesh = &submeshes[i];
-            entry.m_transform = go->transform.get();
-            batchEntries.push_back(entry);
+                entry.m_shaderType = materialAsset->shaderType;
+                entry.m_material = materialAsset;
+                entry.m_mesh = runtimeMeshAsset;
+                entry.m_submesh = &submeshes[i];
+                entry.m_transform = go->transform.get();
+                batchEntries.push_back(entry);
+            }
         }
 
+        std::sort(batchEntries.begin(), batchEntries.end(), [](const BatchEntry& a, const BatchEntry& b) {
+            return a.key < b.key;
+        });
+        scene->rendererDirty = false;
     }
 
-    std::sort(batchEntries.begin(), batchEntries.end(), [](const BatchEntry& a, const BatchEntry& b) {
-        return a.key < b.key;
-        });
-
-    static ShaderType lastShaderType = ShaderType::LIT;
-    static MaterialAsset* lastMaterial = nullptr;
-    static Submesh* lastSubmesh = nullptr;
-    static bool firstBatch = true;
+    ShaderType lastShaderType = static_cast<ShaderType>(-1);
+    MaterialAsset* lastMaterial = nullptr;
+    glm::mat4& view = editor.editorCamera.getViewMat();
+    glm::mat4& proj = editor.editorCamera.getProjMat();
 
     for (auto& batchEntry : batchEntries) {
         // select shader
-        if (batchEntry.m_shaderType != lastShaderType || firstBatch) {
+        if (batchEntry.m_shaderType != lastShaderType) {
             lastShaderType = batchEntry.m_shaderType;
             if (lastShaderType == ShaderType::LIT) {
                 engine.litShader.use();
+                engine.litShader.setMat4("uView", view);
+                engine.litShader.setMat4("uProjection", proj);
+                engine.litShader.setVec3("uCamPos", editor.editorCamera.position);
             }
             else {
                 engine.unlitShader.use();
+                engine.unlitShader.setMat4("uView", view);
+                engine.unlitShader.setMat4("uProjection", proj);
             }
-            if (firstBatch) firstBatch = false;
         }
 
         // set material
-        if (batchEntry.m_material != lastMaterial || firstBatch) {
+        if (batchEntry.m_material != lastMaterial) {
             lastMaterial = batchEntry.m_material;
 
             MaterialAsset* matAsset = engine.assetsRegistry.getAsset<MaterialAsset>(batchEntry.m_submesh->material);
 
             if (lastShaderType == ShaderType::LIT) {
-                engine.litShader.setVec3("uMaterial[diffuseColor]", lastMaterial->diffuseColor);
-                engine.litShader.setVec3("uMaterial[specularColor]", lastMaterial->specularColor);
-                engine.litShader.setFloat("uMaterial[shininess]", lastMaterial->shininess);
+                engine.litShader.setVec3("uMaterial.diffuseColor", lastMaterial->diffuseColor);
+                engine.litShader.setVec3("uMaterial.specularColor", lastMaterial->specularColor);
+                engine.litShader.setFloat("uMaterial.shininess", lastMaterial->shininess);
                 Texture* diffuseTexture = engine.runtimeAssetsRegistry.getAsset<Texture>(matAsset->diffuseMapUUID);
                 Texture* specularTexture = engine.runtimeAssetsRegistry.getAsset<Texture>(matAsset->specularMapUUID);
                 Texture* normalTexture = engine.runtimeAssetsRegistry.getAsset<Texture>(matAsset->normalMapUUID);
@@ -205,48 +265,31 @@ inline void Renderer::renderScene() {
                 if (normalTexture == nullptr) normalTexture = &normalfallback;
 
                 diffuseTexture->bind(0);
-                engine.litShader.setInt("uMaterial[diffuseMap]", 0);
                 specularTexture->bind(1);
-                engine.litShader.setInt("uMaterial[specularMap]", 1);
                 normalTexture->bind(2);
-                engine.litShader.setInt("uMaterial[normalMap]", 2);
+
+                engine.litShader.setInt("uMaterial.uDiffuseMap", 0);
+                engine.litShader.setInt("uMaterial.uSpecularMap", 1);
+                engine.litShader.setInt("uMaterial.uNormalMap", 2);
             }
             else {
-                engine.unlitShader.setVec3("uMaterial[diffuseColor]", lastMaterial->diffuseColor);
+                engine.unlitShader.setVec3("uMaterial.diffuseColor", lastMaterial->diffuseColor);
                 Texture* diffuseTexture = engine.runtimeAssetsRegistry.getAsset<Texture>(matAsset->diffuseMapUUID);
                 if (diffuseTexture == nullptr) diffuseTexture = &fallbackmap;
 
                 diffuseTexture->bind(0);
-                engine.unlitShader.setInt("uMaterial[diffuseMap]", 0);
+                engine.unlitShader.setInt("uMaterial.diffuseMap", 0);
             }
-
-            if (firstBatch) firstBatch = false;
         }
 
         // set transform
-        glm::mat4& model = batchEntry.m_transform->getModel();
-        glm::mat4& view = editor.editorCamera.getViewMat();
-        glm::mat4& proj = editor.editorCamera.getProjMat();
-        glm::mat4& normal = batchEntry.m_transform->getNormalMat();
-
-        if (batchEntry.m_material != lastMaterial || firstBatch) {
-            if (lastShaderType == ShaderType::LIT) {
-                engine.litShader.setMat4("uModel", model);
-                engine.litShader.setMat4("uView", view);
-                engine.litShader.setMat4("uProjection", proj);
-                engine.litShader.setMat4("uNormalMatrix", normal);
-            }
-            else {
-                engine.unlitShader.setMat4("uModel", model);
-                engine.unlitShader.setMat4("uView", view);
-                engine.unlitShader.setMat4("uProjection", proj);
-            }
-        }
+        engine.litShader.setMat4("uModel", batchEntry.m_transform->getModel());
+        if (lastShaderType == ShaderType::LIT) engine.litShader.setMat3("uNormalMatrix", glm::mat3(batchEntry.m_transform->getNormalMat()));
 
         // render mesh
         batchEntry.m_mesh->bind();
         glDrawElements(GL_TRIANGLES, batchEntry.m_submesh->indicesSize, GL_UNSIGNED_INT, (void*)(batchEntry.m_submesh->indicesOffset * sizeof(uint32_t)));
+        lastMaterial = batchEntry.m_material;
     }
 
-    batchEntries.clear();
 }

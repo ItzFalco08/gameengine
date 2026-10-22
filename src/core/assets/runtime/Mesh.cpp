@@ -5,6 +5,7 @@
 #include <cstring>
 
 bool Mesh::Serialize(const AssetMeta& entry) {
+	submeshes.clear();
 	if (VAO != GL_NONE || VBO != GL_NONE || EBO != GL_NONE) {
 		glDeleteBuffers(1, &VBO);
 		glDeleteBuffers(1, &EBO);
@@ -16,32 +17,36 @@ bool Mesh::Serialize(const AssetMeta& entry) {
 	std::ifstream file(meshMeta.m_sourceFile, std::ios::binary);
 	if (!file.is_open()) return false;
 
-	std::streamsize size = file.tellg();
+	file.seekg(0, std::ios::end);
+	const std::streamsize size = file.tellg();
+	if (size < static_cast<std::streamsize>(sizeof(uint32_t) * 2 + sizeof(uint32_t))) return false;
 	file.seekg(0, std::ios::beg);
 
 	std::vector<char> data(size);
 	if (!file.read(data.data(), size)) return false;
 
 	const char* ptr = data.data();
+	std::size_t remaining = data.size();
+	auto read = [&ptr, &remaining](void* destination, std::size_t bytes) {
+		if (bytes > remaining) return false;
+		std::memcpy(destination, ptr, bytes);
+		ptr += bytes;
+		remaining -= bytes;
+		return true;
+	};
 
-	uint32_t verticesSize, indicesSize = 0;
-
-	memcpy(&verticesSize, ptr, sizeof(uint32_t));
-	ptr += sizeof(uint32_t);
-	assert(verticesSize > 0);
-
-	memcpy(&indicesSize, ptr, sizeof(uint32_t));
-	ptr += sizeof(uint32_t);
-	assert(indicesSize > 0);
+	uint32_t verticesSize = 0;
+	uint32_t indicesSize = 0;
+	if (!read(&verticesSize, sizeof(verticesSize)) || !read(&indicesSize, sizeof(indicesSize)) ||
+		verticesSize == 0 || indicesSize == 0) return false;
+	if (verticesSize > remaining / sizeof(Vertex)) return false;
 
 	std::vector<Vertex> vertices(verticesSize);
+	if (!read(vertices.data(), verticesSize * sizeof(Vertex))) return false;
+	if (indicesSize > remaining / sizeof(GLuint)) return false;
+
 	std::vector<GLuint> indices(indicesSize);
-
-	memcpy(vertices.data(), ptr, verticesSize * sizeof(Vertex));
-	ptr += verticesSize * sizeof(Vertex);
-
-	memcpy(indices.data(), ptr, indicesSize * sizeof(GLuint));
-	ptr += indicesSize * sizeof(GLuint);
+	if (!read(indices.data(), indicesSize * sizeof(GLuint))) return false;
 
 	// Setup OpenGL buffers
 	glGenVertexArrays(1, &VAO);
@@ -77,13 +82,12 @@ bool Mesh::Serialize(const AssetMeta& entry) {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	uint32_t submeshCount = 0;
-	memcpy(&submeshCount, ptr, sizeof(uint32_t));
-	ptr += sizeof(uint32_t);
+	if (!read(&submeshCount, sizeof(submeshCount)) || submeshCount > remaining / sizeof(Submesh)) return false;
 
 	for (uint32_t i = 0; i < submeshCount; ++i) {
 		Submesh submesh;
-		memcpy(&submesh, ptr, sizeof(Submesh));
-		ptr += sizeof(Submesh);
+		if (!read(&submesh, sizeof(Submesh))) return false;
+		if (static_cast<uint64_t>(submesh.indicesOffset) + submesh.indicesSize > indicesSize) return false;
 		submeshes.push_back(std::move(submesh));
 	}
 

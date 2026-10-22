@@ -1,7 +1,6 @@
 #version 450 core
 
 #define MAX_LIGHTS_PER_CLUSTER 128
-#define CLUSTER_COUNT 3456
 #define MAX_DIR_LIGHTS 6
 
 // SSBOs
@@ -13,8 +12,8 @@ struct PointLight {
 	vec4 colorIntensity;
 };
 layout(std430, binding = 0) readonly buffer LightSSBO { PointLight lights[]; };
-layout(std430, binding = 1) readonly buffer IndexSSBO { ClusterLights indices[]; };
-layout(std430, binding = 2) readonly buffer CountSSBO { uint counts[CLUSTER_COUNT]; };
+layout(std430, binding = 2) readonly buffer CountSSBO { uint counts[]; };
+layout(std430, binding = 3) readonly buffer IndexSSBO { ClusterLights indices[]; };
 
 in vec3 FragPos;
 in vec3 FragPosViewSpace;
@@ -41,7 +40,7 @@ struct DirLight {
 uniform Material uMaterial;
 uniform DirLight uDirLights[MAX_DIR_LIGHTS];
 
-uniform int nrDirLights;
+uniform int nDirLights;
 uniform float zNear;
 uniform float zFar;
 uniform uvec3 gridSize;
@@ -111,7 +110,7 @@ void main() {
     for (int i = 0; i < count; i++) {
         Output += getPointLightOutput(lights[indices[tileIndex].lightsIndices[i]], camDir, uMaterial.diffuseColor, N, specularTexel, diffTexel);
     }
-    for (int i = 0; i < nrDirLights; i++) {
+    for (int i = 0; i < nDirLights; i++) {
         Output += getDirLightOutput(uDirLights[i], camDir, uMaterial.diffuseColor, N, specularTexel, diffTexel);
     }
 

@@ -1,8 +1,6 @@
 #include "Scene.hpp"
 #include "SceneManager.hpp"
 #include <fstream>
-extern SceneManager sceneManager;
-
 void Scene::recursiveJsonGen(nlohmann::json& gameObjectsArray, std::vector<GameObject*>& nodes) {
     if(nodes.empty()) return;
 
@@ -67,6 +65,8 @@ void Scene::Deserialize(std::string scenePath) {
     }
     gameObjects.clear();
     roots.clear();
+    lights.clear();
+    rendererDirty = true;
 
     sceneFilePath = scenePath;
     std::ifstream file(sceneFilePath);
@@ -82,6 +82,13 @@ void Scene::Deserialize(std::string scenePath) {
     auto& gameObjectsArray = sceneJson.at("gameObjects");
 
     recursion(roots, gameObjectsArray, nullptr);
+    for (const auto& gameObject : gameObjects) {
+        if (LightComponent* light = gameObject->GetComponent<LightComponent>()) {
+            lights.push_back(light);
+        }
+    }
+    dirty = false;
+    rendererDirty = true;
 }
 
 GameObject* Scene::AddGameObject(const std::string& goName, GameObject* parent) {
@@ -95,7 +102,7 @@ GameObject* Scene::AddGameObject(const std::string& goName, GameObject* parent) 
     // adds to tree
     parent ? parent->childs.push_back(ptr) : roots.push_back(ptr);
     
-    dirty = true;
+    MakeDirty();
     return ptr;
 }
 
@@ -141,11 +148,12 @@ void Scene::RemoveGameObject(GameObject* gameObject) {
         gameObjects.erase(objectIt);
     }
 
-    dirty = true;
+    MakeDirty();
 }
 
 void Scene::MakeDirty() {
     dirty = true;
+    rendererDirty = true;
 }
 
 void Scene::SaveScene() {

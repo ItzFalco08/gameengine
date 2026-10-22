@@ -1,11 +1,14 @@
 #include "../../utils/UUID.hpp"
 #include "../../utils/globals.hpp"
 #include "AssetsBrowserPanel.hpp"
+#include "AssetDragPayload.hpp"
 #include "glad/gl.h"
 #include <SDL3/SDL.h>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <assimp/types.h>
+#include <algorithm>
+#include <cctype>
 #include <cstring>
 #include <cstdint>
 #include <fstream>
@@ -20,6 +23,17 @@
 #include "../../core/assets/runtime/Mesh.hpp"
 
 namespace {
+    bool isSupportedModelFile(const fs::path& path) {
+        std::string extension = path.extension().string();
+        std::transform(extension.begin(), extension.end(), extension.begin(), [](unsigned char c) {
+            return static_cast<char>(std::tolower(c));
+        });
+        static const std::vector<std::string> extensions = {
+            ".obj", ".fbx", ".dae", ".gltf", ".glb", ".stl", ".ply", ".3ds", ".blend"
+        };
+        return std::find(extensions.begin(), extensions.end(), extension) != extensions.end();
+    }
+
     bool showYesNoDialog(const char* title, const char* message) {
         const SDL_MessageBoxButtonData buttons[] = {
             { SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Yes" },
@@ -162,6 +176,7 @@ void AssetsBrowser::renderPanels() {
         };
 
         if (ImGui::Button("Import")) {
+            importAssetsSynced = false;
             unsigned int flags = 0;
             for (auto& option : s_assimpFlags) {
                 if (option.enabled) {
@@ -170,6 +185,9 @@ void AssetsBrowser::renderPanels() {
             }
 
             flags |= aiProcess_Triangulate | aiProcess_CalcTangentSpace;
+            // This engine stores meshes without their source node hierarchy, so
+            // bake node transforms into vertex data during import.
+            flags |= aiProcess_PreTransformVertices;
             if (!(flags & aiProcess_GenSmoothNormals)) flags |= aiProcess_GenNormals;
 
             const fs::path sourceModelPath = importModelPath;
@@ -224,6 +242,7 @@ void AssetsBrowser::renderPanels() {
                         const UUID materialUUID = generateUUID();
                         materialMap.emplace(i, materialUUID);
                         nlohmann::json materialJson = {
+                            {"type", AssetType::MATERIAL},
                             {"uuid", UUID::toString(materialUUID)},
                             {"diffuseColor", {diffuse.r, diffuse.g, diffuse.b}},
                             {"specularColor", {specular.r, specular.g, specular.b}},
@@ -264,6 +283,7 @@ void AssetsBrowser::renderPanels() {
 
                             const UUID textureUUID = generateUUID();
                             nlohmann::json textureJson = {
+                                {"type", AssetType::TEXTURE},
                                 {"uuid", UUID::toString(textureUUID)},
                                 {"texturePath", fs::relative(textureOutput, fs::path(ASSETS_DIR)).generic_string()},
                                 {"textureType", "Texture2D"},
@@ -298,8 +318,8 @@ void AssetsBrowser::renderPanels() {
                         progress = 2 + (scene->mNumMaterials ? static_cast<int>((i + 1) * 3 / scene->mNumMaterials) : 3);
                     }
 
-                    uint32_t vertexCount = 0;
-                    uint32_t indexCount = 0;
+                    uint64_t vertexCount = 0;
+                    uint64_t indexCount = 0;
                     for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
                         const aiMesh* mesh = scene->mMeshes[i];
                         vertexCount += mesh->mNumVertices;
@@ -309,11 +329,14 @@ void AssetsBrowser::renderPanels() {
                     if (vertexCount == 0 || indexCount == 0 || vertexCount > std::numeric_limits<uint32_t>::max() || indexCount > std::numeric_limits<uint32_t>::max())
                         throw std::runtime_error("Imported model exceeds supported mesh size.");
 
+                    const uint32_t storedVertexCount = static_cast<uint32_t>(vertexCount);
+                    const uint32_t storedIndexCount = static_cast<uint32_t>(indexCount);
+
                     const fs::path meshDataPath = modelDir / modelName;
                     std::ofstream meshData(meshDataPath, std::ios::binary);
                     if (!meshData) throw std::runtime_error("Failed to create mesh data: " + meshDataPath.string());
-                    meshData.write(reinterpret_cast<const char*>(&vertexCount), sizeof(vertexCount));
-                    meshData.write(reinterpret_cast<const char*>(&indexCount), sizeof(indexCount));
+                    meshData.write(reinterpret_cast<const char*>(&storedVertexCount), sizeof(storedVertexCount));
+                    meshData.write(reinterpret_cast<const char*>(&storedIndexCount), sizeof(storedIndexCount));
 
                     for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
                         const aiMesh* mesh = scene->mMeshes[i];
@@ -373,15 +396,18 @@ void AssetsBrowser::renderPanels() {
                     if (!meshMeta) throw std::runtime_error("Failed to create mesh metadata file.");
 
                     nlohmann::json meshMetaJson = {
+                        {"type", AssetType::MESH},
                         {"uuid", UUID::toString(meshUUID)},
-                        {"vertexCount", vertexCount},
-                        {"indexCount", indexCount},
+                        {"vertexCount", storedVertexCount},
+                        {"indexCount", storedIndexCount},
                         {"submeshCount", submeshCount},
                     };
 
                     meshMeta << meshMetaJson.dump(4);
                     meshMeta.close();
+                    if (!meshMeta) throw std::runtime_error("Failed while writing mesh metadata file.");
 
+                    completedImportDir = modelDir;
                     progress = -2;
                 } catch (const std::exception& e) {
                     failImport(std::string("Model import failed: ") + e.what());
@@ -408,6 +434,10 @@ void AssetsBrowser::renderPanels() {
             }
 		}
 		else if (progress == -2) {
+			if (!importAssetsSynced) {
+				engine.assetsRegistry.syncAssets(completedImportDir);
+				importAssetsSynced = true;
+			}
 			ImGui::Text("Boom Baam! Import complete.");
 			if (ImGui::Button("Close")) {
 				ImGui::CloseCurrentPopup();
@@ -498,9 +528,7 @@ void AssetsBrowser::handleFileDrop(const char* filePath)
 {
     importModelPath = filePath;
 
-    if (importModelPath.extension() == ".fbx" || importModelPath.extension() == ".obj" || importModelPath.extension() == ".dae" ||
-        importModelPath.extension() == ".gltf" || importModelPath.extension() == ".glb" || importModelPath.extension() == ".stl") {
-
+    if (isSupportedModelFile(importModelPath)) {
         showImportModelPopup = true;
     }
 }
@@ -623,6 +651,11 @@ void AssetsBrowser::rename(std::string input) {
     fs::rename(toRename, toRename.parent_path() / (input + toRename.extension().string()));
 }
 
+bool isValidAsset(fs::path path) {
+    if (fs::exists(path) && (path.extension() == ".mat" || path.extension() == ".tex" || path.extension() == ".mesh")) return true;
+    return false;
+}
+
 void AssetsBrowser::DrawAssetItem(
     ImTextureID icon,
     const char* label,
@@ -652,36 +685,53 @@ void AssetsBrowser::DrawAssetItem(
         iconSize, {0,1}, {1,0}, ImVec4(0, 0, 0, 0)
     );
 
-    if (ImGui::BeginDragDropSource()) {
-        const char* itemPathW = itemPath.c_str();
-        ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPathW, (strlen(itemPathW) + 1) * sizeof(char));
-        ImGui::Text("%s", label); 
+    if (isValidAsset(itemPath) && ImGui::BeginDragDropSource()) {
+        std::ifstream assetFile(itemPath, std::ios::binary);
+        nlohmann::json assetJson;
+        assetFile >> assetJson;
+
+        AssetDragPayload assetDragPayload;
+        assetDragPayload.type = assetJson.at("type").get<AssetType>();
+        const std::string uuid = assetJson.at("uuid").get<std::string>();
+        std::memcpy(assetDragPayload.uuid, uuid.data(), std::min(uuid.size(), sizeof(assetDragPayload.uuid) - 1));
+        
+        ImGui::SetDragDropPayload(
+            "ASSET_UUID",
+            &assetDragPayload,
+            sizeof(AssetDragPayload)
+        );
+
+        ImGui::Text("%s", label);
         ImGui::EndDragDropSource();
     }
-
+    
     ImGui::PopStyleColor(3);
 
     if (clicked) {
         if (!isActive) {
             selectedItem = itemPath;
+
+            if (isValidAsset(selectedItem)) {
+                // an asset opened.
+                std::ifstream selectedItemFile(selectedItem, std::ios::binary);
+                if(!selectedItemFile) {
+                    LOG::EditorError("Failed to open asset file: ", selectedItem.string());
+                    return;
+                }
+                
+                nlohmann::json assetMetaJson;
+                selectedItemFile >> assetMetaJson;
+                
+                editor.selectedAssetMeta = engine.assetsRegistry.getAsset<AssetMeta>(
+                    UUID::fromString(assetMetaJson.at("uuid").get<std::string>())
+                );
+                editor.selectedGameObject = nullptr;
+            }
+
         } else if (fs::is_directory(selectedItem)) {
             currentPath = selectedItem;
         } else if (selectedItem.extension() == ".scene") {
             engine.sceneManager.SetScene(selectedItem);
-        } else {
-            // an asset opened.
-            std::ifstream selectedItemFile(selectedItem, std::ios::binary);
-            if(!selectedItemFile) {
-                LOG::EditorError("Failed to open asset file: ", selectedItem.string());
-                return;
-            }
-            
-            nlohmann::json assetMetaJson;
-            selectedItemFile >> assetMetaJson;
-            
-            editor.selectedAssetMeta = engine.assetsRegistry.getAsset<AssetMeta>(
-                UUID::fromString(assetMetaJson.at("uuid").get<std::string>())
-            );
         }
     }
 

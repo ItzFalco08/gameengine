@@ -10,7 +10,8 @@ public:
     std::vector<GameObject*> roots; // root nodes
     std::vector<LightComponent*> lights; // lights
     std::filesystem::path sceneFilePath;
-    bool dirty = false;
+    bool dirty = false; // Scene data needs serialization.
+    bool rendererDirty = true; // Cached draw entries and lighting need rebuilding.
 
     // S C E N E -> J S O N
     void Serialize();

@@ -63,23 +63,13 @@ void ScenePanel::updateDimentions(ImVec2& dimensions) {
     if (width <= 0 || height <= 0)
         return;
 
-    static Uint64 lastChange = 0;
-    static bool resizePending = false;
-
     if (width != editor.sceneView.SCENEVIEW_WIDTH ||
         height != editor.sceneView.SCENEVIEW_HEIGHT) {
 
         editor.sceneView.SCENEVIEW_WIDTH = width;
         editor.sceneView.SCENEVIEW_HEIGHT = height;
-
-        lastChange = SDL_GetTicks();
-        resizePending = true;
-    }
-
-    if (resizePending && SDL_GetTicks() - lastChange >= 150) {
         updateFBODimensions();
         editor.editorCamera.projDirty = true;
-        resizePending = false;
     }
 }
 
@@ -184,7 +174,7 @@ void ScenePanel::renderGuizmos() {
 
         if (ImGuizmo::IsUsing()) {
             editor.selectedGameObject->transform->DecomposeModel();
-            sceneManager.activeScene->MakeDirty();
+            engine.sceneManager.activeScene->MakeDirty();
         }
     }
 };

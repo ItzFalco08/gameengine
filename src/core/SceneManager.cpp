@@ -1,5 +1,6 @@
 #include "SceneManager.hpp"
 #include <filesystem>
+#include "../utils/globals.hpp"
 
 void SceneManager::SetScene(const fs::path& path) {
     LOG::Info("Switching Scene");
@@ -8,6 +9,8 @@ void SceneManager::SetScene(const fs::path& path) {
         return;
     }
 
+    editor.selectedGameObject = nullptr;
+    editor.selectedAssetMeta = nullptr;
     activeScene = std::make_unique<Scene>();
     activeScene->Deserialize(path.string());
 }

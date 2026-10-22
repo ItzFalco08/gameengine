@@ -31,6 +31,7 @@ struct BatchEntry {
 
 class Renderer {
     Scene* scene;
+    Scene* previousScene = nullptr;
 
     // Clustered Forward Rendering constants
     uint32_t GX = 16, GY = 9, GZ = 24;
@@ -54,7 +55,8 @@ class Renderer {
     // other constrants
 	static constexpr uint32_t MAX_DIRLIGHTS = 6;
     bool firstFrame = true;
-	float prevAspect = 0.0f;
+    int clusterWidth = 0;
+    int clusterHeight = 0;
     inline static std::vector<GPUDirLight> gpuDirLights;
 
 

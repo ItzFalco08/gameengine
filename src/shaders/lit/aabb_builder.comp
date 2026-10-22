@@ -13,7 +13,7 @@ struct GridAABB {
 	vec4 to;
 };
 
-layout(std430, binding = 0) buffer MyBuffer {
+layout(std430, binding = 1) buffer MyBuffer {
     GridAABB data[];
 };
 

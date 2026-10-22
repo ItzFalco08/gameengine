@@ -4,7 +4,6 @@
 #include "json/json.hpp"
 
 class SceneManager;
-extern SceneManager sceneManager;
 
 enum class LightType {
     POINT,

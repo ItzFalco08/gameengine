@@ -50,6 +50,8 @@ private:
 	fs::path importModelPath = "";
     std::atomic<int> progress = 0;
     std::future<void> importFuture;
+    bool importAssetsSynced = true;
+    fs::path completedImportDir;
 
     // popup flags
 	bool showCreateFolderPopup = false;
