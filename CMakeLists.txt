@@ -29,9 +29,6 @@ add_subdirectory(third_party/KHR)
 add_subdirectory(third_party/STB)
 add_subdirectory(third_party/assimp)
 
-find_path(MINIZIP_INCLUDE_DIR unzip.h PATH_SUFFIXES minizip REQUIRED)
-target_include_directories(assimp PRIVATE "${MINIZIP_INCLUDE_DIR}")
-
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     target_compile_options(assimp PRIVATE -Wno-unsafe-buffer-usage)
 endif()

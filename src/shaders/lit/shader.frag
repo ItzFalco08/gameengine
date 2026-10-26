@@ -48,37 +48,49 @@ uniform vec2 uTileSize;
 
 out vec4 FragColor;
 
-vec3 getPointLightOutput(PointLight pointLight, vec3 camDir, vec3 fragColor, vec3 N, vec3 specularTexel, vec3 diffTexel) {
+vec3 getPointLightOutput(PointLight pointLight, vec3 camDir, vec3 N, vec3 specularTexel, vec3 diffTexel) {
     // pre requrities
     float dist = length(pointLight.positionRange.xyz - FragPos);
+    float range = pointLight.positionRange.w;
+
+    if (range <= 0.0 || dist >= range)
+        return vec3(0.0);
      
     vec3 lightDir = normalize(pointLight.positionRange.xyz - FragPos);
-    vec3 reflectedLight = reflect(-lightDir, N);
+
+    vec3 halfway = normalize(lightDir + camDir);
+
     float attenuation = pow(clamp(1.0 - (dist / pointLight.positionRange.w), 0.0, 1.0), 2.0) * pointLight.colorIntensity.w;
 
     // 0 - 1 dots
-    float diffuse = max(dot(lightDir, normalize(N)), 0.0);
-    float specular = pow(max(dot(camDir, reflectedLight), 0.0), uMaterial.shininess);
+    float diffuse = max(dot(lightDir, N), 0.0);
+    float specular = 0;
+    if (diffuse > 0.0) { // skip unecessary highlight
+        specular = pow(max(dot(N, halfway ), 0.0), uMaterial.shininess);
+    }
 
     // phong colors
-    vec3 diffusedColor = diffuse * uMaterial.diffuseColor * diffTexel * fragColor;
-    vec3 specularColor = specular * uMaterial.specularColor * specularTexel * fragColor;
+    vec3 diffusedColor = diffuse  * diffTexel * uMaterial.diffuseColor;
+    vec3 specularColor = specular * specularTexel * uMaterial.specularColor;
 
     return (diffusedColor + specularColor) * pointLight.colorIntensity.xyz * attenuation;
 }
 
-vec3 getDirLightOutput(DirLight dirLight, vec3 camDir, vec3 fragColor, vec3 N, vec3 specularTexel, vec3 diffTexel) {
+vec3 getDirLightOutput(DirLight dirLight, vec3 camDir, vec3 N, vec3 specularTexel, vec3 diffTexel) {
     // pre requrities
     vec3 lightDir = normalize(dirLight.direction);
     vec3 reflectedLight = reflect(-lightDir, N);
 
     // 0 - 1 dots
     float diffuse = max(dot(lightDir, N), 0.0);
-    float specular = pow(max(dot(camDir, reflectedLight), 0.0), uMaterial.shininess);
+    float specular = 0.0;
+    if (diffuse > 0.0) { // skip unecessary highlight
+       specular = pow(max(dot(camDir, reflectedLight), 0.0), uMaterial.shininess);
+    }
 
     // phong colors
-    vec3 diffusedColor = diffuse * uMaterial.diffuseColor * diffTexel * fragColor;
-    vec3 specularColor = specular * uMaterial.specularColor * specularTexel * fragColor;
+    vec3 diffusedColor = diffuse  * diffTexel * uMaterial.diffuseColor;
+    vec3 specularColor = specular * specularTexel * uMaterial.specularColor;
 
     return  (diffusedColor + specularColor) * dirLight.color;
 }
@@ -107,11 +119,11 @@ void main() {
     // tangent space -> world space
 
     uint count = min(counts[tileIndex], uint(MAX_LIGHTS_PER_CLUSTER));
-    for (int i = 0; i < count; i++) {
-        Output += getPointLightOutput(lights[indices[tileIndex].lightsIndices[i]], camDir, uMaterial.diffuseColor, N, specularTexel, diffTexel);
+    for (uint i = 0u; i < count; ++i) {
+        Output += getPointLightOutput(lights[indices[tileIndex].lightsIndices[i]], camDir, N, specularTexel, diffTexel);
     }
-    for (int i = 0; i < nDirLights; i++) {
-        Output += getDirLightOutput(uDirLights[i], camDir, uMaterial.diffuseColor, N, specularTexel, diffTexel);
+    for (uint i = 0u; i < nDirLights; ++i) {
+        Output += getDirLightOutput(uDirLights[i], camDir, N, specularTexel, diffTexel);
     }
 
     FragColor = vec4(Output, 1.0);
