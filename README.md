@@ -71,28 +71,6 @@ cd build/release
 | :---: | :---: |
 | ![Editor view](./screenshots/ss1.png) | ![Assets Registry view](./screenshots/ss2.png) |
 
-## Project Structure
-
-```text
-gameengine/
-|-- Assets/                 # Scenes and imported project assets
-|-- screenshots/
-|-- src/
-|   |-- core/                # Scene, game object, renderer, and asset systems
-|   |   |-- assets/
-|   |   |   |-- meta/
-|   |   |   `-- runtime/
-|   |   `-- components/
-|   |-- editor/
-|   |   |-- gui/             # Editor panels
-|   |   `-- resources/       # Editor icons
-|   |-- shaders/
-|   `-- utils/
-|-- third_party/             # Vendored dependencies
-|-- CMakeLists.txt
-|-- CMakePresets.json
-`-- README.md
-```
 
 ## Roadmap
 
